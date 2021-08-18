@@ -6,7 +6,15 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 tools:context=".ui.search.SearchFragment">
 
-<TextView
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
+    <TextView
     android:id="@+id/text_search"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -20,4 +28,5 @@ tools:context=".ui.search.SearchFragment">
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     android:gravity="center_horizontal" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
