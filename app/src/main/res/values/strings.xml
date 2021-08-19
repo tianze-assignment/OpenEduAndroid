@@ -1,7 +1,23 @@
 <resources>
     <string name="app_name">EasyLearn</string>
-    <string name="title_home">Home</string>
-    <string name="title_search">Search</string>
-    <string name="title_train">Train</string>
-    <string name="title_user">User</string>
+    <string name="title_home">首页</string>
+    <string name="title_search">发现</string>
+    <string name="title_train">训练</string>
+    <string name="title_user">我的</string>
+    <!-- Sync Preferences -->
+
+    <string name="subject_manage_title">请选择您感兴趣的科目</string>
+    <string name="subject_chinese">语文</string>
+    <string name="subject_math">数学</string>
+    <string name="subject_english">英语</string>
+    <string name="subject_physics">物理</string>
+    <string name="subject_chemistry">化学</string>
+    <string name="subject_biology">生物</string>
+    <string name="subject_history">历史</string>
+    <string name="subject_geography">地理</string>
+    <string name="subject_politics">政治</string>
+    <string name="title_activity_subject_manage">学科设置</string>
+    <string name="searchViewText">搜索</string>
+    <string name="app_label">EasyLearn</string>
+    <string name="search_hint">搜索知识点</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.wudaokou.easylearn.ui.user;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -8,6 +9,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +44,17 @@ public class UserFragment extends Fragment {
                 textView.setText(s);
             }
         });
+
+        // 显示定制的toolbar
+        NavController navController = Navigation.findNavController(requireActivity(),
+                R.id.nav_host_fragment_activity_main);
+        AppBarConfiguration appBarConfiguration =
+                new AppBarConfiguration.Builder(navController.getGraph()).build();
+        Toolbar toolbar = binding.toolbar4;
+        NavigationUI.setupWithNavController(
+                toolbar, navController, appBarConfiguration);
+
+
         return root;
     }
 
