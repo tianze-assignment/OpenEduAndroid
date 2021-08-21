@@ -1,6 +1,7 @@
 package com.wudaokou.easylearn.ui.home;
 
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,10 +12,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -23,6 +26,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.wudaokou.easylearn.R;
 import com.wudaokou.easylearn.SearchableActivity;
 import com.wudaokou.easylearn.SubjectManageActivity;
@@ -65,6 +69,7 @@ public class HomeFragment extends Fragment {
         NavigationUI.setupWithNavController(
                 toolbar, navController, appBarConfiguration);
 
+        // 使activity回调fragment的onCreateOptionsMenu函数
         setHasOptionsMenu(true);
 //        ((AppCompatActivity) requireActivity()).setSupportActionBar(binding.toolbar);
 
@@ -101,7 +106,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    // 获取toolbar的菜单项
+    // 加载toolbar的菜单项
     @Override
     public void onCreateOptionsMenu(@NotNull Menu menu, MenuInflater inflater) {
         menu.clear(); // 清除activity工具栏内容
@@ -111,11 +116,64 @@ public class HomeFragment extends Fragment {
         mSearchView.setIconifiedByDefault(false);
         mSearchView.setSubmitButtonEnabled(true);
         mSearchView.setQueryRefinementEnabled(true);
+        mSearchView.setQueryHint("搜索知识点");
+
+        // 去掉搜索框默认的下划线
+//        mSearchView.findViewById(R.id.search_plate).setBackground(null);
+//        mSearchView.findViewById(R.id.submit_area).setBackground(null);
+
+        // 设置搜索框背景样式
+        mSearchView.setBackground(ContextCompat.getDrawable(
+                requireActivity(), R.drawable.search_view_background));
+
+
+        // 搜索内容自动提示
+        // 待完成Adapter
+//        mSearchView.setSuggestionsAdapter();
+
 
         // Get the SearchView and set the searchable configuration
 //        SearchManager searchManager = (SearchManager) requireActivity().getSystemService(Context.SEARCH_SERVICE);
-//        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(
+//                new ComponentName("com.wudaokou.easylearn", "SearchableActivity")));
 
+        // 搜索框打开监听
+//        mSearchView.setOnSearchClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(requireActivity(),"open",Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
+        // 搜索框关闭监听
+//        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
+//            @Override
+//            public boolean onClose() {
+//                Toast.makeText(requireActivity(),"close",Toast.LENGTH_SHORT).show();
+//                return false;
+//            }
+//        });
+
+        // 输入文本变化监听
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // 提交文本时调用
+//                Snackbar.make(mSearchView.findViewById(R.id.search_go_btn),query,Snackbar.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(getActivity(), SearchableActivity.class);
+                intent.setAction(Intent.ACTION_SEARCH);
+                intent.putExtra("QUERY", query);
+                startActivity(intent);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // 文本搜索框发生变化时调用
+                return false;
+            }
+        });
     }
 
     @Override

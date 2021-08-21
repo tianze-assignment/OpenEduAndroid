@@ -6,4 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".SearchableActivity">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="145dp"
+        android:layout_height="125dp"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="121dp"
+        tools:layout_editor_absoluteY="318dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
