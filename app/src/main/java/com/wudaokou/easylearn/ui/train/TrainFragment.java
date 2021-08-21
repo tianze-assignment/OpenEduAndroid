@@ -15,12 +15,16 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wudaokou.easylearn.R;
 import com.wudaokou.easylearn.databinding.FragmentTrainBinding;
+
+import org.jetbrains.annotations.NotNull;
 
 public class TrainFragment extends Fragment {
 
@@ -44,13 +48,15 @@ public class TrainFragment extends Fragment {
         });
 
         // 显示定制的toolbar
-        NavController navController = Navigation.findNavController(requireActivity(),
-                R.id.nav_host_fragment_activity_main);
-        AppBarConfiguration appBarConfiguration =
-                new AppBarConfiguration.Builder(navController.getGraph()).build();
-        Toolbar toolbar = binding.toolbar3;
-        NavigationUI.setupWithNavController(
-                toolbar, navController, appBarConfiguration);
+//        NavController navController = Navigation.findNavController(requireActivity(),
+//                R.id.nav_host_fragment_activity_main);
+//        AppBarConfiguration appBarConfiguration =
+//                new AppBarConfiguration.Builder(navController.getGraph()).build();
+//        Toolbar toolbar = binding.toolbar3;
+//        NavigationUI.setupWithNavController(
+//                toolbar, navController, appBarConfiguration);
+
+        setHasOptionsMenu(true);
 
         return root;
     }
@@ -61,4 +67,8 @@ public class TrainFragment extends Fragment {
         binding = null;
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NotNull Menu menu, MenuInflater inflater) {
+        menu.clear();
+    }
 }

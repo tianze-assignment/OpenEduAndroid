@@ -65,9 +65,9 @@ public class HomeFragment extends Fragment {
                 R.id.nav_host_fragment_activity_main);
         AppBarConfiguration appBarConfiguration =
                 new AppBarConfiguration.Builder(navController.getGraph()).build();
-        Toolbar toolbar = binding.toolbar;
-        NavigationUI.setupWithNavController(
-                toolbar, navController, appBarConfiguration);
+//        Toolbar toolbar = binding.toolbar;
+//        NavigationUI.setupWithNavController(
+//                toolbar, navController, appBarConfiguration);
 
         // 使activity回调fragment的onCreateOptionsMenu函数
         setHasOptionsMenu(true);

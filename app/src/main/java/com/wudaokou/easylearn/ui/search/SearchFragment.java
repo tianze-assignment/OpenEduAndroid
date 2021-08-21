@@ -15,6 +15,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -23,6 +25,8 @@ import com.wudaokou.easylearn.R;
 import com.wudaokou.easylearn.databinding.FragmentHomeBinding;
 import com.wudaokou.easylearn.databinding.FragmentSearchBinding;
 import com.wudaokou.easylearn.ui.home.HomeViewModel;
+
+import org.jetbrains.annotations.NotNull;
 
 public class SearchFragment extends Fragment {
 
@@ -47,13 +51,15 @@ public class SearchFragment extends Fragment {
         });
 
         // 显示定制的toolbar
-        NavController navController = Navigation.findNavController(requireActivity(),
-                R.id.nav_host_fragment_activity_main);
-        AppBarConfiguration appBarConfiguration =
-                new AppBarConfiguration.Builder(navController.getGraph()).build();
-        Toolbar toolbar = binding.toolbar2;
-        NavigationUI.setupWithNavController(
-                toolbar, navController, appBarConfiguration);
+//        NavController navController = Navigation.findNavController(requireActivity(),
+//                R.id.nav_host_fragment_activity_main);
+//        AppBarConfiguration appBarConfiguration =
+//                new AppBarConfiguration.Builder(navController.getGraph()).build();
+//        Toolbar toolbar = binding.toolbar2;
+//        NavigationUI.setupWithNavController(
+//                toolbar, navController, appBarConfiguration);
+
+        setHasOptionsMenu(true);
 
         return root;
     }
@@ -62,5 +68,10 @@ public class SearchFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NotNull Menu menu, MenuInflater inflater) {
+        menu.clear();
     }
 }
