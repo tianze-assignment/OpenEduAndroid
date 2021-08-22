@@ -48,5 +48,4 @@ public class MainActivity extends AppCompatActivity {
 //        getMenuInflater().inflate(R.menu.home_toolbar_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
-
 }

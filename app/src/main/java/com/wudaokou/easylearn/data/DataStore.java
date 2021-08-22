@@ -1,6 +1,7 @@
 package com.wudaokou.easylearn.data;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceDataStore;
@@ -16,6 +17,8 @@ public class DataStore extends PreferenceDataStore {
 
     public Context context;
     public String name;
+
+    public final String TAG = "DataStore";
 
     public DataStore (Context context, String name) {
         this.context = context;
@@ -35,7 +38,7 @@ public class DataStore extends PreferenceDataStore {
 //                SimpleSQLiteQuery query = new SimpleSQLiteQuery(sql);
 //                MyDatabase.getDatabase(context).userDAO().updateBoolean(query);
 //                MyDatabase.getDatabase(context).query(query);
-
+                Log.w(TAG, String.format("putBoolean(%s, %s)", key, Boolean.toString(value)));
                 User user = MyDatabase.getDatabase(context).userDAO().loadUserByName("default");
                 switch (key) {
                     case "chineseChosen":
@@ -79,12 +82,15 @@ public class DataStore extends PreferenceDataStore {
         // Retrieve the value
         // TODO!!录入个人名称后需要考虑对应用户是否存在
 
+        Log.w(TAG, String.format("enter getBoolean(%s)", key));
         Future<Boolean> future = MyDatabase.databaseWriteExecutor.submit(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 String sql = String.format("SELECT %s from user WHERE name = '" + "%s'", key, name);
                 SimpleSQLiteQuery query = new SimpleSQLiteQuery(sql);
-                return MyDatabase.getDatabase(context).userDAO().loadBoolean(query);
+                boolean ret = MyDatabase.getDatabase(context).userDAO().loadBoolean(query);
+                Log.w(TAG, String.format("getBoolean(%s, %s)", key, Boolean.toString(ret)));
+                return ret;
 
 //                return MyDatabase.getDatabase(context).userDAO().loadUserByName(name).chineseChosen;
 

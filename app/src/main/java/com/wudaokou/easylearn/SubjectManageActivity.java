@@ -1,6 +1,7 @@
 package com.wudaokou.easylearn;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,11 +35,23 @@ public class SubjectManageActivity extends AppCompatActivity {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
             // 使用数据存储区存储学科设置信息
-            DataStore dataStore = new DataStore(getContext(), "default1");
+//            DataStore dataStore = new DataStore(getContext(), "default1");
 
             // 为整个层次结构启用自定义数据存储区
-            PreferenceManager preferenceManager = getPreferenceManager();
-            preferenceManager.setPreferenceDataStore(dataStore);
+//            PreferenceManager preferenceManager = getPreferenceManager();
+//            preferenceManager.setPreferenceDataStore(dataStore);
+
+//            final String[] keys = {"chineseChosen", "mathChosen", "englishChosen",
+//                    "physicsChosen", "chemistryChosen", "biologyChosen", "historyChosen",
+//                    "geographyChosen", "politicsChosen"};
+//            for (String key : keys) {
+//                Preference preference = findPreference(key);
+//                if (preference != null) {
+//                    preference.setPreferenceDataStore(dataStore);
+//                } else {
+//                    Log.w("SubjectManageActivity", String.format("%s is null", key));
+//                }
+//            }
         }
     }
 }
