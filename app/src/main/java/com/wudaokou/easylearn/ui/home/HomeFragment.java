@@ -55,7 +55,7 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        intiSearchView();
+//        intiSearchView();
 
         // 显示定制的toolbar
 //        NavController navController = Navigation.findNavController(requireActivity(),
@@ -76,6 +76,15 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), SubjectManageActivity.class);
                 startActivityForResult(intent, subjectManageRequestCode);
+            }
+        });
+
+        binding.searchLine.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("HomeFragment", "click search box");
+                Intent intent = new Intent(getActivity(), SearchableActivity.class);
+                startActivity(intent);
             }
         });
         return root;
@@ -160,11 +169,11 @@ public class HomeFragment extends Fragment {
     }
 
     public void intiSearchView() {
-        SearchView mSearchView = binding.searchView;
-        mSearchView.setIconifiedByDefault(false);
-//        mSearchView.setSubmitButtonEnabled(true);
-        mSearchView.setQueryRefinementEnabled(true);
-        mSearchView.setQueryHint("搜索知识点");
+//        SearchView mSearchView = binding.searchView;
+//        mSearchView.setIconifiedByDefault(false);
+////        mSearchView.setSubmitButtonEnabled(true);
+//        mSearchView.setQueryRefinementEnabled(true);
+//        mSearchView.setQueryHint("搜索知识点");
 
         // 去掉搜索框默认的下划线
 //        mSearchView.findViewById(R.id.search_plate).setBackground(null);
@@ -185,15 +194,15 @@ public class HomeFragment extends Fragment {
 //        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().getComponentName()));
 
 //         搜索框打开监听
-        mSearchView.setOnSearchClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Intent intent = new Intent(getActivity(), SearchableActivity.class);
-//                intent.setAction(Intent.ACTION_SEARCH);
-//                startActivity(intent);
-//                Toast.makeText(requireActivity(),"open",Toast.LENGTH_SHORT).show();
-            }
-        });
+//        mSearchView.setOnSearchClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                Intent intent = new Intent(getActivity(), SearchableActivity.class);
+////                intent.setAction(Intent.ACTION_SEARCH);
+////                startActivity(intent);
+////                Toast.makeText(requireActivity(),"open",Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         // 搜索框关闭监听
 //        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
@@ -205,24 +214,24 @@ public class HomeFragment extends Fragment {
 //        });
 
         // 输入文本变化监听
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                // 提交文本时调用
-//                Snackbar.make(mSearchView.findViewById(R.id.search_go_btn),query,Snackbar.LENGTH_SHORT).show();
-
-                Intent intent = new Intent(getActivity(), SearchableActivity.class);
-                intent.setAction(Intent.ACTION_SEARCH);
-                intent.putExtra("QUERY", query);
-                startActivity(intent);
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // 文本搜索框发生变化时调用
-                return false;
-            }
-        });
+//        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                // 提交文本时调用
+////                Snackbar.make(mSearchView.findViewById(R.id.search_go_btn),query,Snackbar.LENGTH_SHORT).show();
+//
+//                Intent intent = new Intent(getActivity(), SearchableActivity.class);
+//                intent.setAction(Intent.ACTION_SEARCH);
+//                intent.putExtra("QUERY", query);
+//                startActivity(intent);
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                // 文本搜索框发生变化时调用
+//                return false;
+//            }
+//        });
     }
 }
