@@ -1,9 +1,14 @@
 package com.wudaokou.easylearn.ui.home;
 
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,6 +19,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
@@ -48,6 +54,8 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        intiSearchView();
 
         // 显示定制的toolbar
 //        NavController navController = Navigation.findNavController(requireActivity(),
@@ -129,6 +137,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onConfigureTab(@NonNull @NotNull TabLayout.Tab tab, int position) {
                 TextView tabView = new TextView(requireContext());
+                tabView.setGravity(Gravity.CENTER);
                 tabView.setText(map.get(subject.get(position)));
                 tab.setCustomView(tabView);
             }
@@ -150,15 +159,10 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    // 加载toolbar的菜单项
-    @Override
-    public void onCreateOptionsMenu(@NotNull Menu menu, MenuInflater inflater) {
-        menu.clear(); // 清除activity工具栏内容
-        inflater.inflate(R.menu.home_toolbar_menu, menu);
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+    public void intiSearchView() {
+        SearchView mSearchView = binding.searchView;
         mSearchView.setIconifiedByDefault(false);
-        mSearchView.setSubmitButtonEnabled(true);
+//        mSearchView.setSubmitButtonEnabled(true);
         mSearchView.setQueryRefinementEnabled(true);
         mSearchView.setQueryHint("搜索知识点");
 
@@ -167,8 +171,8 @@ public class HomeFragment extends Fragment {
 //        mSearchView.findViewById(R.id.submit_area).setBackground(null);
 
         // 设置搜索框背景样式
-        mSearchView.setBackground(ContextCompat.getDrawable(
-                requireActivity(), R.drawable.search_view_background));
+//        mSearchView.setBackground(ContextCompat.getDrawable(
+//                requireActivity(), R.drawable.search_view_background));
 
 
         // 搜索内容自动提示
@@ -178,16 +182,18 @@ public class HomeFragment extends Fragment {
 
         // Get the SearchView and set the searchable configuration
 //        SearchManager searchManager = (SearchManager) requireActivity().getSystemService(Context.SEARCH_SERVICE);
-//        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(
-//                new ComponentName("com.wudaokou.easylearn", "SearchableActivity")));
+//        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().getComponentName()));
 
-        // 搜索框打开监听
-//        mSearchView.setOnSearchClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
+//         搜索框打开监听
+        mSearchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent intent = new Intent(getActivity(), SearchableActivity.class);
+//                intent.setAction(Intent.ACTION_SEARCH);
+//                startActivity(intent);
 //                Toast.makeText(requireActivity(),"open",Toast.LENGTH_SHORT).show();
-//            }
-//        });
+            }
+        });
 
         // 搜索框关闭监听
 //        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
@@ -218,14 +224,5 @@ public class HomeFragment extends Fragment {
                 return false;
             }
         });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_search) {
-
-        }
-        return super.onOptionsItemSelected(item);
     }
 }

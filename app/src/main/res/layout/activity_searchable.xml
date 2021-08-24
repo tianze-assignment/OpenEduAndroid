@@ -1,16 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     tools:context=".SearchableActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="145dp"
-        android:layout_height="125dp"
-        android:text="TextView"
-        tools:layout_editor_absoluteX="121dp"
-        tools:layout_editor_absoluteY="318dp" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:id="@+id/search_block"
+        android:layout_width="match_parent"
+        android:layout_height="66dp"
+        android:orientation="horizontal"
+        android:paddingRight="10dp">
+
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="84dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/design_default_color_background"
+            android:contentDescription="返回"
+            android:onClick="getBack"
+            app:srcCompat="@mipmap/back" />
+
+        <Button
+            android:id="@+id/subjectButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:onClick="showPopup"
+            android:text="语文"
+            android:textColor="@color/grey_700"
+            android:textSize="16sp"
+            app:backgroundTint="@color/white" />
+
+        <SearchView
+            android:id="@+id/searchView2"
+            android:layout_width="248dp"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <ListView
+            android:id="@+id/recordList"
+            style="@style/Widget.AppCompat.ListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </ListView>
+
+        <Button
+            android:id="@+id/clearRecordButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="clearSearchRecord"
+            android:text="@string/clearSearchHistory" />
+
+    </LinearLayout>
+</LinearLayout>

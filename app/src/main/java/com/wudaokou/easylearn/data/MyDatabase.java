@@ -11,22 +11,25 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {User.class}, version = 1)
+@Database(entities = {User.class, SearchRecord.class}, version = 2)
 public abstract class MyDatabase extends RoomDatabase {
     public abstract UserDAO userDAO();
+    public abstract SearchRecordDAO searchRecordDAO();
 
     private static volatile MyDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
-    static final ExecutorService databaseWriteExecutor =
+    public static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-    static MyDatabase getDatabase(final Context context) {
+    public static MyDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (MyDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             MyDatabase.class, "my_database")
-                            .addCallback(sRoomDatabaseCallback).build();
+                            .addCallback(sRoomDatabaseCallback)
+                            .fallbackToDestructiveMigration()
+                            .build();
                 }
             }
         }
