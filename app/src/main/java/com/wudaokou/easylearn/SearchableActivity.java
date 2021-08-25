@@ -40,6 +40,7 @@ public class SearchableActivity extends AppCompatActivity
     SharedPreferences sharedPreferences;
     public Button typeButton;
     public Button clearRecordButton;
+    HashMap<String, String> map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,7 @@ public class SearchableActivity extends AppCompatActivity
         typeButton = binding.subjectButton;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String selectedType = sharedPreferences.getString("searchType", "chinese");
-        HashMap<String, String> map = SubjectMap.getMap();
+        map = SubjectMap.getMap();
         typeButton.setText(map.get(selectedType));
 
         initSearchView();
@@ -63,6 +64,12 @@ public class SearchableActivity extends AppCompatActivity
         myDatabase = MyDatabase.getDatabase(this);
 
         // 再获取历史搜索记录
+//        initSearchRecord();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         initSearchRecord();
     }
 
@@ -150,6 +157,7 @@ public class SearchableActivity extends AppCompatActivity
                 });
 
                 // todo 执行搜搜
+                doMySearch(subject, query);
 
                 return false;
             }
@@ -206,7 +214,11 @@ public class SearchableActivity extends AppCompatActivity
         initSearchRecord();
     }
 
-    private void doMySearch(String query) {
+    private void doMySearch(String queryType, String queryContent) {
         // 执行搜索操作
+        Intent intent = new Intent(this, SearchResultActivity.class);
+        intent.putExtra("queryType", queryType);
+        intent.putExtra("queryContent", queryContent);
+        startActivity(intent);
     }
 }
