@@ -122,7 +122,7 @@ public class HomeFragment extends Fragment {
             boolean value = sharedPreferences.getBoolean(key, false);
             if (value) {
                 subject.add(key);
-                Log.w("HomeFragment",String.format("[%s] has been selected!", key));
+//                Log.w("HomeFragment",String.format("[%s] has been selected!", key));
             }
         }
 
