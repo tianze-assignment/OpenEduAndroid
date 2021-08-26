@@ -39,13 +39,7 @@ public class TrainFragment extends Fragment {
         binding = FragmentTrainBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textTrain;
-        trainViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+
 
         // 显示定制的toolbar
 //        NavController navController = Navigation.findNavController(requireActivity(),
