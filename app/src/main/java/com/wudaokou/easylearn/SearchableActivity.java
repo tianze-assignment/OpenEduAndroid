@@ -119,7 +119,7 @@ public class SearchableActivity extends AppCompatActivity
                 break;
             case R.id.type_geography:
                 typeButton.setText("地理");
-                editor.putString("searchType", "geography");
+                editor.putString("searchType", "geo");
                 break;
             case R.id.type_politics:
                 typeButton.setText("政治");

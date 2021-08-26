@@ -92,7 +92,7 @@ public class SearchRecordAdapter extends BaseAdapter {
                 case "history":
                     imageRes = R.drawable.history;
                     break;
-                case "geography":
+                case "geo":
                     imageRes = R.drawable.geography;
                     break;
                 default:

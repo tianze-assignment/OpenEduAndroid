@@ -20,7 +20,7 @@ public class SubjectMap {
             map.put("chemistry", "化学");
             map.put("biology", "生物");
             map.put("history", "历史");
-            map.put("geography", "地理");
+            map.put("geo", "地理");
             map.put("politics", "政治");
         }
         return map;

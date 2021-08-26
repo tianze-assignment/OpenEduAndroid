@@ -35,7 +35,9 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
             @Override
             public void onClick(View v) {
                 //item 点击事件
-                Log.e("SearchResultAdapter", "Click item");
+                Log.e("SearchResultAdapter", String.format("Click item, label: %s, category: %s",
+                        data.get(position).label, data.get(position).category));
+
             }
         });
     }

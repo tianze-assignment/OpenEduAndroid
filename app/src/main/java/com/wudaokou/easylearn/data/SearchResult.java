@@ -12,9 +12,12 @@ public class SearchResult {
 
     public String category;
 
+    public boolean hasRead;
+
     public SearchResult(final String label, final String category, final String uri) {
         this.category = category;
         this.label = label;
         this.uri = uri;
+        this.hasRead = false;
     }
 }
