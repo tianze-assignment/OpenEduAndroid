@@ -2,6 +2,7 @@ package com.wudaokou.easylearn;
 
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -47,5 +48,9 @@ public class MainActivity extends AppCompatActivity {
         // 设置activity的toolbar样式
 //        getMenuInflater().inflate(R.menu.home_toolbar_menu, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    public void backToHomePage(View view) {
+        Navigation.findNavController(view).navigate(R.id.navigation_home);
     }
 }

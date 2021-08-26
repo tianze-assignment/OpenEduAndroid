@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.wudaokou.easylearn.R;
 import com.wudaokou.easylearn.databinding.FragmentHomeBinding;
 import com.wudaokou.easylearn.databinding.FragmentSearchBinding;
@@ -42,13 +43,7 @@ public class SearchFragment extends Fragment {
         binding = FragmentSearchBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textSearch;
-        searchViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+//
 
         // 显示定制的toolbar
 //        NavController navController = Navigation.findNavController(requireActivity(),
@@ -74,4 +69,5 @@ public class SearchFragment extends Fragment {
     public void onCreateOptionsMenu(@NotNull Menu menu, MenuInflater inflater) {
         menu.clear();
     }
+
 }
