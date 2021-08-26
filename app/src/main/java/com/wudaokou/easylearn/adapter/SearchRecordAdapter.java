@@ -2,28 +2,32 @@ package com.wudaokou.easylearn.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.wudaokou.easylearn.R;
+import com.wudaokou.easylearn.SearchResultActivity;
 import com.wudaokou.easylearn.data.SearchRecord;
 
 import java.util.List;
 
 public class SearchRecordAdapter extends BaseAdapter {
 
-    List<SearchRecord> searchRecords;
-    int resourceId;
+    public List<SearchRecord> searchRecords;
+    public int resourceId;
     private LayoutInflater inflater;
 
     public SearchRecordAdapter(@NonNull LayoutInflater inflater, int resource,
@@ -102,9 +106,20 @@ public class SearchRecordAdapter extends BaseAdapter {
             imageView.setImageResource(imageRes);
 //            Log.e("SearchRecordAdapter",
 //                    String.format("%s | %s", searchRecord.subject, searchRecord.content));
+//            ((ListView)container).setOnClickListener(this);
         } else {
             Log.e("SearchRecordAdapter", "null view");
         }
         return view;
     }
+
+
+//    @Override
+//    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//        SearchRecord record = searchRecords.get(position);
+//        Intent intent = new Intent(getActivity(), SearchResultActivity.class);
+//        intent.putExtra("queryType", queryType);
+//        intent.putExtra("queryContent", queryContent);
+//        startActivity(intent);
+//    }
 }
