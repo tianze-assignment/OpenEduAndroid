@@ -2,25 +2,29 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wudaokou.easylearn">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.EasyLearn">
-        <activity android:name=".SearchResultActivity"
+        android:theme="@style/Theme.EasyLearn"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".EntityInfoActivity"
+            android:label="@string/title_activity_entity_info"
+            android:theme="@style/Theme.EasyLearn.NoActionBar"></activity>
+        <activity
+            android:name=".SearchResultActivity"
             android:parentActivityName=".SearchableActivity">
+
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SearchableActivity" />
         </activity>
-
         <activity
             android:name=".SearchableActivity"
             android:parentActivityName=".MainActivity">

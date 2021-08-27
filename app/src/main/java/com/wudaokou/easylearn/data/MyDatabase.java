@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {User.class, SearchRecord.class}, version = 2)
+@Database(entities = {User.class, SearchRecord.class}, version = 3, exportSchema = false)
 public abstract class MyDatabase extends RoomDatabase {
     public abstract UserDAO userDAO();
     public abstract SearchRecordDAO searchRecordDAO();
