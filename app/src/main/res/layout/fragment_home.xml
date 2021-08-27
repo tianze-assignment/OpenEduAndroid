@@ -25,6 +25,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/white"
+                android:padding="7dp"
                 android:src="@drawable/logo" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -90,6 +91,7 @@
                 android:layout_weight="1"
                 android:background="@color/white"
                 android:contentDescription=""
+                android:padding="7dp"
                 android:src="@drawable/add2" />
 
         </LinearLayout>

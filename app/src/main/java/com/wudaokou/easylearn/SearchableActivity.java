@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -196,6 +197,15 @@ public class SearchableActivity extends AppCompatActivity
                     getLayoutInflater(), R.layout.search_record_item, searchRecords);
             listView = binding.recordList;
             listView.setAdapter(searchRecordAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    SearchRecord record = searchRecordAdapter.getItem(position);
+                    if (record != null) {
+                        doMySearch(record.subject, record.content);
+                    }
+                }
+            });
             Log.e("SearchableActivity", "after setAdapter");
         } catch (InterruptedException e) {
             e.printStackTrace();
