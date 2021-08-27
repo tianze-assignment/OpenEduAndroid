@@ -26,7 +26,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/label"
+            android:id="@+id/predicateLabel"
             android:layout_width="126dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

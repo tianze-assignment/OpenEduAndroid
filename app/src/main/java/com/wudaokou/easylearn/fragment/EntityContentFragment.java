@@ -3,64 +3,50 @@ package com.wudaokou.easylearn.fragment;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.wudaokou.easylearn.R;
+import com.wudaokou.easylearn.adapter.EntityContentAdapter;
+import com.wudaokou.easylearn.data.Content;
+import com.wudaokou.easylearn.databinding.FragmentEntityContentBinding;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link EntityContentFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+
 public class EntityContentFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    public List<Content> data;
+    private FragmentEntityContentBinding binding;
+    private EntityContentAdapter adapter;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public EntityContentFragment() {
-        // Required empty public constructor
+    public EntityContentFragment () {}
+    public EntityContentFragment (List<Content> data) {
+        this.data = data;
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment EntityContentFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static EntityContentFragment newInstance(String param1, String param2) {
-        EntityContentFragment fragment = new EntityContentFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public void updateData(List<Content> data) {
+        this.data = data;
+        if (adapter != null) {
+            adapter.updateData(data);
+            adapter.notifyDataSetChanged();
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_entity_content, container, false);
+        binding = FragmentEntityContentBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
+
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new EntityContentAdapter(data);
+        binding.recyclerView.setAdapter(adapter);
+        return root;
     }
 }

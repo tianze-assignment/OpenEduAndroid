@@ -15,12 +15,12 @@ public class EntityInfo {
             parentColumn = "userId",
             entityColumn = "predicateLabel"
     )
-    public List<Property> propertyList;
+    public List<Property> property;
 
     @Relation(
             parentColumn = "userId",
             entityColumn = "predicate_label"
     )
-    public List<Content> contentList;
+    public List<Content> content;
 }
 

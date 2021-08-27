@@ -5,9 +5,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import com.wudaokou.easylearn.adapter.SearchRecordAdapter;
 import com.wudaokou.easylearn.adapter.SearchResultAdapter;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.constant.SubjectMap;
@@ -32,19 +35,19 @@ public class SearchResultActivity extends AppCompatActivity {
 
     public ActivitySearchResultBinding binding;
     HashMap<String, String> map;
+    public String course;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_result);
 
-        Intent intent = getIntent();
-
         binding = ActivitySearchResultBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         map = SubjectMap.getMap();
-        String course = intent.getStringExtra("queryType");
+        Intent intent = getIntent();
+        course = intent.getStringExtra("queryType");
         binding.subjectButton.setText(map.get(course));
         String searchKey = intent.getStringExtra("queryContent");
         binding.searchLine.setText(searchKey);
@@ -80,11 +83,33 @@ public class SearchResultActivity extends AppCompatActivity {
                         Log.e("retrofit", String.format("category: %s, label: %s, uri: %s",
                                 searchResult.category, searchResult.label, searchResult.uri));
                     }
-                    binding.recyclerView.setAdapter(new SearchResultAdapter(jsonArray.data));
+
+                    // 添加选项点击监听器
+                    SearchResultAdapter adapter = new SearchResultAdapter(jsonArray.data);
+                    adapter.setOnItemClickListener(new SearchResultAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(View view, int position) {
+                            // 跳转到实体详情页
+                            SearchResult searchResult = jsonArray.data.get(position);
+                            Intent intent = new Intent(SearchResultActivity.this, EntityInfoActivity.class);
+                            intent.putExtra("course", course);
+                            intent.putExtra("label", searchResult.label);
+                            startActivity(intent);
+                        }
+                    });
+
+                    adapter.setOnItemLongClickListener(new SearchResultAdapter.OnItemLongClickListener() {
+                        @Override
+                        public void onItemLongClick(View view, int position) {
+                            // todo 待长按搜索结果的功能
+                            Toast.makeText(getApplicationContext(), "长按选项", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                    binding.recyclerView.setAdapter(adapter);
                 } else {
                     Log.e("retrofit", "error request");
                     List<SearchResult> searchResultList = new ArrayList<SearchResult>();
-                    searchResultList.add(new SearchResult("暂无结果", "啊哦", ""));
+                    searchResultList.add(new SearchResult("暂时找不到您想要的结果", "抱歉", ""));
                     binding.recyclerView.setAdapter(new SearchResultAdapter(searchResultList));
                 }
             }
@@ -93,10 +118,6 @@ public class SearchResultActivity extends AppCompatActivity {
             public void onFailure(@NotNull Call<JSONArray<SearchResult>> call,
                                   @NotNull Throwable t) {
                 Log.e("retrofit", "connect error");
-                // todo
-            }
-
-            public void onError() {
                 // todo
             }
         });

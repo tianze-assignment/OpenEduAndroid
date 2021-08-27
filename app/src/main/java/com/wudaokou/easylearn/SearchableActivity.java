@@ -197,6 +197,7 @@ public class SearchableActivity extends AppCompatActivity
                     getLayoutInflater(), R.layout.search_record_item, searchRecords);
             listView = binding.recordList;
             listView.setAdapter(searchRecordAdapter);
+            // 监听ListView选项被点击
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
