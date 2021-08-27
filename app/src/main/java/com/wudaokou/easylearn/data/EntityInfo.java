@@ -12,13 +12,13 @@ public class EntityInfo {
     public String label;
 
     @Relation(
-            parentColumn = "userId",
+            parentColumn = "label",
             entityColumn = "predicateLabel"
     )
     public List<Property> property;
 
     @Relation(
-            parentColumn = "userId",
+            parentColumn = "label",
             entityColumn = "predicate_label"
     )
     public List<Content> content;

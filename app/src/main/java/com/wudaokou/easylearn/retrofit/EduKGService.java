@@ -1,6 +1,7 @@
 package com.wudaokou.easylearn.retrofit;
 
 import com.wudaokou.easylearn.data.EntityInfo;
+import com.wudaokou.easylearn.data.Question;
 import com.wudaokou.easylearn.data.SearchResult;
 
 import java.util.List;
@@ -23,5 +24,8 @@ public interface EduKGService {
     @GET("infoByInstanceName?id=54cb27c0-e910-4963-9c9a-345d7b366b0b")
     Call<JSONObject<EntityInfo>> infoByInstanceName(@Query("course") String course,
                                                     @Query("name") String name);
+
+    @GET("questionListByUriName?id=54cb27c0-e910-4963-9c9a-345d7b366b0b")
+    Call<JSONArray<Question>> questionListByUriName(@Query("uriName") String uriName);
 }
 
