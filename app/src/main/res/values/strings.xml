@@ -1,9 +1,5 @@
 <resources>
     <string name="app_name">EasyLearn</string>
-    <string name="title_home">首页</string>
-    <string name="title_search">发现</string>
-    <string name="title_train">训练</string>
-    <string name="title_user">我的</string>
     <!-- Sync Preferences -->
 
     <string name="subject_manage_title">请选择您感兴趣的科目</string>
@@ -26,4 +22,17 @@
     <string name="title_activity_entity_info">EntityInfoActivity</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
+    <string name="title_home">Home</string>
+    <string name="title_search">Search</string>
+    <string name="title_train">Train</string>
+    <string name="title_user">User</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
 </resources>
