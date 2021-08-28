@@ -18,15 +18,18 @@
             android:theme="@style/Theme.EasyLearn.NoActionBar">
 
         </activity>
+
+        <activity android:name=".EntityLinkResultActivity"></activity>
+        <activity android:name=".EntityLinkSearchActivity" />
         <activity
             android:name=".SearchResultActivity"
             android:parentActivityName=".SearchableActivity">
-
             <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SearchableActivity" />
         </activity>
+
         <activity
             android:name=".SearchableActivity"
             android:parentActivityName=".MainActivity">
