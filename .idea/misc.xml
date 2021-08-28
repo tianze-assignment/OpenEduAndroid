@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Lenovo/AndroidStudioProjects/OpenEduAndroid/app/src/main/res/drawable/ic_launcher_background.xml" value="0.26979166666666665" />
+        <entry key="..\:/Users/Lenovo/AndroidStudioProjects/OpenEduAndroid/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.16298527443105756" />
+        <entry key="..\:/Users/Lenovo/AndroidStudioProjects/OpenEduAndroid/app/src/main/res/layout-w936dp/activity_login.xml" value="0.18579234972677597" />
+        <entry key="..\:/Users/Lenovo/AndroidStudioProjects/OpenEduAndroid/app/src/main/res/layout/activity_login.xml" value="0.2" />
+        <entry key="..\:/Users/Lenovo/AndroidStudioProjects/OpenEduAndroid/app/src/main/res/layout/activity_main.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/Lenovo/AndroidStudioProjects/OpenEduAndroid/app/src/main/res/layout/fragment_home.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/Lenovo/AndroidStudioProjects/OpenEduAndroid/app/src/main/res/layout/fragment_search.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/Lenovo/AndroidStudioProjects/OpenEduAndroid/app/src/main/res/layout/fragment_train.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/Lenovo/AndroidStudioProjects/OpenEduAndroid/app/src/main/res/layout/fragment_user.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/Lenovo/AndroidStudioProjects/OpenEduAndroid/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/Lenovo/AndroidStudioProjects/OpenEduAndroid/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.26979166666666665" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
