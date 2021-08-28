@@ -98,7 +98,7 @@ public class EntityPropertyFragment extends Fragment {
             public void onFailure(@NotNull Call<JSONObject<EntityInfo>> call,
                                   @NotNull Throwable t) {
                 Log.e("retrofit", "http error");
-                loadingDialog.dismiss();
+//                loadingDialog.dismiss();
             }
         });
     }

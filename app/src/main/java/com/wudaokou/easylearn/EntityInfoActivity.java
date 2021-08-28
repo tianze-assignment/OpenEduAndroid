@@ -122,4 +122,8 @@ public class EntityInfoActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void goBack(View view) {
+        EntityInfoActivity.this.finish();
+    }
 }

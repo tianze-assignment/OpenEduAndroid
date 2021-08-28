@@ -91,7 +91,7 @@ public class EntityContentFragment extends Fragment {
                         updateData(data);
                     }
                 }
-                loadingDialog.dismiss();
+//                loadingDialog.dismiss();
             }
 
             @Override
