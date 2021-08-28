@@ -1,10 +1,9 @@
 package com.wudaokou.easylearn;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -50,7 +49,14 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    // 发现、训练两页面的返回按钮onClick
     public void backToHomePage(View view) {
         Navigation.findNavController(view).navigate(R.id.navigation_home);
+    }
+
+    // 实体链接onClick
+    public void showEntitySearch(View view) {
+        Intent intent = new Intent(this, EntityLinkSearchActivity.class);
+        startActivity(intent);
     }
 }
