@@ -30,6 +30,7 @@ import com.wudaokou.easylearn.fragment.EntityQuestionFragment;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 import com.wudaokou.easylearn.retrofit.JSONArray;
 import com.wudaokou.easylearn.retrofit.JSONObject;
+import com.wudaokou.easylearn.utils.LoadingDialog;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -68,9 +69,6 @@ public class EntityInfoActivity extends AppCompatActivity {
 
         Log.e("EntityInfoActivity", String.format("title: %s", label));
 
-        getEntityInfo(course, label);
-        getEntityQuestion(label);
-
         binding.viewPager2.setAdapter(new FragmentStateAdapter(getSupportFragmentManager(), getLifecycle()) {
             @NonNull
             @NotNull
@@ -79,28 +77,20 @@ public class EntityInfoActivity extends AppCompatActivity {
                 switch (position) {
                     case 0:
                         // 实体属性
-                        if (propertyList != null) {
-                            Log.e("EntityInfoActivity", "param constructor");
-                            entityPropertyFragment = new EntityPropertyFragment(propertyList);
-                        } else {
-                            Log.e("EntityInfoActivity", "empty constructor");
-                            entityPropertyFragment = new EntityPropertyFragment();
+                        if (entityPropertyFragment == null) {
+                            entityPropertyFragment = new EntityPropertyFragment(course, label);
                         }
                         return entityPropertyFragment;
                     case 1:
                         // 实体关联
-                        if (contentList != null) {
-                            entityContentFragment = new EntityContentFragment(contentList);
-                        } else {
-                            entityContentFragment = new EntityContentFragment();
+                        if (entityContentFragment == null) {
+                            entityContentFragment = new EntityContentFragment(course, label);
                         }
                         return entityContentFragment;
                     default:
                         // 实体相关习题列表
-                        if (questionList != null) {
-                            entityQuestionFragment = new EntityQuestionFragment(questionList);
-                        } else {
-                            entityQuestionFragment = new EntityQuestionFragment();
+                        if (entityQuestionFragment == null) {
+                            entityQuestionFragment = new EntityQuestionFragment(label);
                         }
                         return entityQuestionFragment;
                 }
@@ -116,7 +106,7 @@ public class EntityInfoActivity extends AppCompatActivity {
             public void onConfigureTab(@NonNull @NotNull TabLayout.Tab tab, int position) {
                 TextView tabView = new TextView(EntityInfoActivity.this);
                 tabView.setGravity(Gravity.CENTER);
-                String[] titles = {"知识特征", "知识内容", "相关习题"} ;
+                String[] titles = {"知识属性", "知识关联", "相关习题"} ;
                 tabView.setText(titles[position]);
                 tab.setCustomView(tabView);
             }
@@ -129,84 +119,6 @@ public class EntityInfoActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-            }
-        });
-    }
-
-    public void getEntityInfo(final String course, final String label) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constant.eduKGBaseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        EduKGService service = retrofit.create(EduKGService.class);
-
-        Call<JSONObject<EntityInfo>> call = service.infoByInstanceName(course, label);
-        call.enqueue(new Callback<JSONObject<EntityInfo>>() {
-            @Override
-            public void onResponse(@NotNull Call<JSONObject<EntityInfo>> call,
-                                   @NotNull Response<JSONObject<EntityInfo>> response) {
-                JSONObject<EntityInfo> jsonObject = response.body();
-                Log.e("retrofit", "http ok");
-                if (jsonObject != null) {
-                    if (jsonObject.data.property != null) {
-                        Log.e("retrofit", String.format("property size: %s",
-                                jsonObject.data.property.size()));
-                        propertyList = jsonObject.data.property;
-                        if (entityPropertyFragment != null) {
-                            entityPropertyFragment.updateData(propertyList);
-                            Log.e("retrofit", "update entityPropertyFragment");
-                        }
-                    }
-                    if (jsonObject.data.content != null) {
-                        Log.e("retrofit", String.format("content size: %s",
-                                 jsonObject.data.content.size()));
-                        contentList = jsonObject.data.content;
-                        if (entityContentFragment != null) {
-                            entityContentFragment.updateData(contentList);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call<JSONObject<EntityInfo>> call,
-                                  @NotNull Throwable t) {
-                Log.e("retrofit", "http error");
-            }
-        });
-    }
-
-    void getEntityQuestion(final String uriName) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constant.eduKGBaseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        EduKGService service = retrofit.create(EduKGService.class);
-
-        Call<JSONArray<Question>> call = service.questionListByUriName(uriName);
-        call.enqueue(new Callback<JSONArray<Question>>() {
-            @Override
-            public void onResponse(@NotNull Call<JSONArray<Question>> call,
-                                   @NotNull Response<JSONArray<Question>> response) {
-                JSONArray<Question> jsonArray = response.body();
-                Log.e("retrofit", "http ok");
-                if (jsonArray != null) {
-                    if (jsonArray.data != null) {
-                        Log.e("retrofit question", String.format("property size: %s",
-                                jsonArray.data.size()));
-                        questionList = jsonArray.data;
-                        // todo 更新fragment数据
-                        if (entityQuestionFragment != null) {
-                            entityQuestionFragment.updateData(questionList);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call<JSONArray<Question>> call,
-                                  @NotNull Throwable t) {
-
             }
         });
     }
