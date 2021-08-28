@@ -4,16 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
-import com.wudaokou.easylearn.databinding.ActivitySearchableBinding;
 
-import java.util.Objects;
 
 public class EntityLinkSearchActivity extends AppCompatActivity {
 
@@ -56,5 +53,9 @@ public class EntityLinkSearchActivity extends AppCompatActivity {
         intent.putExtra("subject", subject);
         intent.putExtra("text", text);
         startActivity(intent);
+    }
+
+    public void clearText(View view) {
+        searchText.setText("");
     }
 }

@@ -27,11 +27,11 @@ public class EntityLinkAdapter extends RecyclerView.Adapter<EntityLinkAdapter.VH
         this.data = data;
     }
 
+    // 点击函数，由EntityLinkResultActivity设置
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
     }
     OnItemClickListener onItemClickListener;
-
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
@@ -52,12 +52,9 @@ public class EntityLinkAdapter extends RecyclerView.Adapter<EntityLinkAdapter.VH
         holder.itemView.setActivated(selectedPos == position);
 
         if(onItemClickListener != null){
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = holder.getLayoutPosition();
-                    onItemClickListener.onItemClick(holder.itemView, position);
-                }
+            holder.itemView.setOnClickListener(v -> {
+                int position1 = holder.getLayoutPosition();
+                onItemClickListener.onItemClick(holder.itemView, position1);
             });
         }
     }
