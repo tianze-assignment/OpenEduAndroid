@@ -1,5 +1,6 @@
 package com.wudaokou.easylearn.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,11 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.wudaokou.easylearn.AnswerActivity;
+import com.wudaokou.easylearn.EntityInfoActivity;
 import com.wudaokou.easylearn.R;
+import com.wudaokou.easylearn.SearchResultActivity;
 import com.wudaokou.easylearn.adapter.EntityQuestionAdapter;
+import com.wudaokou.easylearn.adapter.SearchResultAdapter;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.Content;
 import com.wudaokou.easylearn.data.Question;
+import com.wudaokou.easylearn.data.SearchResult;
 import com.wudaokou.easylearn.databinding.FragmentEntityQuestionBinding;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 import com.wudaokou.easylearn.retrofit.JSONArray;
@@ -22,6 +28,8 @@ import com.wudaokou.easylearn.utils.LoadingDialog;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -65,6 +73,16 @@ public class EntityQuestionFragment extends Fragment {
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new EntityQuestionAdapter(data);
+        adapter.setOnItemClickListener(new SearchResultAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                // 跳转到实体详情页
+                Intent intent = new Intent(requireActivity(), AnswerActivity.class);
+                intent.putExtra("position", position);
+                intent.putExtra("questionList", (Serializable)data);
+                startActivity(intent);
+            }
+        });
         binding.recyclerView.setAdapter(adapter);
         return root;
     }
@@ -88,7 +106,15 @@ public class EntityQuestionFragment extends Fragment {
                     if (jsonArray.data != null) {
                         Log.e("retrofit question", String.format("property size: %s",
                                 jsonArray.data.size()));
-                        data = jsonArray.data;
+
+                        // 只展示选择题
+                        data = new ArrayList<>();
+                        for (Question question: jsonArray.data) {
+                            String ans = question.qAnswer;
+                            if (ans.length() == 1) {
+                                data.add(question);
+                            }
+                        }
                         updateData(data);
                     }
                 }
