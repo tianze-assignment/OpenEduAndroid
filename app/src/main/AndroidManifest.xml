@@ -12,12 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyLearn"
         android:usesCleartextTraffic="true">
+        <activity android:name=".AnswerActivity"></activity>
         <activity
             android:name=".EntityInfoActivity"
             android:label="@string/title_activity_entity_info"
-            android:theme="@style/Theme.EasyLearn.NoActionBar">
-
-        </activity>
+            android:theme="@style/Theme.EasyLearn.NoActionBar"></activity>
         <activity
             android:name=".SearchResultActivity"
             android:parentActivityName=".SearchableActivity">

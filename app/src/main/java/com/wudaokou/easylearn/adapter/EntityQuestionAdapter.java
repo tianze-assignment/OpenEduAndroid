@@ -20,6 +20,16 @@ import java.util.List;
 public class EntityQuestionAdapter
         extends RecyclerView.Adapter<EntityQuestionAdapter.VH>{
 
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    private SearchResultAdapter.OnItemClickListener mOnItemClickListener;
+
+    public void setOnItemClickListener(SearchResultAdapter.OnItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
+    }
+
     @NonNull
     @NotNull
     @Override
@@ -43,8 +53,19 @@ public class EntityQuestionAdapter
         } else {
             questionText = qBody;
         }
-
         holder.qBodyText.setText(questionText);
+
+        //判断是否设置了监听器
+        if(mOnItemClickListener != null){
+            //为ItemView设置监听器
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = holder.getLayoutPosition(); // 1
+                    mOnItemClickListener.onItemClick(holder.itemView,position); // 2
+                }
+            });
+        }
     }
 
     @Override
