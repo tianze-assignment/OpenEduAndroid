@@ -17,9 +17,9 @@
 
         <ImageButton
             android:id="@+id/backButton"
-            android:layout_width="38dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:background="@color/design_default_color_background"
             android:contentDescription="返回"
             android:onClick="getBack"
@@ -28,9 +28,9 @@
         <Button
             android:id="@+id/subjectButton"
             style="?android:attr/borderlessButtonStyle"
-            android:layout_width="76dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:background="@color/white"
             android:text="语文"
             android:textColor="@color/grey_700"
@@ -39,8 +39,9 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/searchBox"
-            android:layout_width="263dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="6"
             android:focusable="true"
             android:focusableInTouchMode="true">
 
@@ -49,8 +50,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/search_background"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -92,8 +92,8 @@
                     app:layout_constraintStart_toEndOf="@+id/imageView3"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </LinearLayout>
 
@@ -106,6 +106,49 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/chooseResultOrderLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <AutoCompleteTextView
+                android:id="@+id/chooseResultOrder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="排序"
+                android:inputType="none"
+                android:text="默认" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/setResultFilterLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <AutoCompleteTextView
+                android:id="@+id/setResultFilter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="筛选"
+                android:inputType="none"
+                android:text="全部" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

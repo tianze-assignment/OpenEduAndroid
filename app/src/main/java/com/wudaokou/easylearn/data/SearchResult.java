@@ -20,4 +20,11 @@ public class SearchResult {
         this.uri = uri;
         this.hasRead = false;
     }
+
+    public SearchResult(final SearchResult result) {
+        this.uri = result.uri;
+        this.label = result.label;
+        this.category = result.category;
+        this.hasRead = result.hasRead;
+    }
 }

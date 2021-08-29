@@ -76,6 +76,9 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
 
     @Override
     public int getItemCount() {
+        if (data == null) {
+            return 0;
+        }
         return data.size();
     }
 
@@ -93,4 +96,5 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
     public SearchResultAdapter(List<SearchResult> data) {
         this.data = data;
     }
+    public void updateData(List<SearchResult> data) {this.data = data;}
 }

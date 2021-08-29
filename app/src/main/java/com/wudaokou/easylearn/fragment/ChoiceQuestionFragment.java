@@ -36,6 +36,10 @@ public class ChoiceQuestionFragment extends Fragment {
             ch = "、";
             aPos = qBody.lastIndexOf("A" + ch);
         }
+        if (aPos == -1) {
+            ch = "．";
+            aPos = qBody.lastIndexOf("A" + ch);
+        }
         int bPos = qBody.lastIndexOf("B" + ch);
         int cPos = qBody.lastIndexOf("C" + ch);
         int dPos = qBody.lastIndexOf("D" + ch);

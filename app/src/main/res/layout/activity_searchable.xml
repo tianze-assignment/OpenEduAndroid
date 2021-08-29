@@ -42,7 +42,8 @@
             android:id="@+id/searchView2"
             android:layout_width="248dp"
             android:layout_height="match_parent"
-            android:focusable="auto" />
+            android:focusable="auto"
+            android:goIcon="@drawable/submit" />
 
     </LinearLayout>
 

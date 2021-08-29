@@ -47,6 +47,9 @@ public class EntityQuestionAdapter
         if (splitPos == -1) {
             splitPos = qBody.lastIndexOf("A、");
         }
+        if (splitPos == -1) {
+            splitPos = qBody.lastIndexOf("A．");
+        }
         String questionText;
         if (splitPos != -1) {
             questionText = qBody.substring(0, splitPos);
