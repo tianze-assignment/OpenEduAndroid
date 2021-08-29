@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.wudaokou.easylearn.data.Question;
 import com.wudaokou.easylearn.databinding.ActivityAnswerBinding;
@@ -50,6 +52,7 @@ public class AnswerActivity extends AppCompatActivity {
             Log.e("serializable size", String.valueOf(questionList.size()));
         }
         int position = intent.getIntExtra("position", 0);
+        String label = intent.getStringExtra("label");
 
         // 为viewpager2设置adapter
         binding.questionViewPager2.setAdapter(new FragmentStateAdapter(getSupportFragmentManager(),
@@ -58,6 +61,7 @@ public class AnswerActivity extends AppCompatActivity {
             @NotNull
             @Override
             public Fragment createFragment(int position) {
+                // assert: questionList != null
                 return new ChoiceQuestionFragment(questionList.get(position));
             }
 
@@ -69,5 +73,22 @@ public class AnswerActivity extends AppCompatActivity {
                 return 0;
             }
         });
+        binding.questionViewPager2.setCurrentItem(position, true);
+        // 设置初始位置
+        binding.workProgress.setText(String.format("%d/%d", position + 1, questionList.size()));
+        binding.questionViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                binding.workProgress.setText(String.format("%d/%d",
+                        binding.questionViewPager2.getCurrentItem() + 1, questionList.size()));
+            }
+        });
+        String label2 = label.length() < 10 ? label : label.substring(0, 10);
+        binding.entityTitle.setText(String.format("%s相关习题", label2));
+    }
+
+    public void goBack(View view) {
+        this.finish();
     }
 }

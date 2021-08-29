@@ -80,6 +80,7 @@ public class EntityQuestionFragment extends Fragment {
                 Intent intent = new Intent(requireActivity(), AnswerActivity.class);
                 intent.putExtra("position", position);
                 intent.putExtra("questionList", (Serializable)data);
+                intent.putExtra("label", label);
                 startActivity(intent);
             }
         });

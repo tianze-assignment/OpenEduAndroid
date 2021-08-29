@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,10 @@ import android.widget.RadioButton;
 import com.wudaokou.easylearn.R;
 import com.wudaokou.easylearn.data.Question;
 import com.wudaokou.easylearn.databinding.FragmentChoiceQuestionBinding;
+import com.wudaokou.easylearn.utils.LoadingDialog;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChoiceQuestionFragment extends Fragment {
 
@@ -19,6 +24,7 @@ public class ChoiceQuestionFragment extends Fragment {
     String qBody;
     String[] choices;
     FragmentChoiceQuestionBinding binding;
+    List<RadioButton> radioButtonList;
 
     public ChoiceQuestionFragment(Question question) {
         // Required empty public constructor
@@ -51,24 +57,33 @@ public class ChoiceQuestionFragment extends Fragment {
         binding.choiceQuestionBody.setText(qBody);
         binding.choiceQuestionAnswer.setText(qAnswer);
 
+        radioButtonList = new ArrayList<>();
+
         for (String choice : choices) {
             RadioButton radioButton = new RadioButton(getActivity());
             radioButton.setText(choice);
+            radioButton.setTextSize(20);
             radioButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     RadioButton radioButton1 = (RadioButton) v;
                     String text = (String) radioButton1.getText();
+
                     if (text.substring(0, 1).equals(qAnswer)) {
-                        radioButton1.setButtonDrawable(R.drawable.correct_answer);
+//                        radioButton1.setButtonDrawable(R.drawable.correct_answer);
+                        radioButton1.setTextColor(getResources().getColor(R.color.green_A700));
                     } else {
-                        radioButton1.setButtonDrawable(R.drawable.false_answer);
+//                        radioButton1.setButtonDrawable(R.drawable.false_answer);
+                        radioButton1.setTextColor(getResources().getColor(R.color.red_900));
                     }
                     binding.answerLayout.setVisibility(View.VISIBLE);
-                    binding.radioGroup.setEnabled(false);
+                    for (RadioButton button : radioButtonList) {
+                        button.setEnabled(false);
+                    }
                 }
             });
             binding.radioGroup.addView(radioButton);
+            radioButtonList.add(radioButton);
         }
         return root;
     }

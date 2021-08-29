@@ -45,11 +45,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class EntityInfoActivity extends AppCompatActivity {
 
     private ActivityEntityInfoBinding binding;
-    public EntityInfo entityInfo;
-    public List<Property> propertyList;
-    public List<Content> contentList;
-    public List<Question> questionList;
-
     private EntityPropertyFragment entityPropertyFragment;
     private EntityContentFragment entityContentFragment;
     private EntityQuestionFragment entityQuestionFragment;
