@@ -3,15 +3,13 @@ package com.wudaokou.easylearn.retrofit;
 import com.wudaokou.easylearn.data.EntityInfo;
 import com.wudaokou.easylearn.data.Question;
 import com.wudaokou.easylearn.data.SearchResult;
+import com.wudaokou.easylearn.retrofit.entityLink.JsonEntityLink;
 
-import java.util.List;
-
-import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
-import retrofit2.http.Path;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface EduKGService {
@@ -27,5 +25,11 @@ public interface EduKGService {
 
     @GET("questionListByUriName?id=54cb27c0-e910-4963-9c9a-345d7b366b0b")
     Call<JSONArray<Question>> questionListByUriName(@Query("uriName") String uriName);
+
+    @FormUrlEncoded
+    @POST("linkInstance")
+    Call<JSONObject<JsonEntityLink>> linkInstance(@Field("id") String id,
+                                                  @Field("course") String course,
+                                                  @Field("context") String text);
 }
 
