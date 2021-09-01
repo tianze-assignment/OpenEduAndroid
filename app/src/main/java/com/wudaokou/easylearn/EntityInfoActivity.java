@@ -8,6 +8,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -16,8 +17,16 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.sina.weibo.sdk.api.TextObject;
+import com.sina.weibo.sdk.api.WeiboMultiMessage;
+import com.sina.weibo.sdk.auth.AuthInfo;
+import com.sina.weibo.sdk.common.UiError;
+import com.sina.weibo.sdk.openapi.IWBAPI;
+import com.sina.weibo.sdk.openapi.WBAPIFactory;
+import com.sina.weibo.sdk.share.WbShareCallback;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.Content;
 import com.wudaokou.easylearn.data.EntityInfo;
@@ -42,16 +51,21 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class EntityInfoActivity extends AppCompatActivity {
+public class EntityInfoActivity extends AppCompatActivity implements WbShareCallback {
 
     private ActivityEntityInfoBinding binding;
     private EntityPropertyFragment entityPropertyFragment;
     private EntityContentFragment entityContentFragment;
     private EntityQuestionFragment entityQuestionFragment;
 
+    String label;
+    IWBAPI mWBAPI;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        initWeiboSdk();
 
         binding = ActivityEntityInfoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -59,7 +73,7 @@ public class EntityInfoActivity extends AppCompatActivity {
         // 获取实体信息
         Intent intent = getIntent();
         String course = intent.getStringExtra("course");
-        String label = intent.getStringExtra("label");
+        label = intent.getStringExtra("label");
         binding.title.setText(label);
 
         Log.e("EntityInfoActivity", String.format("title: %s", label));
@@ -120,5 +134,53 @@ public class EntityInfoActivity extends AppCompatActivity {
 
     public void goBack(View view) {
         EntityInfoActivity.this.finish();
+    }
+
+    // 微博sdk初始化
+    private void initWeiboSdk() {
+        AuthInfo authInfo = new AuthInfo(this, "949341693", "", "");
+        mWBAPI = WBAPIFactory.createWBAPI(this);
+        mWBAPI.registerApp(this, authInfo);
+
+    }
+
+    // 微博分享回调
+    @Override
+    public void onComplete() {
+        Toast.makeText(EntityInfoActivity.this, "分享成功",
+                Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    public void onError(UiError error) {
+        Toast.makeText(EntityInfoActivity.this, "分享失败:" + error.errorMessage,
+                Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    public void onCancel() {
+        Toast.makeText(EntityInfoActivity.this, "分享取消",
+                Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (mWBAPI != null) {
+            mWBAPI.doResultIntent(data, this);
+        }
+    }
+
+    public void shareToWeibo(View view) {
+        WeiboMultiMessage message = new WeiboMultiMessage();
+        TextObject textObject = new TextObject();
+        textObject.text = shareText(entityPropertyFragment.data);
+        message.textObject = textObject;
+        mWBAPI.shareMessage(message, false);
+    }
+
+    String shareText(List<Property> data){
+        StringBuilder sb = new StringBuilder();
+        sb.append(label).append("：\n\n");
+        for(Property p : data)
+            sb.append(p.toString());
+        return sb.toString();
     }
 }
