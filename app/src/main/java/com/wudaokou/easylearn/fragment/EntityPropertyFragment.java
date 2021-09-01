@@ -14,6 +14,7 @@ import com.wudaokou.easylearn.R;
 import com.wudaokou.easylearn.adapter.EntityPropertyAdapter;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.EntityInfo;
+import com.wudaokou.easylearn.data.KnowledgeCard;
 import com.wudaokou.easylearn.data.Property;
 import com.wudaokou.easylearn.databinding.FragmentEntityPropertyBinding;
 import com.wudaokou.easylearn.retrofit.EduKGService;
@@ -38,6 +39,7 @@ public class EntityPropertyFragment extends Fragment {
     private LoadingDialog loadingDialog;
     private String course;
     private String label;
+    EduKGService service;
 
     public EntityPropertyFragment(String course, String label) {
         this.course = course;
@@ -61,20 +63,23 @@ public class EntityPropertyFragment extends Fragment {
 
 //        loadingDialog = new LoadingDialog(requireContext());
 //        loadingDialog.show();
-        getEntityInfo(course, label);
 
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new EntityPropertyAdapter(data);
-        binding.recyclerView.setAdapter(adapter);
-        return root;
-    }
-
-    public void getEntityInfo(final String course, final String label) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.eduKGBaseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        EduKGService service = retrofit.create(EduKGService.class);
+        service = retrofit.create(EduKGService.class);
+
+        getEntityInfo();
+
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new EntityPropertyAdapter(data);
+        binding.recyclerView.setAdapter(adapter);
+
+        return root;
+    }
+
+    public void getEntityInfo() {
 
         Call<JSONObject<EntityInfo>> call = service.infoByInstanceName(course, label);
         call.enqueue(new Callback<JSONObject<EntityInfo>>() {
@@ -89,6 +94,7 @@ public class EntityPropertyFragment extends Fragment {
                                 jsonObject.data.property.size()));
                         data = jsonObject.data.property;
                         updateData(data);
+                        filterProperty(data);
                     }
                 }
 //                loadingDialog.dismiss();
@@ -101,5 +107,32 @@ public class EntityPropertyFragment extends Fragment {
 //                loadingDialog.dismiss();
             }
         });
+    }
+
+    public void filterProperty(List<Property> propertyList) {
+        if (propertyList == null)
+            return;
+        for (Property property : propertyList) {
+            if (property.object.contains("http") && property.objectLabel == null) {
+                Call<JSONObject<KnowledgeCard>> call = service.getKnowledgeCard(Constant.eduKGId,
+                        course, property.object);
+                call.enqueue(new Callback<JSONObject<KnowledgeCard>>() {
+                    @Override
+                    public void onResponse(@NotNull Call<JSONObject<KnowledgeCard>> call,
+                                           @NotNull Response<JSONObject<KnowledgeCard>> response) {
+                        if (response.body() != null && response.body().data != null) {
+                            property.objectLabel = response.body().data.entity_name;
+                            updateData(data);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull Call<JSONObject<KnowledgeCard>> call,
+                                          @NotNull Throwable t) {
+
+                    }
+                });
+            }
+        }
     }
 }

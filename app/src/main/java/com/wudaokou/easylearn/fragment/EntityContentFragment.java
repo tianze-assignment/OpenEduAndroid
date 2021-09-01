@@ -15,6 +15,7 @@ import com.wudaokou.easylearn.adapter.EntityContentAdapter;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.Content;
 import com.wudaokou.easylearn.data.EntityInfo;
+import com.wudaokou.easylearn.data.KnowledgeCard;
 import com.wudaokou.easylearn.databinding.FragmentEntityContentBinding;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 import com.wudaokou.easylearn.retrofit.JSONObject;
@@ -38,6 +39,7 @@ public class EntityContentFragment extends Fragment {
     private LoadingDialog loadingDialog;
     private String course;
     private String label;
+    EduKGService service;
 
     public EntityContentFragment (final String course, final String label) {
         this.course = course;
@@ -59,22 +61,23 @@ public class EntityContentFragment extends Fragment {
         binding = FragmentEntityContentBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-//        loadingDialog = new LoadingDialog(requireContext());
-//        loadingDialog.show();
-        getEntityInfo(course, label);
-
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new EntityContentAdapter(data);
-        binding.recyclerView.setAdapter(adapter);
-        return root;
-    }
-
-    public void getEntityInfo(final String course, final String label) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.eduKGBaseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        EduKGService service = retrofit.create(EduKGService.class);
+        service = retrofit.create(EduKGService.class);
+
+//        loadingDialog = new LoadingDialog(requireContext());
+//        loadingDialog.show();
+        getEntityInfo();
+
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new EntityContentAdapter(data, getLayoutInflater());
+        binding.recyclerView.setAdapter(adapter);
+        return root;
+    }
+
+    public void getEntityInfo() {
 
         Call<JSONObject<EntityInfo>> call = service.infoByInstanceName(course, label);
         call.enqueue(new Callback<JSONObject<EntityInfo>>() {
@@ -89,6 +92,7 @@ public class EntityContentFragment extends Fragment {
                                 jsonObject.data.content.size()));
                         data = jsonObject.data.content;
                         updateData(data);
+                        getExtraKnowledge();
                     }
                 }
 //                loadingDialog.dismiss();
@@ -101,5 +105,35 @@ public class EntityContentFragment extends Fragment {
 //                loadingDialog.dismiss();
             }
         });
+    }
+
+    public void getExtraKnowledge() {
+        if (data == null)
+            return;
+        for (Content content : data) {
+            String uri = content.subject;
+            if (uri == null) {
+                uri = content.object;
+            }
+            if (uri != null) {
+                Call<JSONObject<KnowledgeCard>> call = service.getKnowledgeCard(Constant.eduKGId,
+                        course, uri);
+                call.enqueue(new Callback<JSONObject<KnowledgeCard>>() {
+                    @Override
+                    public void onResponse(@NotNull Call<JSONObject<KnowledgeCard>> call,
+                                           @NotNull Response<JSONObject<KnowledgeCard>> response) {
+                        if (response.body() != null && response.body().data != null) {
+                            content.entityFeatureList = response.body().data.entity_features;
+                            updateData(data);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull Call<JSONObject<KnowledgeCard>> call,
+                                          @NotNull Throwable t) {
+                    }
+                });
+            }
+        }
     }
 }

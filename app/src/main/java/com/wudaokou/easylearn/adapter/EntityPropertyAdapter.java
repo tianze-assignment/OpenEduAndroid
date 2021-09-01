@@ -3,6 +3,9 @@ package com.wudaokou.easylearn.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,10 +41,16 @@ public class EntityPropertyAdapter extends RecyclerView.Adapter<EntityPropertyAd
     @Override
     public void onBindViewHolder(@NonNull @NotNull EntityPropertyAdapter.VH holder, int position) {
         Property property = data.get(position);
-        holder.object.setText(property.object);
+        if (property.object.contains("http")) {
+            if (property.objectLabel == null) {
+                holder.object.setText("暂无");
+            } else {
+                holder.object.setText(property.objectLabel);
+            }
+        } else {
+            holder.object.setText(property.object);
+        }
         holder.predicateLabel.setText(property.predicateLabel);
-
-        // todo 设置监听器
     }
 
     @Override

@@ -14,11 +14,14 @@ public class SearchResult {
 
     public boolean hasRead;
 
+    public boolean hasStar;
+
     public SearchResult(final String label, final String category, final String uri) {
         this.category = category;
         this.label = label;
         this.uri = uri;
         this.hasRead = false;
+        this.hasStar = false;
     }
 
     public SearchResult(final SearchResult result) {
@@ -26,5 +29,6 @@ public class SearchResult {
         this.label = result.label;
         this.category = result.category;
         this.hasRead = result.hasRead;
+        this.hasStar = result.hasStar;
     }
 }
