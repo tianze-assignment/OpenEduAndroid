@@ -19,10 +19,16 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.wudaokou.easylearn.adapter.SearchRecordAdapter;
+import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.constant.SubjectMap;
 import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.SearchRecord;
 import com.wudaokou.easylearn.databinding.ActivitySearchableBinding;
+import com.wudaokou.easylearn.retrofit.BackendObject;
+import com.wudaokou.easylearn.retrofit.BackendService;
+import com.wudaokou.easylearn.retrofit.HistoryParam;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +36,12 @@ import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SearchableActivity extends AppCompatActivity
             implements PopupMenu.OnMenuItemClickListener{
@@ -157,6 +169,28 @@ public class SearchableActivity extends AppCompatActivity
                     }
                 });
 
+                // 将搜索历史记录传递给后端
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(Constant.backendBaseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                BackendService service = retrofit.create(BackendService.class);
+                service.postHistorySearch(new HistoryParam(subject.toUpperCase(), query))
+                        .enqueue(new Callback<List<BackendObject>>() {
+                    @Override
+                    public void onResponse(@NotNull Call<List<BackendObject>> call,
+                                           @NotNull Response<List<BackendObject>> response) {
+                        Log.e("backend", "post search history ok");
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull Call<List<BackendObject>> call,
+                                          @NotNull Throwable t) {
+                        Log.e("backend", "post search history error");
+                    }
+                });
+
                 // todo 执行搜搜
                 doMySearch(subject, query);
 
@@ -208,9 +242,7 @@ public class SearchableActivity extends AppCompatActivity
                 }
             });
             Log.e("SearchableActivity", "after setAdapter");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }

@@ -19,6 +19,7 @@ import com.wudaokou.easylearn.adapter.EntityQuestionAdapter;
 import com.wudaokou.easylearn.adapter.SearchResultAdapter;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.Content;
+import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.Question;
 import com.wudaokou.easylearn.data.SearchResult;
 import com.wudaokou.easylearn.databinding.FragmentEntityQuestionBinding;
@@ -32,7 +33,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
+import kotlin.jvm.internal.FunctionReference;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,9 +51,10 @@ public class EntityQuestionFragment extends Fragment {
     private FragmentEntityQuestionBinding binding;
     private EntityQuestionAdapter adapter;
     private LoadingDialog loadingDialog;
-    private String label;
+    private String label, course;
 
-    public EntityQuestionFragment(final String label) {
+    public EntityQuestionFragment(final String course, final String label) {
+        this.course = course;
         this.label = label;
     }
 
@@ -69,7 +75,9 @@ public class EntityQuestionFragment extends Fragment {
 
         loadingDialog = new LoadingDialog(requireContext());
         loadingDialog.show();
-        getEntityQuestion(label);
+
+//        getEntityQuestion(label);
+        checkDatabase();
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new EntityQuestionAdapter(data);
@@ -88,15 +96,38 @@ public class EntityQuestionFragment extends Fragment {
         return root;
     }
 
+    public void checkDatabase() {
+        Future<List<Question>> listFuture = MyDatabase.databaseWriteExecutor.submit(new Callable<List<Question>>() {
+            @Override
+            public List<Question> call() throws Exception {
+                return MyDatabase.getDatabase(getContext()).questionDAO()
+                        .loadQuestionByCourseAndLabel(course, label);
+            }
+        });
 
-    void getEntityQuestion(final String uriName) {
+        try {
+            List<Question> localList = listFuture.get();
+            if (localList != null && localList.size() != 0) {
+                data = localList;
+                updateData(data);
+                loadingDialog.dismiss();
+            } else {
+                getEntityQuestion(label);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void getEntityQuestion(final String uriName) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.eduKGBaseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         EduKGService service = retrofit.create(EduKGService.class);
 
-        Call<JSONArray<Question>> call = service.questionListByUriName(uriName);
+        Call<JSONArray<Question>> call = service.questionListByUriName(Constant.eduKGId, uriName);
         call.enqueue(new Callback<JSONArray<Question>>() {
             @Override
             public void onResponse(@NotNull Call<JSONArray<Question>> call,
@@ -113,7 +144,19 @@ public class EntityQuestionFragment extends Fragment {
                         for (Question question: jsonArray.data) {
                             String ans = question.qAnswer;
                             if (ans.length() == 1) {
+                                question.totalCount = 0;
+                                question.wrongCount = 0;
+                                question.hasStar = false;
+                                question.label = label;
+                                question.course = course;
                                 data.add(question);
+                                MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        MyDatabase.getDatabase(getContext()).questionDAO()
+                                                .insertQuestion(question);
+                                    }
+                                });
                             }
                         }
                         updateData(data);

@@ -71,4 +71,7 @@ dependencies {
     implementation 'com.android.volley:volley:1.1.1'
 
     implementation 'io.github.sinaweibosdk:core:11.8.1@aar'
+    // https://mvnrepository.com/artifact/com.belerweb/pinyin4j
+    implementation group: 'com.belerweb', name: 'pinyin4j', version: '2.5.1'
+
 }

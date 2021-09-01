@@ -3,7 +3,10 @@ package com.wudaokou.easylearn.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,10 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wudaokou.easylearn.R;
 import com.wudaokou.easylearn.data.Content;
+import com.wudaokou.easylearn.data.EntityFeature;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.zip.Inflater;
 
 public class EntityContentAdapter
         extends RecyclerView.Adapter<EntityContentAdapter.VH>{
@@ -23,11 +28,15 @@ public class EntityContentAdapter
         public final TextView subOrObjectLabel;
         public final TextView predicateLabel;
         public final ImageView relationImageView;
+        public final ListView listView;
+        public final ImageButton imageButton;
         public VH(View v) {
             super(v);
             subOrObjectLabel = (TextView) v.findViewById(R.id.subOrObjectLabel);
             predicateLabel = (TextView) v.findViewById(R.id.predicateLabel);
             relationImageView = (ImageView) v.findViewById(R.id.relationImageView);
+            imageButton = (ImageButton) v.findViewById(R.id.collapseButton);
+            listView = (ListView) v.findViewById(R.id.collapseListView);
         }
     }
 
@@ -51,6 +60,22 @@ public class EntityContentAdapter
         }
 
         // todo 设置监听器
+        // todo 设置监听器
+        holder.imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (holder.listView.getVisibility() == View.VISIBLE) {
+                    holder.listView.setVisibility(View.INVISIBLE);
+                    holder.imageButton.setImageResource(R.drawable.expand);
+                } else {
+                    holder.listView.setVisibility(View.VISIBLE);
+                    holder.imageButton.setImageResource(R.drawable.collapse);
+                }
+            }
+        });
+
+//        holder.listView.setAdapter(new EntityContentCollapseAdapter(
+//                data.get(position).entityFeatureList, R.layout.entity_content_collapse_item, inflater));
     }
 
     @Override
@@ -63,8 +88,10 @@ public class EntityContentAdapter
     }
 
     private List<Content> data;
-    public EntityContentAdapter(List<Content> data) {
+    private LayoutInflater inflater;
+    public EntityContentAdapter(List<Content> data, LayoutInflater inflater) {
         this.data = data;
+        this.inflater = inflater;
     }
     public void updateData(List<Content> data) {
         this.data = data;
