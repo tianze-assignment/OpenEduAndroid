@@ -17,16 +17,19 @@ import retrofit2.http.Query;
 public interface EduKGService {
 
 //    @Headers("Content-Type: application/x-www-form-urlencoded; charset=UTF-8")
-    @GET("instanceList?id=e260ad16-7b00-40fc-b200-cf1da1dc7889")
-    Call<JSONArray<SearchResult>> instanceList(@Query("course") String course,
+    @GET("instanceList")
+    Call<JSONArray<SearchResult>> instanceList(@Query("id") String id,
+                                    @Query("course") String course,
                                     @Query("searchKey") String searchKey);
 
-    @GET("infoByInstanceName?id=e260ad16-7b00-40fc-b200-cf1da1dc7889")
-    Call<JSONObject<EntityInfo>> infoByInstanceName(@Query("course") String course,
+    @GET("infoByInstanceName")
+    Call<JSONObject<EntityInfo>> infoByInstanceName(@Query("id") String id,
+                                                    @Query("course") String course,
                                                     @Query("name") String name);
 
-    @GET("questionListByUriName?id=e260ad16-7b00-40fc-b200-cf1da1dc7889")
-    Call<JSONArray<Question>> questionListByUriName(@Query("uriName") String uriName);
+    @GET("questionListByUriName")
+    Call<JSONArray<Question>> questionListByUriName(@Query("id") String id,
+            @Query("uriName") String uriName);
 
     @FormUrlEncoded
     @POST("linkInstance")

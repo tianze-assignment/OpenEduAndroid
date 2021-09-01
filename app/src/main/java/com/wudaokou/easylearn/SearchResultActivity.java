@@ -16,6 +16,7 @@ import com.wudaokou.easylearn.adapter.SearchRecordAdapter;
 import com.wudaokou.easylearn.adapter.SearchResultAdapter;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.constant.SubjectMap;
+import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.SearchResult;
 import com.wudaokou.easylearn.databinding.ActivitySearchResultBinding;
 import com.wudaokou.easylearn.retrofit.EduKGService;
@@ -30,6 +31,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,7 +51,7 @@ public class SearchResultActivity extends AppCompatActivity {
 
     public ActivitySearchResultBinding binding;
     HashMap<String, String> map;
-    public String course;
+    public String course, searchKey;
     SearchResultAdapter adapter;
     List<SearchResult> data;  // 原始数据
     List<SearchResult> activeData; // 经筛选和排序后的数据
@@ -67,7 +71,7 @@ public class SearchResultActivity extends AppCompatActivity {
         Intent intent = getIntent();
         course = intent.getStringExtra("queryType");
         binding.subjectButton.setText(map.get(course));
-        String searchKey = intent.getStringExtra("queryContent");
+        searchKey = intent.getStringExtra("queryContent");
         binding.searchLine.setText(searchKey);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -75,7 +79,7 @@ public class SearchResultActivity extends AppCompatActivity {
         filterMethods = new ArrayList<>();
         filterMethods.add("全部");
 
-        doSearch(course, searchKey);
+        checkDatabase();
 
         // 为recyclerView设置adapter
         adapter = new SearchResultAdapter(activeData);
@@ -116,6 +120,15 @@ public class SearchResultActivity extends AppCompatActivity {
         // 为筛选按钮设置adapter
 //        String[] filterMethods = getResources().getStringArray(R.array.resultFilterMethod);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (adapter != null) {
+            // 强制刷新，及时更新点击过后的选项为灰色
+            adapter.notifyDataSetChanged();
+        }
     }
 
     public void setFilter() {
@@ -215,21 +228,57 @@ public class SearchResultActivity extends AppCompatActivity {
         SearchResultActivity.this.finish();
     }
 
-    public void doSearch(final String course, final String searchKey) {
+    public void checkDatabase() {
+        Future<List<SearchResult>> futureList = MyDatabase.databaseWriteExecutor.submit(new Callable<List<SearchResult>>() {
+            @Override
+            public List<SearchResult> call() throws Exception {
+                return MyDatabase.getDatabase(SearchResultActivity.this)
+                        .searchResultDAO()
+                        .loadSearchResultByCourseAndLabel(course, searchKey);
+            }
+        });
+        try {
+            List<SearchResult> localList = futureList.get();
+            if (localList != null && localList.size() != 0) {
+                Log.e("database", "search result success");
+                Log.e("database", String.format("list size: %s", localList.size()));
+                data = localList;
+                activeData = data;
+                Set<String> set = new HashSet<>();  //去重
+                for (SearchResult result : data) {
+                    if (!set.contains(result.category)) {
+                        set.add(result.category);
+                        filterMethods.add(result.category);
+                    }
+                }
+                if (adapter != null) {
+                    adapter.updateData(activeData);
+                    adapter.notifyDataSetChanged();
+                }
+                setFilter();
+            } else {
+                doSearch();
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void doSearch() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.eduKGBaseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         EduKGService service = retrofit.create(EduKGService.class);
 
-        Call<JSONArray<SearchResult>> call = service.instanceList(course, searchKey);
+        Call<JSONArray<SearchResult>> call = service.instanceList(Constant.eduKGId,course, searchKey);
 
 
         call.enqueue(new Callback<JSONArray<SearchResult>>() {
             @Override
             public void onResponse(@NotNull Call<JSONArray<SearchResult>> call,
                                    @NotNull Response<JSONArray<SearchResult>> response) {
-                Log.e("retrofit", "success");
+                Log.e("retrofit", "search result success");
                 JSONArray<SearchResult> jsonArray = response.body();
 
                 if (jsonArray != null && jsonArray.code.equals("0")) {
@@ -242,12 +291,28 @@ public class SearchResultActivity extends AppCompatActivity {
                             filterMethods.add(result.category);
                         }
                     }
+
+                    for (SearchResult searchResult : data) {
+                        MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                            @Override
+                            public void run() {
+                                searchResult.course = course;
+                                searchResult.searchKey = searchKey;
+                                searchResult.hasRead = false;
+                                searchResult.hasStar = false;
+                                MyDatabase.getDatabase(SearchResultActivity.this)
+                                        .searchResultDAO().insertSearchResult(searchResult);
+                            }
+                        });
+                    }
+
                 } else {
                     Log.e("retrofit", "error request");
                     data = new ArrayList<SearchResult>();
                     data.add(new SearchResult("暂时找不到您想要的结果", "抱歉", ""));
                     activeData = data;
                 }
+
                 if (adapter != null) {
                     adapter.updateData(activeData);
                     adapter.notifyDataSetChanged();

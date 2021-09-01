@@ -8,14 +8,21 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.wudaokou.easylearn.constant.Constant;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {User.class, SearchRecord.class},
-        version = 3, exportSchema = false)
+@Database(entities = {User.class, SearchRecord.class, Property.class,
+        Content.class, Question.class, SearchResult.class},
+        version = 5, exportSchema = false)
 public abstract class MyDatabase extends RoomDatabase {
     public abstract UserDAO userDAO();
     public abstract SearchRecordDAO searchRecordDAO();
+    public abstract SearchResultDAO searchResultDAO();
+    public abstract ContentDAO contentDAO();
+    public abstract PropertyDAO propertyDAO();
+    public abstract QuestionDAO questionDAO();
 
     private static volatile MyDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;

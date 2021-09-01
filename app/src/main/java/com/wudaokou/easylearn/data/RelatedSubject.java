@@ -18,4 +18,8 @@ public class RelatedSubject {
     public String attention;
     public String fsscore;
     public String value;
+
+    public String label;  // 记录所属知识点
+
+    public String course;  // 记录所属学科
 }

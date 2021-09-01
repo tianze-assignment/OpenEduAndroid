@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -18,6 +19,12 @@ public interface QuestionDAO {
     @Delete
     public void deleteQuestion(Question question);
 
+    @Update
+    public void updateQuestion(Question question);
+
     @Query("SELECT * FROM question")
     public List<Question> loadAllQuestion();
+
+    @Query("SELECT * FROM question WHERE course = :course AND label = :label")
+    public List<Question> loadQuestionByCourseAndLabel(String course, String label);
 }

@@ -85,7 +85,7 @@ public class EntityInfoActivity extends AppCompatActivity {
                     default:
                         // 实体相关习题列表
                         if (entityQuestionFragment == null) {
-                            entityQuestionFragment = new EntityQuestionFragment(label);
+                            entityQuestionFragment = new EntityQuestionFragment(course, label);
                         }
                         return entityQuestionFragment;
                 }

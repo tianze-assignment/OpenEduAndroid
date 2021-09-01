@@ -74,8 +74,8 @@ public class EntityContentAdapter
             }
         });
 
-        holder.listView.setAdapter(new EntityContentCollapseAdapter(
-                data.get(position).entityFeatureList, R.layout.entity_content_collapse_item, inflater));
+//        holder.listView.setAdapter(new EntityContentCollapseAdapter(
+//                data.get(position).entityFeatureList, R.layout.entity_content_collapse_item, inflater));
     }
 
     @Override

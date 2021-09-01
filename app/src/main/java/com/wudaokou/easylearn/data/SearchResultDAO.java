@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -18,6 +19,12 @@ public interface SearchResultDAO {
     @Delete
     public void deleteSearchResult(SearchResult searchResult);
 
+    @Update
+    public void updateSearchResult(SearchResult searchResult);
+
     @Query("SELECT * FROM search_result")
     public List<SearchResult> loadAllSearchResult();
+
+    @Query("SELECT * FROM search_result WHERE course = :course AND searchKey = :searchKey")
+    public List<SearchResult> loadSearchResultByCourseAndLabel(String course, String searchKey);
 }

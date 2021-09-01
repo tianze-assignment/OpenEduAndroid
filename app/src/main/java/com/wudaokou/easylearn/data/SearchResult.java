@@ -3,8 +3,11 @@ package com.wudaokou.easylearn.data;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import org.jetbrains.annotations.NotNull;
+
 @Entity(tableName = "search_result")
 public class SearchResult {
+    @NotNull
     @PrimaryKey
     public String uri;
 
@@ -15,6 +18,10 @@ public class SearchResult {
     public boolean hasRead;
 
     public boolean hasStar;
+
+    public String course;    // 搜索的学科
+
+    public String searchKey; // 搜索的关键词
 
     public SearchResult(final String label, final String category, final String uri) {
         this.category = category;
@@ -30,5 +37,7 @@ public class SearchResult {
         this.category = result.category;
         this.hasRead = result.hasRead;
         this.hasStar = result.hasStar;
+        this.course = result.course;
+        this.searchKey = result.searchKey;
     }
 }

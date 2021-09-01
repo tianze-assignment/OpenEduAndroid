@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -18,6 +19,12 @@ public interface PropertyDAO {
     @Delete
     public void deleteProperty(Property property);
 
+    @Update
+    public void updateProperty(Property property);
+
     @Query("SELECT * FROM property")
     public List<Property> loadAllProperty();
+
+    @Query("SELECT * FROM property WHERE course = :course AND label = :label")
+    public List<Property> loadPropertyByCourseAndLabel(String course, String label);
 }

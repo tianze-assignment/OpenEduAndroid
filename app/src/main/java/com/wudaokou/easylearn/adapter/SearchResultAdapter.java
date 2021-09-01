@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wudaokou.easylearn.R;
+import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.SearchResult;
 
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +49,10 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
         SearchResult searchResult = data.get(position);
         holder.label.setText(searchResult.label);
         holder.category.setText(searchResult.category);
+        if (searchResult.hasRead) {
+            holder.label.setTextColor(holder.label.getContext()
+                    .getResources().getColor(R.color.grey_500));
+        }
 
         //判断是否设置了监听器
         if(mOnItemClickListener != null){
@@ -55,8 +60,19 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int position = holder.getLayoutPosition(); // 1
-                    mOnItemClickListener.onItemClick(holder.itemView,position); // 2
+                    int position = holder.getLayoutPosition();
+                    mOnItemClickListener.onItemClick(holder.itemView,position);
+                    if (!searchResult.hasRead) {
+                        searchResult.hasRead = true;
+//                    holder.label.setTextColor(v.getResources().getColor(R.color.grey_300));
+                        MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                            @Override
+                            public void run() {
+                                MyDatabase.getDatabase(v.getContext()).searchResultDAO()
+                                        .updateSearchResult(searchResult);
+                            }
+                        });
+                    }
                 }
             });
         }

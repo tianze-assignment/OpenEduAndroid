@@ -42,6 +42,7 @@
             android:gravity="center"
             android:minHeight="50dp"
             android:text="TextView"
+            android:textColor="@color/grey_900"
             android:textSize="20sp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
