@@ -3,9 +3,6 @@ package com.wudaokou.easylearn.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,7 +23,7 @@ public class EntityPropertyAdapter extends RecyclerView.Adapter<EntityPropertyAd
         public VH(View v) {
             super(v);
             object = (TextView) v.findViewById(R.id.object);
-            predicateLabel = (TextView) v.findViewById(R.id.predicateLabel);
+            predicateLabel = (TextView) v.findViewById(R.id.entityPropertyLabel);
         }
     }
 

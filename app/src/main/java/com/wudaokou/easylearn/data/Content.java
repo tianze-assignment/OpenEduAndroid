@@ -11,7 +11,7 @@ import java.util.List;
 @Entity(tableName = "content")
 public class Content {
     @PrimaryKey(autoGenerate = true)
-    public Integer id;
+    public Integer uid;
 
     public String predicate;
 

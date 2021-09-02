@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 @Entity(tableName = "property")
 public class Property {
     @PrimaryKey(autoGenerate = true)
-    public Integer id;
+    public Integer uid;
 
     public String predicate;
 

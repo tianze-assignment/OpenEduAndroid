@@ -22,7 +22,7 @@
             android:minHeight="60dp">
 
             <TextView
-                android:id="@+id/predicateLabel"
+                android:id="@+id/relatedTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center|center_vertical"

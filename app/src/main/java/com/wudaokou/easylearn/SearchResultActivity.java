@@ -24,6 +24,7 @@ import com.wudaokou.easylearn.retrofit.JSONArray;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -79,8 +80,6 @@ public class SearchResultActivity extends AppCompatActivity {
         filterMethods = new ArrayList<>();
         filterMethods.add("全部");
 
-        checkDatabase();
-
         // 为recyclerView设置adapter
         adapter = new SearchResultAdapter(activeData);
         adapter.setOnItemClickListener(new SearchResultAdapter.OnItemClickListener() {
@@ -91,6 +90,8 @@ public class SearchResultActivity extends AppCompatActivity {
                 Intent intent = new Intent(SearchResultActivity.this, EntityInfoActivity.class);
                 intent.putExtra("course", course);
                 intent.putExtra("label", searchResult.label);
+                intent.putExtra("uri", searchResult.uri);
+                intent.putExtra("searchResult", searchResult);
                 startActivity(intent);
             }
         });
@@ -125,10 +126,11 @@ public class SearchResultActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (adapter != null) {
-            // 强制刷新，及时更新点击过后的选项为灰色
-            adapter.notifyDataSetChanged();
-        }
+        checkDatabase();
+//        if (adapter != null) {
+//            // 强制刷新，及时更新点击过后的选项为灰色
+//            adapter.notifyDataSetChanged();
+//        }
     }
 
     public void setFilter() {
@@ -271,7 +273,7 @@ public class SearchResultActivity extends AppCompatActivity {
                 .build();
         EduKGService service = retrofit.create(EduKGService.class);
 
-        Call<JSONArray<SearchResult>> call = service.instanceList(Constant.eduKGId,course, searchKey);
+        Call<JSONArray<SearchResult>> call = service.instanceList(Constant.eduKGId, course, searchKey);
 
 
         call.enqueue(new Callback<JSONArray<SearchResult>>() {

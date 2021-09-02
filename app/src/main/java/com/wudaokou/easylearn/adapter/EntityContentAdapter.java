@@ -3,7 +3,6 @@ package com.wudaokou.easylearn.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -14,12 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wudaokou.easylearn.R;
 import com.wudaokou.easylearn.data.Content;
-import com.wudaokou.easylearn.data.EntityFeature;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.zip.Inflater;
 
 public class EntityContentAdapter
         extends RecyclerView.Adapter<EntityContentAdapter.VH>{
@@ -33,7 +30,7 @@ public class EntityContentAdapter
         public VH(View v) {
             super(v);
             subOrObjectLabel = (TextView) v.findViewById(R.id.subOrObjectLabel);
-            predicateLabel = (TextView) v.findViewById(R.id.predicateLabel);
+            predicateLabel = (TextView) v.findViewById(R.id.entityContentLabel);
             relationImageView = (ImageView) v.findViewById(R.id.relationImageView);
             imageButton = (ImageButton) v.findViewById(R.id.collapseButton);
             listView = (ListView) v.findViewById(R.id.collapseListView);

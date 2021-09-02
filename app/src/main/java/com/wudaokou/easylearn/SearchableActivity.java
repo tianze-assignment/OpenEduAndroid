@@ -21,6 +21,7 @@ import android.widget.SearchView;
 import com.wudaokou.easylearn.adapter.SearchRecordAdapter;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.constant.SubjectMap;
+import com.wudaokou.easylearn.constant.SubjectMapChineseToEnglish;
 import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.SearchRecord;
 import com.wudaokou.easylearn.databinding.ActivitySearchableBinding;
@@ -101,46 +102,11 @@ public class SearchableActivity extends AppCompatActivity
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        switch (item.getItemId()) {
-            case R.id.type_chinese:
-                typeButton.setText("语文");
-                editor.putString("searchType", "chinese");
-                break;
-            case R.id.type_math:
-                typeButton.setText("数学");
-                editor.putString("searchType", "math");
-                break;
-            case R.id.type_english:
-                typeButton.setText("英语");
-                editor.putString("searchType", "english");
-                break;
-            case R.id.type_physics:
-                typeButton.setText("物理");
-                editor.putString("searchType", "physics");
-                break;
-            case R.id.type_chemistry:
-                typeButton.setText("化学");
-                editor.putString("searchType", "chemistry");
-                break;
-            case R.id.type_biology:
-                typeButton.setText("生物");
-                editor.putString("searchType", "biology");
-                break;
-            case R.id.type_history:
-                typeButton.setText("历史");
-                editor.putString("searchType", "history");
-                break;
-            case R.id.type_geography:
-                typeButton.setText("地理");
-                editor.putString("searchType", "geo");
-                break;
-            case R.id.type_politics:
-                typeButton.setText("政治");
-                editor.putString("searchType", "politics");
-                break;
-            default:
-                break;
-        }
+        String course = item.toString();
+        typeButton.setText(course);
+        editor.putString("searchType", SubjectMapChineseToEnglish.getMap().get(course));
+//        Log.e("menu", course);
+//        Log.e("menu", SubjectMapChineseToEnglish.getMap().get(course));
         editor.apply();
         return false;
     }

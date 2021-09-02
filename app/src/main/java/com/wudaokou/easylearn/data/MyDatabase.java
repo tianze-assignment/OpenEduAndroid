@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 
 @Database(entities = {User.class, SearchRecord.class, Property.class,
         Content.class, Question.class, SearchResult.class},
-        version = 5, exportSchema = false)
+        version = 6, exportSchema = false)
 public abstract class MyDatabase extends RoomDatabase {
     public abstract UserDAO userDAO();
     public abstract SearchRecordDAO searchRecordDAO();

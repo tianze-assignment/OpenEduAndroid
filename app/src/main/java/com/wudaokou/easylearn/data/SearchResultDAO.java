@@ -27,4 +27,7 @@ public interface SearchResultDAO {
 
     @Query("SELECT * FROM search_result WHERE course = :course AND searchKey = :searchKey")
     public List<SearchResult> loadSearchResultByCourseAndLabel(String course, String searchKey);
+
+    @Query("SELECT * FROM search_result WHERE uri = :uri")
+    public SearchResult loadSearchResultByUri(String uri);
 }
