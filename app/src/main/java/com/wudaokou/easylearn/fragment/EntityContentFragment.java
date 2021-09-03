@@ -1,5 +1,6 @@
 package com.wudaokou.easylearn.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,14 +11,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.wudaokou.easylearn.EntityInfoActivity;
 import com.wudaokou.easylearn.R;
 import com.wudaokou.easylearn.SearchResultActivity;
 import com.wudaokou.easylearn.adapter.EntityContentAdapter;
+import com.wudaokou.easylearn.adapter.SearchResultAdapter;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.Content;
 import com.wudaokou.easylearn.data.EntityInfo;
 import com.wudaokou.easylearn.data.KnowledgeCard;
 import com.wudaokou.easylearn.data.MyDatabase;
+import com.wudaokou.easylearn.data.SearchResult;
 import com.wudaokou.easylearn.databinding.FragmentEntityContentBinding;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 import com.wudaokou.easylearn.retrofit.JSONObject;
@@ -25,6 +29,7 @@ import com.wudaokou.easylearn.utils.LoadingDialog;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -45,6 +50,7 @@ public class EntityContentFragment extends Fragment {
     private String course;
     private String label;
     EduKGService service;
+    SearchResult searchResult;
 
     public EntityContentFragment (final String course, final String label) {
         this.course = course;
@@ -78,6 +84,53 @@ public class EntityContentFragment extends Fragment {
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new EntityContentAdapter(data, getLayoutInflater());
+        adapter.setOnItemClickListener(new SearchResultAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Log.e("entity_content", "click");
+                Content content = data.get(position);
+                String course = content.course;
+                String label, uri;
+                if (content.subject_label != null) {
+                    label = content.subject_label;
+                    uri = content.subject;
+                } else {
+                    label = content.object_label;
+                    uri = content.object;
+                }
+                Intent intent = new Intent(getActivity(), EntityInfoActivity.class);
+                intent.putExtra("course", course);
+                intent.putExtra("label", label);
+                intent.putExtra("uri", uri);
+                Future<SearchResult> searchResultFuture = MyDatabase.databaseWriteExecutor.submit(new Callable<SearchResult>() {
+                    @Override
+                    public SearchResult call() throws Exception {
+                        return MyDatabase.getDatabase(getContext()).searchResultDAO()
+                                .loadSearchResultByUri(uri);
+                    }
+                });
+                try {
+                    searchResult = searchResultFuture.get();
+                    Log.e("entity_content", "load searchResult ok");
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                    Log.e("entity_content", "load searchResult fail");
+                    searchResult = new SearchResult(course, label, uri);
+                    searchResult.hasRead = false;
+                    searchResult.hasStar = false;
+                } finally {
+                    MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            MyDatabase.getDatabase(getContext()).searchResultDAO()
+                                    .insertSearchResult(searchResult);
+                        }
+                    });
+                    intent.putExtra("searchResult", searchResult);
+                    startActivity(intent);
+                }
+            }
+        });
         binding.recyclerView.setAdapter(adapter);
         return root;
     }

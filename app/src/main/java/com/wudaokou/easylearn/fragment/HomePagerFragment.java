@@ -58,7 +58,6 @@ public class HomePagerFragment extends Fragment {
     String course;
     String [] keyWordList;
     EduKGService service;
-    BackendService backendService;
     int resultThreadCount, propertyThreadCount;
     HomeCourseItemAdapter adapter;
     LoadingDialog loadingDialog;
@@ -83,11 +82,6 @@ public class HomePagerFragment extends Fragment {
                 .build();
         service = retrofit.create(EduKGService.class);
 
-        Retrofit backendRetrofit = new Retrofit.Builder()
-                .baseUrl(Constant.backendBaseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        backendService = backendRetrofit.create(BackendService.class);
         homeCourseItemList = new ArrayList<>();
 
         binding = FragmentHomePagerBinding.inflate(inflater, container, false);
@@ -97,26 +91,6 @@ public class HomePagerFragment extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                 HomeCourseItem homeCourseItem = homeCourseItemList.get(position);
-                backendService.postClickEntity(Constant.backendToken, new HistoryParam(course.toUpperCase(),
-                        homeCourseItem.result.label, homeCourseItem.result.uri)).enqueue(new Callback<BackendObject>() {
-                    @Override
-                    public void onResponse(@NotNull Call<BackendObject> call,
-                                           @NotNull Response<BackendObject> response) {
-                        if (response.code() == 200) {
-                            Log.e("home", "post click ok");
-                        } else {
-                            Log.e("home", "post click fail");
-                            Log.e("home", String.format("code: %d", response.code()));
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NotNull Call<BackendObject> call,
-                                          @NotNull Throwable t) {
-                        Log.e("home", "post click error");
-                    }
-                });
-
                 Intent intent = new Intent(getActivity(), EntityInfoActivity.class);
                 intent.putExtra("course", course);
                 intent.putExtra("label", homeCourseItem.result.label);
@@ -312,11 +286,8 @@ public class HomePagerFragment extends Fragment {
                     SearchResult searchResult = searchResultList.get(id);
                     homeCourseItemList.add(new HomeCourseItem(searchResult, null));
                 }
-                // 使用迭代器时，在home页连续切换tab会闪退
+                // 使用迭代器遍历时，在home页连续切换tab会闪退
 
-//                for (SearchResult searchResult : searchResultList) {
-//                    homeCourseItemList.add(new HomeCourseItem(searchResult, null));
-//                }
                 Collections.shuffle(homeCourseItemList); // 打乱数据
                 adapter.updateData(homeCourseItemList);
                 requireActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());

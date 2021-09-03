@@ -70,6 +70,7 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
     IWBAPI mWBAPI;
 
     SearchResult searchResult;
+    BackendService backendService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,22 +93,30 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
         }
         searchResult = (SearchResult) intent.getSerializableExtra("searchResult");
 
+        if (searchResult == null) {
+            Log.e("entity_info", "get null searchResult from intent");
 
-//        Future<SearchResult> searchResultFuture = MyDatabase.databaseWriteExecutor.submit(new Callable<SearchResult>() {
-//            @Override
-//            public SearchResult call() throws Exception {
-//                return MyDatabase.getDatabase(EntityInfoActivity.this)
-//                        .searchResultDAO().loadSearchResultByUri(uri);
-//            }
-//        });
-//
-//        try {
-//            searchResult = searchResultFuture.get();
-//        } catch (ExecutionException | InterruptedException e) {
-//            e.printStackTrace();
-//        }
+            Future<SearchResult> searchResultFuture = MyDatabase.databaseWriteExecutor.submit(new Callable<SearchResult>() {
+                @Override
+                public SearchResult call() throws Exception {
+                    return MyDatabase.getDatabase(EntityInfoActivity.this)
+                            .searchResultDAO().loadSearchResultByUri(uri);
+                }
+            });
 
-        if (searchResult.hasStar) {
+            try {
+                searchResult = searchResultFuture.get();
+                if (searchResult != null) {
+                    Log.e("entity_info", "get null searchResult from database");
+                } else {
+                    Log.e("entity_info", "get a searchResult from database");
+                }
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (searchResult != null && searchResult.hasStar) {
             binding.imageButtonStar.setImageResource(R.drawable.star_fill);
         }
 
@@ -241,6 +250,33 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+            }
+        });
+
+        Retrofit backendRetrofit = new Retrofit.Builder()
+                .baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        backendService = backendRetrofit.create(BackendService.class);
+
+        backendService.postClickEntity(Constant.backendToken,
+        new HistoryParam(course.toUpperCase(), label, uri))
+        .enqueue(new Callback<BackendObject>() {
+            @Override
+            public void onResponse(@NotNull Call<BackendObject> call,
+                                   @NotNull Response<BackendObject> response) {
+                if (response.code() == 200) {
+                    Log.e("home", "post click ok");
+                } else {
+                    Log.e("home", "post click fail");
+                    Log.e("home", String.format("code: %d", response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<BackendObject> call,
+                                  @NotNull Throwable t) {
+                Log.e("home", "post click error");
             }
         });
     }

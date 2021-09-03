@@ -63,7 +63,6 @@ public class SearchResultActivity extends AppCompatActivity {
             selectedFilter = "全部";
     private List<String> filterMethods;
     EduKGService service;
-    BackendService backendService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,13 +89,6 @@ public class SearchResultActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         service = retrofit.create(EduKGService.class);
-
-        Retrofit backendRetrofit = new Retrofit.Builder()
-                .baseUrl(Constant.backendBaseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        backendService = backendRetrofit.create(BackendService.class);
-
         // 为recyclerView设置adapter
         adapter = new SearchResultAdapter(activeData);
         adapter.setOnItemClickListener(new SearchResultAdapter.OnItemClickListener() {
@@ -104,27 +96,6 @@ public class SearchResultActivity extends AppCompatActivity {
             public void onItemClick(View view, int position) {
                 // 跳转到实体详情页
                 SearchResult searchResult = activeData.get(position);
-
-                backendService.postClickEntity(Constant.backendToken,
-                        new HistoryParam(course.toUpperCase(), searchResult.label, searchResult.uri))
-                        .enqueue(new Callback<BackendObject>() {
-                    @Override
-                    public void onResponse(@NotNull Call<BackendObject> call,
-                                           @NotNull Response<BackendObject> response) {
-                        if (response.code() == 200) {
-                            Log.e("home", "post click ok");
-                        } else {
-                            Log.e("home", "post click fail");
-                            Log.e("home", String.format("code: %d", response.code()));
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NotNull Call<BackendObject> call,
-                                          @NotNull Throwable t) {
-                        Log.e("home", "post click error");
-                    }
-                });
 
                 Intent intent = new Intent(SearchResultActivity.this, EntityInfoActivity.class);
                 intent.putExtra("course", course);
