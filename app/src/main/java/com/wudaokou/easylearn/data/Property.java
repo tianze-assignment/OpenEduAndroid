@@ -28,6 +28,8 @@ public class Property {
 
     public String course;  // 记录所属学科
 
+    public String parentUri; // 记录所属知识点的uri
+
     public boolean hasStar;
 
     public boolean hasRead;

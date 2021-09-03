@@ -84,7 +84,7 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
         Intent intent = getIntent();
         course = intent.getStringExtra("course");
         label = intent.getStringExtra("label");
-//        uri = intent.getStringExtra("uri");
+        uri = intent.getStringExtra("uri");
         if (label.length() < 10) {
             binding.title.setText(label);
         } else {
@@ -198,7 +198,7 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                     case 0:
                         // 实体属性
                         if (entityPropertyFragment == null) {
-                            entityPropertyFragment = new EntityPropertyFragment(course, label);
+                            entityPropertyFragment = new EntityPropertyFragment(course, label, uri);
                         }
                         return entityPropertyFragment;
                     case 1:

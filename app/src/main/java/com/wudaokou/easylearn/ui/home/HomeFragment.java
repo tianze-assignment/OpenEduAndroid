@@ -32,6 +32,8 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.wudaokou.easylearn.R;
 import com.wudaokou.easylearn.SearchableActivity;
 import com.wudaokou.easylearn.SubjectManageActivity;
+import com.wudaokou.easylearn.constant.SubjectMap;
+import com.wudaokou.easylearn.constant.SubjectMapChineseToEnglish;
 import com.wudaokou.easylearn.databinding.FragmentHomeBinding;
 import com.wudaokou.easylearn.fragment.HomePagerFragment;
 
@@ -100,28 +102,19 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        final String[] keys = {"chineseChosen", "mathChosen", "englishChosen",
-                    "physicsChosen", "chemistryChosen", "biologyChosen", "historyChosen",
-                    "geographyChosen", "politicsChosen"};
-        HashMap<String, String> map = new HashMap<>();
-        map.put("chineseChosen", "语文");
-        map.put("mathChosen", "数学");
-        map.put("englishChosen", "英语");
-        map.put("physicsChosen", "物理");
-        map.put("chemistryChosen", "化学");
-        map.put("biologyChosen", "生物");
-        map.put("historyChosen", "历史");
-        map.put("geographyChosen", "地理");
-        map.put("politicsChosen", "政治");
+        final String[] keys = {"chinese", "math", "english",
+                    "physics", "chemistry", "biology", "history",
+                    "geo", "politics"};
+        HashMap<String, String> map = SubjectMap.getMap();
 
-        final Vector<String> subject = new Vector<>();
+        final Vector<String> courseList = new Vector<>();
 
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(requireContext());
         for (String key : keys) {
             boolean value = sharedPreferences.getBoolean(key, false);
             if (value) {
-                subject.add(key);
+                courseList.add(key);
 //                Log.w("HomeFragment",String.format("[%s] has been selected!", key));
             }
         }
@@ -132,13 +125,13 @@ public class HomeFragment extends Fragment {
             @NotNull
             @Override
             public Fragment createFragment(int position) {
-                String key = subject.get(position);
-                return HomePagerFragment.newInstance(map.get(key));
+                String key = courseList.get(position);
+                return new HomePagerFragment(key);
             }
 
             @Override
             public int getItemCount() {
-                return subject.size();
+                return courseList.size();
             }
         });
 
@@ -147,7 +140,7 @@ public class HomeFragment extends Fragment {
             public void onConfigureTab(@NonNull @NotNull TabLayout.Tab tab, int position) {
                 TextView tabView = new TextView(requireContext());
                 tabView.setGravity(Gravity.CENTER);
-                tabView.setText(map.get(subject.get(position)));
+                tabView.setText(map.get(courseList.get(position)));
                 tab.setCustomView(tabView);
             }
         }).attach();

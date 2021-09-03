@@ -27,4 +27,7 @@ public interface PropertyDAO {
 
     @Query("SELECT * FROM property WHERE course = :course AND label = :label")
     public List<Property> loadPropertyByCourseAndLabel(String course, String label);
+
+    @Query("SELECT * FROM property WHERE parentUri = :uri")
+    public List<Property> loadPropertyByParentUri(String uri);
 }

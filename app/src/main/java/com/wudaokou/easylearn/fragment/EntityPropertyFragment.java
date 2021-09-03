@@ -45,11 +45,13 @@ public class EntityPropertyFragment extends Fragment {
     private LoadingDialog loadingDialog;
     private String course;
     private String label;
+    private String uri;
     EduKGService service;
 
-    public EntityPropertyFragment(String course, String label) {
+    public EntityPropertyFragment(String course, String label, String uri) {
         this.course = course;
         this.label = label;
+        this.uri = uri;
     }
 
     public void updateData(List<Property> data) {
@@ -124,6 +126,7 @@ public class EntityPropertyFragment extends Fragment {
                         for (Property property : data) {
                             property.course = course;
                             property.label = label;
+                            property.parentUri = uri;
                             property.hasRead = false;
                             property.hasStar = false;
                         }

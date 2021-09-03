@@ -2,7 +2,7 @@ package com.wudaokou.easylearn.constant;
 
 public class Constant {
     public static final String eduKGBaseUrl = "http://open.edukg.cn/opedukg/api/typeOpen/open/";
-    public static final String eduKGId = "1e7ad5b4-2a0d-44ed-9379-155e31986618";
+    public static final String eduKGId = "a2464f2e-63b4-42e8-a7c2-bc8e341fea64";
 
     public static final String backendBaseUrl = "http://tianze.site:6789";
 }
