@@ -1,5 +1,6 @@
 package com.wudaokou.easylearn.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.wudaokou.easylearn.EntityInfoActivity;
 import com.wudaokou.easylearn.adapter.HomeCourseItemAdapter;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.constant.SubjectKeyWords;
@@ -22,7 +24,10 @@ import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.Property;
 import com.wudaokou.easylearn.data.SearchResult;
 import com.wudaokou.easylearn.databinding.FragmentHomePagerBinding;
+import com.wudaokou.easylearn.retrofit.BackendObject;
+import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.EduKGService;
+import com.wudaokou.easylearn.retrofit.HistoryParam;
 import com.wudaokou.easylearn.retrofit.JSONArray;
 import com.wudaokou.easylearn.retrofit.JSONObject;
 import com.wudaokou.easylearn.utils.LoadingDialog;
@@ -53,6 +58,7 @@ public class HomePagerFragment extends Fragment {
     String course;
     String [] keyWordList;
     EduKGService service;
+    BackendService backendService;
     int resultThreadCount, propertyThreadCount;
     HomeCourseItemAdapter adapter;
     LoadingDialog loadingDialog;
@@ -76,11 +82,49 @@ public class HomePagerFragment extends Fragment {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         service = retrofit.create(EduKGService.class);
+
+        Retrofit backendRetrofit = new Retrofit.Builder()
+                .baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        backendService = backendRetrofit.create(BackendService.class);
         homeCourseItemList = new ArrayList<>();
 
         binding = FragmentHomePagerBinding.inflate(inflater, container, false);
         binding.pagerRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new HomeCourseItemAdapter(homeCourseItemList);
+        adapter.setOnItemClickListener(new HomeCourseItemAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                HomeCourseItem homeCourseItem = homeCourseItemList.get(position);
+                backendService.postClickEntity(Constant.backendToken, new HistoryParam(course.toUpperCase(),
+                        homeCourseItem.result.label, homeCourseItem.result.uri)).enqueue(new Callback<BackendObject>() {
+                    @Override
+                    public void onResponse(@NotNull Call<BackendObject> call,
+                                           @NotNull Response<BackendObject> response) {
+                        if (response.code() == 200) {
+                            Log.e("home", "post click ok");
+                        } else {
+                            Log.e("home", "post click fail");
+                            Log.e("home", String.format("code: %d", response.code()));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull Call<BackendObject> call,
+                                          @NotNull Throwable t) {
+                        Log.e("home", "post click error");
+                    }
+                });
+
+                Intent intent = new Intent(getActivity(), EntityInfoActivity.class);
+                intent.putExtra("course", course);
+                intent.putExtra("label", homeCourseItem.result.label);
+                intent.putExtra("uri", homeCourseItem.result.uri);
+                intent.putExtra("searchResult", homeCourseItem.result);
+                startActivity(intent);
+            }
+        });
         binding.pagerRecyclerView.setAdapter(adapter);
 
         loadingDialog = new LoadingDialog(requireContext());
@@ -96,7 +140,7 @@ public class HomePagerFragment extends Fragment {
     }
 
     public void getCourseData() {
-        int randomCount = 4;  // 随机选四个关键词
+        int randomCount = 4;  // 随机选4个关键词
         List<String> selectedKeyWordList = new ArrayList<>();
         int chosen = 0;
         Random random = new Random();
@@ -184,7 +228,7 @@ public class HomePagerFragment extends Fragment {
         while (true) {
 
             //!! log不能注释掉
-            Log.e("home", "waiting");
+            Log.i("home", "home page waiting");
 
             if (resultThreadCount == 0) {
 
@@ -263,9 +307,16 @@ public class HomePagerFragment extends Fragment {
 //                    }
 //                }
                 Log.e("home", "enter break");
-                for (SearchResult searchResult : searchResultList) {
+                Log.e("home", String.format("list size: %d", searchResultList.size()));
+                for (int id = 0; id != searchResultList.size(); id++) {
+                    SearchResult searchResult = searchResultList.get(id);
                     homeCourseItemList.add(new HomeCourseItem(searchResult, null));
                 }
+                // 使用迭代器时，在home页连续切换tab会闪退
+
+//                for (SearchResult searchResult : searchResultList) {
+//                    homeCourseItemList.add(new HomeCourseItem(searchResult, null));
+//                }
                 Collections.shuffle(homeCourseItemList); // 打乱数据
                 adapter.updateData(homeCourseItemList);
                 requireActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());

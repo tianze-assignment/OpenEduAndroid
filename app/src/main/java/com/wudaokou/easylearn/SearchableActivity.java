@@ -142,7 +142,8 @@ public class SearchableActivity extends AppCompatActivity
                         .build();
 
                 BackendService service = retrofit.create(BackendService.class);
-                service.postHistorySearch(new HistoryParam(subject.toUpperCase(), query))
+                service.postHistorySearch(Constant.backendToken,
+                        new HistoryParam(subject.toUpperCase(), query))
                         .enqueue(new Callback<List<BackendObject>>() {
                     @Override
                     public void onResponse(@NotNull Call<List<BackendObject>> call,

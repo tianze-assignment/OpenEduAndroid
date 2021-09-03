@@ -19,7 +19,10 @@ import com.wudaokou.easylearn.constant.SubjectMap;
 import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.SearchResult;
 import com.wudaokou.easylearn.databinding.ActivitySearchResultBinding;
+import com.wudaokou.easylearn.retrofit.BackendObject;
+import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.EduKGService;
+import com.wudaokou.easylearn.retrofit.HistoryParam;
 import com.wudaokou.easylearn.retrofit.JSONArray;
 
 import org.jetbrains.annotations.NotNull;
@@ -59,6 +62,8 @@ public class SearchResultActivity extends AppCompatActivity {
     private String selectedMethod = "默认",
             selectedFilter = "全部";
     private List<String> filterMethods;
+    EduKGService service;
+    BackendService backendService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +85,18 @@ public class SearchResultActivity extends AppCompatActivity {
         filterMethods = new ArrayList<>();
         filterMethods.add("全部");
 
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.eduKGBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        service = retrofit.create(EduKGService.class);
+
+        Retrofit backendRetrofit = new Retrofit.Builder()
+                .baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        backendService = backendRetrofit.create(BackendService.class);
+
         // 为recyclerView设置adapter
         adapter = new SearchResultAdapter(activeData);
         adapter.setOnItemClickListener(new SearchResultAdapter.OnItemClickListener() {
@@ -87,6 +104,28 @@ public class SearchResultActivity extends AppCompatActivity {
             public void onItemClick(View view, int position) {
                 // 跳转到实体详情页
                 SearchResult searchResult = activeData.get(position);
+
+                backendService.postClickEntity(Constant.backendToken,
+                        new HistoryParam(course.toUpperCase(), searchResult.label, searchResult.uri))
+                        .enqueue(new Callback<BackendObject>() {
+                    @Override
+                    public void onResponse(@NotNull Call<BackendObject> call,
+                                           @NotNull Response<BackendObject> response) {
+                        if (response.code() == 200) {
+                            Log.e("home", "post click ok");
+                        } else {
+                            Log.e("home", "post click fail");
+                            Log.e("home", String.format("code: %d", response.code()));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull Call<BackendObject> call,
+                                          @NotNull Throwable t) {
+                        Log.e("home", "post click error");
+                    }
+                });
+
                 Intent intent = new Intent(SearchResultActivity.this, EntityInfoActivity.class);
                 intent.putExtra("course", course);
                 intent.putExtra("label", searchResult.label);
@@ -267,12 +306,6 @@ public class SearchResultActivity extends AppCompatActivity {
     }
 
     public void doSearch() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constant.eduKGBaseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        EduKGService service = retrofit.create(EduKGService.class);
-
         Call<JSONArray<SearchResult>> call = service.instanceList(Constant.eduKGId, course, searchKey);
 
 

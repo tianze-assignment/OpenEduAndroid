@@ -8,28 +8,31 @@ import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface BackendService {
-    @Headers("Authorization: Bearer ieyMlHM6iYRExfQjkrdkGaTrd7bThLDv9DnbbE4gr7ydViWDz0pWguaCgZoMgNma")
     @POST("/api/history/search")
-    public Call<List<BackendObject>> postHistorySearch(@Body HistoryParam param);
+    public Call<List<BackendObject>> postHistorySearch(@Header ("Authorization") String backendToken,
+                                                           @Body HistoryParam param);
 
-    @Headers("Authorization: Bearer ieyMlHM6iYRExfQjkrdkGaTrd7bThLDv9DnbbE4gr7ydViWDz0pWguaCgZoMgNma")
     @GET("/api/history/search")
-    public Call<List<BackendObject>> getHistorySearch();
+    public Call<List<BackendObject>> getHistorySearch(@Header ("Authorization") String backendToken);
 
-    @Headers("Authorization: Bearer ieyMlHM6iYRExfQjkrdkGaTrd7bThLDv9DnbbE4gr7ydViWDz0pWguaCgZoMgNma")
     @DELETE("/api/history/search")
-    public Call<BackendObject> deleteAllHistorySearch();
+    public Call<BackendObject> deleteAllHistorySearch(@Header ("Authorization") String backendToken);
 
-    @Headers("Authorization: Bearer ieyMlHM6iYRExfQjkrdkGaTrd7bThLDv9DnbbE4gr7ydViWDz0pWguaCgZoMgNma")
     @POST("/api/history/star")
-    public Call<BackendObject> starEntity(@Body HistoryParam param);
+    public Call<BackendObject> starEntity(@Header ("Authorization") String backendToken,
+                                          @Body HistoryParam param);
 
-    @Headers("Authorization: Bearer ieyMlHM6iYRExfQjkrdkGaTrd7bThLDv9DnbbE4gr7ydViWDz0pWguaCgZoMgNma")
     @DELETE("/api/history/{id}")
-    public Call<BackendObject> cancelStarEntity(@Path("id") int id);
+    public Call<BackendObject> cancelStarEntity(@Header ("Authorization") String backendToken,
+                                                @Path("id") int id);
+
+    @POST("/api/history/info")
+    public Call<BackendObject> postClickEntity(@Header ("Authorization") String backendToken,
+                                               @Body HistoryParam param);
 }

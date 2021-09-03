@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wudaokou.easylearn.R;
 import com.wudaokou.easylearn.data.HomeCourseItem;
+import com.wudaokou.easylearn.data.MyDatabase;
+import com.wudaokou.easylearn.data.SearchResult;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +20,16 @@ import java.util.List;
 
 public class HomeCourseItemAdapter
         extends RecyclerView.Adapter<HomeCourseItemAdapter.VH>{
+
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    private OnItemClickListener mOnItemClickListener;
+
+    public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
+    }
 
     public static class VH extends RecyclerView.ViewHolder{
         public final TextView entityLabel;
@@ -47,7 +59,11 @@ public class HomeCourseItemAdapter
             if (homeCourseItem.result != null) {
                 holder.entityLabel.setText(homeCourseItem.result.label);
                 holder.entityKeyWord.setText(String.format("关键词: %s", homeCourseItem.result.searchKey));
-                holder.entityDescription.setText(String.format("分类: %s", homeCourseItem.result.category));
+                String category = homeCourseItem.result.category;
+                if (category.length() > 10) {
+                    category = category.substring(0, 9) + "...";
+                }
+                holder.entityDescription.setText(String.format("分类: %s", category));
             } else {
                 holder.entityLabel.setText("Label");
                 holder.entityDescription.setText("Category");
@@ -55,20 +71,43 @@ public class HomeCourseItemAdapter
             }
 
             if (homeCourseItem.result.hasRead) {
+                holder.entityLabel.setTextColor(holder.entityLabel.getContext()
+                    .getResources().getColor(R.color.orange_700));
                 holder.entityKeyWord.setTextColor(holder.entityKeyWord.getContext()
                         .getResources().getColor(R.color.grey_500));
                 holder.entityDescription.setTextColor(holder.entityDescription.getContext()
                         .getResources().getColor(R.color.grey_500));
             } else {
+                holder.entityLabel.setTextColor(holder.entityLabel.getContext()
+                        .getResources().getColor(R.color.orange_900));
                 holder.entityKeyWord.setTextColor(holder.entityKeyWord.getContext()
-                        .getResources().getColor(R.color.grey_700));
+                        .getResources().getColor(R.color.grey_800));
                 holder.entityDescription.setTextColor(holder.entityDescription.getContext()
-                        .getResources().getColor(R.color.grey_700));
+                        .getResources().getColor(R.color.grey_800));
             }
 
         } else {
             holder.entityLabel.setText("Label");
             holder.entityDescription.setText("Description");
+        }
+
+        if (mOnItemClickListener != null) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SearchResult searchResult = data.get(position).result;
+                    searchResult.hasRead = true;
+                    int position = holder.getLayoutPosition();
+                    mOnItemClickListener.onItemClick(holder.itemView, position);
+                    MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            MyDatabase.getDatabase(v.getContext()).searchResultDAO()
+                                    .updateSearchResult(searchResult);
+                        }
+                    });
+                }
+            });
         }
     }
 

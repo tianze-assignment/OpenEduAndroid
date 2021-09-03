@@ -129,7 +129,8 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                 BackendService service = retrofit.create(BackendService.class);
 
                 if (searchResult.hasStar) {
-                    service.starEntity(new HistoryParam(searchResult.course.toUpperCase(),
+                    service.starEntity(Constant.backendToken,
+                            new HistoryParam(searchResult.course.toUpperCase(),
                             searchResult.label, searchResult.uri))
                             .enqueue(new Callback<BackendObject>() {
                                 @Override
@@ -159,7 +160,8 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                                 }
                             });
                 } else {
-                    service.cancelStarEntity(searchResult.id).enqueue(new Callback<BackendObject>() {
+                    service.cancelStarEntity(Constant.backendToken,
+                            searchResult.id).enqueue(new Callback<BackendObject>() {
                         @Override
                         public void onResponse(@NotNull Call<BackendObject> call,
                                                @NotNull Response<BackendObject> response) {

@@ -94,7 +94,8 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
                 BackendService service = retrofit.create(BackendService.class);
 
                 if (searchResult.hasStar) {
-                   service.starEntity(new HistoryParam(searchResult.course.toUpperCase(),
+                   service.starEntity(Constant.backendToken,
+                           new HistoryParam(searchResult.course.toUpperCase(),
                             searchResult.label, searchResult.uri))
                            .enqueue(new Callback<BackendObject>() {
                         @Override
@@ -128,7 +129,8 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
                         }
                     });
                 } else {
-                    service.cancelStarEntity(searchResult.id).enqueue(new Callback<BackendObject>() {
+                    service.cancelStarEntity(Constant.backendToken, searchResult.id)
+                            .enqueue(new Callback<BackendObject>() {
                         @Override
                         public void onResponse(@NotNull Call<BackendObject> call,
                                                @NotNull Response<BackendObject> response) {
