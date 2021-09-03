@@ -8,17 +8,31 @@ import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface BackendService {
-    @Headers("Authorization: Bearer ieyMlHM6iYRExfQjkrdkGaTrd7bThLDv9DnbbE4gr7ydViWDz0pWguaCgZoMgNma")
     @POST("/api/history/search")
-    public Call<List<BackendObject>> postHistorySearch(@Body HistoryParam param);
+    public Call<List<BackendObject>> postHistorySearch(@Header ("Authorization") String backendToken,
+                                                           @Body HistoryParam param);
 
     @GET("/api/history/search")
-    public Call<List<BackendObject>> getHistorySearch();
+    public Call<List<BackendObject>> getHistorySearch(@Header ("Authorization") String backendToken);
 
     @DELETE("/api/history/search")
-    public void deleteAllHistorySearch();
+    public Call<BackendObject> deleteAllHistorySearch(@Header ("Authorization") String backendToken);
+
+    @POST("/api/history/star")
+    public Call<BackendObject> starEntity(@Header ("Authorization") String backendToken,
+                                          @Body HistoryParam param);
+
+    @DELETE("/api/history/{id}")
+    public Call<BackendObject> cancelStarEntity(@Header ("Authorization") String backendToken,
+                                                @Path("id") int id);
+
+    @POST("/api/history/info")
+    public Call<BackendObject> postClickEntity(@Header ("Authorization") String backendToken,
+                                               @Body HistoryParam param);
 }

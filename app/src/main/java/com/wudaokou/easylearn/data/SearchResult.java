@@ -5,8 +5,10 @@ import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
+
 @Entity(tableName = "search_result")
-public class SearchResult {
+public class SearchResult implements Serializable {
     @NotNull
     @PrimaryKey
     public String uri;
@@ -22,6 +24,8 @@ public class SearchResult {
     public String course;    // 搜索的学科
 
     public String searchKey; // 搜索的关键词
+
+    public int id;  // 收藏后后端生成的id
 
     public SearchResult(final String label, final String category, final String uri) {
         this.category = category;
@@ -39,5 +43,7 @@ public class SearchResult {
         this.hasStar = result.hasStar;
         this.course = result.course;
         this.searchKey = result.searchKey;
+        this.id = result.id;
     }
+
 }

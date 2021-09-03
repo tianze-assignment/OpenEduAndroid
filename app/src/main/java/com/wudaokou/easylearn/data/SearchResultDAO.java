@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
 import java.util.List;
@@ -27,4 +28,12 @@ public interface SearchResultDAO {
 
     @Query("SELECT * FROM search_result WHERE course = :course AND searchKey = :searchKey")
     public List<SearchResult> loadSearchResultByCourseAndLabel(String course, String searchKey);
+
+    @Query("SELECT * FROM search_result WHERE uri = :uri")
+    public SearchResult loadSearchResultByUri(String uri);
+
+    // home page 使用
+//    @Transaction
+//    @Query("SELECT * FROM search_result")
+//    public List<HomeCourseItem> loadSearchResultWithProperty();
 }

@@ -30,13 +30,18 @@ import com.sina.weibo.sdk.share.WbShareCallback;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.Content;
 import com.wudaokou.easylearn.data.EntityInfo;
+import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.Property;
 import com.wudaokou.easylearn.data.Question;
+import com.wudaokou.easylearn.data.SearchResult;
 import com.wudaokou.easylearn.databinding.ActivityEntityInfoBinding;
 import com.wudaokou.easylearn.fragment.EntityContentFragment;
 import com.wudaokou.easylearn.fragment.EntityPropertyFragment;
 import com.wudaokou.easylearn.fragment.EntityQuestionFragment;
+import com.wudaokou.easylearn.retrofit.BackendObject;
+import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.EduKGService;
+import com.wudaokou.easylearn.retrofit.HistoryParam;
 import com.wudaokou.easylearn.retrofit.JSONArray;
 import com.wudaokou.easylearn.retrofit.JSONObject;
 import com.wudaokou.easylearn.utils.LoadingDialog;
@@ -44,6 +49,9 @@ import com.wudaokou.easylearn.utils.LoadingDialog;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -58,8 +66,11 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
     private EntityContentFragment entityContentFragment;
     private EntityQuestionFragment entityQuestionFragment;
 
-    String label;
+    String course, label, uri;
     IWBAPI mWBAPI;
+
+    SearchResult searchResult;
+    BackendService backendService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +83,120 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
 
         // 获取实体信息
         Intent intent = getIntent();
-        String course = intent.getStringExtra("course");
+        course = intent.getStringExtra("course");
         label = intent.getStringExtra("label");
-        binding.title.setText(label);
+        uri = intent.getStringExtra("uri");
+        if (label.length() < 10) {
+            binding.title.setText(label);
+        } else {
+            binding.title.setText(String.format("%s...", label.substring(0, 10)));
+        }
+        searchResult = (SearchResult) intent.getSerializableExtra("searchResult");
+
+        if (searchResult == null) {
+            Log.e("entity_info", "get null searchResult from intent");
+
+            Future<SearchResult> searchResultFuture = MyDatabase.databaseWriteExecutor.submit(new Callable<SearchResult>() {
+                @Override
+                public SearchResult call() throws Exception {
+                    return MyDatabase.getDatabase(EntityInfoActivity.this)
+                            .searchResultDAO().loadSearchResultByUri(uri);
+                }
+            });
+
+            try {
+                searchResult = searchResultFuture.get();
+                if (searchResult != null) {
+                    Log.e("entity_info", "get null searchResult from database");
+                } else {
+                    Log.e("entity_info", "get a searchResult from database");
+                }
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (searchResult != null && searchResult.hasStar) {
+            binding.imageButtonStar.setImageResource(R.drawable.star_fill);
+        }
+
+        binding.imageButtonStar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchResult.hasStar = !searchResult.hasStar;
+
+                if (searchResult.hasStar) {
+                    binding.imageButtonStar.setImageResource(R.drawable.star_fill);
+                } else {
+                    binding.imageButtonStar.setImageResource(R.drawable.star_blank);
+                }
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(Constant.backendBaseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+                BackendService service = retrofit.create(BackendService.class);
+
+                if (searchResult.hasStar) {
+                    service.starEntity(Constant.backendToken,
+                            new HistoryParam(searchResult.course.toUpperCase(),
+                            searchResult.label, searchResult.uri))
+                            .enqueue(new Callback<BackendObject>() {
+                                @Override
+                                public void onResponse(@NotNull Call<BackendObject> call,
+                                                       @NotNull Response<BackendObject> response) {
+                                    if (response.body() != null) {
+                                        searchResult.id = response.body().id;
+                                        MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                MyDatabase.getDatabase(v.getContext()).searchResultDAO()
+                                                        .updateSearchResult(searchResult);
+                                            }
+                                        });
+                                        Snackbar.make(v, "收藏成功", Snackbar.LENGTH_LONG)
+                                                .setAction("Action", null).show();
+                                        Log.e("retrofit", "收藏成功!");
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(@NotNull Call<BackendObject> call,
+                                                      @NotNull Throwable t) {
+                                    Log.e("retrofit", "收藏失败!");
+                                    Snackbar.make(v, "收藏失败!", Snackbar.LENGTH_LONG)
+                                            .setAction("Action", null).show();
+                                }
+                            });
+                } else {
+                    service.cancelStarEntity(Constant.backendToken,
+                            searchResult.id).enqueue(new Callback<BackendObject>() {
+                        @Override
+                        public void onResponse(@NotNull Call<BackendObject> call,
+                                               @NotNull Response<BackendObject> response) {
+                            MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                                @Override
+                                public void run() {
+                                    MyDatabase.getDatabase(v.getContext()).searchResultDAO()
+                                            .updateSearchResult(searchResult);
+                                    Log.e("retrofit", "取消收藏成功!");
+                                    Snackbar.make(v, "取消收藏成功!", Snackbar.LENGTH_LONG)
+                                            .setAction("Action", null).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(@NotNull Call<BackendObject> call,
+                                              @NotNull Throwable t) {
+                            Log.e("retrofit", "取消收藏失败!");
+                            Snackbar.make(v, "取消收藏失败!", Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+                        }
+                    });
+                }
+            }
+        });
 
         Log.e("EntityInfoActivity", String.format("title: %s", label));
 
@@ -87,7 +209,7 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                     case 0:
                         // 实体属性
                         if (entityPropertyFragment == null) {
-                            entityPropertyFragment = new EntityPropertyFragment(course, label);
+                            entityPropertyFragment = new EntityPropertyFragment(course, label, uri);
                         }
                         return entityPropertyFragment;
                     case 1:
@@ -128,6 +250,33 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+            }
+        });
+
+        Retrofit backendRetrofit = new Retrofit.Builder()
+                .baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        backendService = backendRetrofit.create(BackendService.class);
+
+        backendService.postClickEntity(Constant.backendToken,
+        new HistoryParam(course.toUpperCase(), label, uri))
+        .enqueue(new Callback<BackendObject>() {
+            @Override
+            public void onResponse(@NotNull Call<BackendObject> call,
+                                   @NotNull Response<BackendObject> response) {
+                if (response.code() == 200) {
+                    Log.e("home", "post click ok");
+                } else {
+                    Log.e("home", "post click fail");
+                    Log.e("home", String.format("code: %d", response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<BackendObject> call,
+                                  @NotNull Throwable t) {
+                Log.e("home", "post click error");
             }
         });
     }

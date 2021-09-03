@@ -8,7 +8,7 @@ import java.io.Serializable;
 @Entity(tableName = "question")
 public class Question implements Serializable {
     @PrimaryKey
-    public int id;
+    public int uid;
 
     public String qAnswer;
 
