@@ -6,8 +6,10 @@ import com.wudaokou.easylearn.adapter.EntityLinkAdapter;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.model.LoggedInUser;
 import com.wudaokou.easylearn.data.model.logException;
+import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 import com.wudaokou.easylearn.retrofit.JSONObject;
+import com.wudaokou.easylearn.retrofit.LoginParam;
 import com.wudaokou.easylearn.retrofit.entityLink.EntityLinkObject;
 import com.wudaokou.easylearn.retrofit.entityLink.JsonEntityLink;
 import com.wudaokou.easylearn.retrofit.userObject;
@@ -18,6 +20,11 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 /**
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
@@ -26,11 +33,12 @@ public class LoginDataSource {
     public Result<LoggedInUser> login(String username, String password) {
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constant.eduKGBaseUrl)
+                .baseUrl(Constant.backendBaseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        EduKGService service = retrofit.create(EduKGService.class);
-        Call<JSONObject<userObject>> call = service.userlogin(username, password);
+        BackendService service = retrofit.create(BackendService.class);
+        Call<JSONObject<userObject>> call = service.userlogin(Constant.backendToken,
+                new LoginParam(username, password));
 
         try {
             // TODO: handle loggedInUser authentication

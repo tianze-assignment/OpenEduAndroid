@@ -55,4 +55,12 @@ public interface BackendService {
                                          @Field("qBody") String qBody,
                                          @Field("label") String label,
                                          @Field("course") String course);  //课程名称大写
+
+    @POST("/login")
+    Call<JSONObject<userObject>> userlogin(@Header ("Authorization") String backendToken,
+                                            @Body LoginParam loginParam);
+
+    @POST("/register")
+    Call<JSONObject<userObject>> userregister(@Header ("Authorization") String backendToken,
+                                              @Body LoginParam loginParam);
 }

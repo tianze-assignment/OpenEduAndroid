@@ -23,14 +23,24 @@ import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.Result;
 import com.wudaokou.easylearn.data.model.LoggedInUser;
 import com.wudaokou.easylearn.data.model.logException;
+import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 import com.wudaokou.easylearn.retrofit.JSONObject;
+import com.wudaokou.easylearn.retrofit.LoginParam;
 import com.wudaokou.easylearn.retrofit.userObject;
 import com.wudaokou.easylearn.ui.login.LoginViewModel;
 import com.wudaokou.easylearn.ui.login.LoginViewModelFactory;
 import com.wudaokou.easylearn.databinding.ActivityLoginBinding;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -40,7 +50,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
      binding = ActivityLoginBinding.inflate(getLayoutInflater());
      setContentView(binding.getRoot());
 
@@ -137,24 +146,52 @@ public class LoginActivity extends AppCompatActivity {
                 String password = passwordEditText.getText().toString();
                 //使用retrofit进行请求
                 Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(Constant.eduKGBaseUrl)
+                        .baseUrl(Constant.backendBaseUrl)
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
-                EduKGService service = retrofit.create(EduKGService.class);
-                Call<JSONObject<userObject>> call = service.userregister(username, password);
-                Response<JSONObject<userObject>> response = call.execute();
-                JSONObject<userObject> rsp = response.body();
-                if(rsp == null){
-                    //服务器错误
-                    Toast.makeText(LoginActivity.this,"服务器错误", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(rsp.getCode().equals("406")){
-                    Toast.makeText(LoginActivity.this,"用户已经存在", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                loginViewModel.login(username,password);
-                return;
+                BackendService service = retrofit.create(BackendService.class);
+                Call<JSONObject<userObject>> call = service.userregister(Constant.backendToken,
+                        new LoginParam(username, password));
+                call.enqueue(new Callback<JSONObject<userObject>>() {
+                    @Override
+                    public void onResponse(@NotNull Call<JSONObject<userObject>> call,
+                                           @NotNull Response<JSONObject<userObject>> response) {
+                        if (response.body() != null) {
+                            JSONObject<userObject> rsp = response.body();
+                            loginViewModel.login(username,password);
+                        } else {
+                            if (response.code() == 409) {
+                                Toast.makeText(LoginActivity.this,"用户已经存在", Toast.LENGTH_SHORT).show();
+                            }
+                            Toast.makeText(LoginActivity.this,"服务器错误", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull Call<JSONObject<userObject>> call,
+                                          @NotNull Throwable t) {
+
+                    }
+                });
+
+
+//                Response<JSONObject<userObject>> response = null;
+//                try {
+//                    response = call.execute();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                JSONObject<userObject> rsp = response.body();
+//                if(rsp == null){
+//                    //服务器错误
+//
+//                    return;
+//                }
+//                if(rsp.getCode().equals("409")){
+//
+//                    return;
+//                }
+
             }
         });
     }
