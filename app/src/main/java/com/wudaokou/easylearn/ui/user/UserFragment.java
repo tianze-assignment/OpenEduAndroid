@@ -46,12 +46,10 @@ public class UserFragment extends Fragment implements View.OnClickListener{
         final Button login = binding.loginButton;
         final Button pick = binding.pickButton;
         final Button history = binding.historyButton;
-        final ImageButton info = binding.imageButton;
         //button行为监听
         login.setOnClickListener(this);
         pick.setOnClickListener(this);
         history.setOnClickListener(this);
-        info.setOnClickListener(this);
         //module行为监听
         userViewModel.getmText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
