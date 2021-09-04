@@ -59,4 +59,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EntityLinkSearchActivity.class);
         startActivity(intent);
     }
+
+    // 试题推荐onClick
+    public void showQuestionRecommend(View view) {
+        Intent intent = new Intent(this, QuestionRecommendActivity.class);
+        startActivity(intent);
+    }
 }

@@ -1,5 +1,7 @@
 package com.wudaokou.easylearn.retrofit;
 
+import com.wudaokou.easylearn.data.Question;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -13,6 +15,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface BackendService {
     @POST("/api/history/search")
@@ -55,4 +58,10 @@ public interface BackendService {
                                          @Field("qBody") String qBody,
                                          @Field("label") String label,
                                          @Field("course") String course);  //课程名称大写
+
+    @GET("/api/question/recommend")
+    public Call<List<Question>> getRecommendQuestions(@Header("Authorization") String backendToken,
+                                               @Query("course") String course,
+                                               @Query("number") int number,
+                                               @Query("openEduId") String openEduId);
 }
