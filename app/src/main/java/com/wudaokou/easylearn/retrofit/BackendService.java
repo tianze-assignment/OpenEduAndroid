@@ -57,10 +57,10 @@ public interface BackendService {
                                          @Field("course") String course);  //课程名称大写
 
     @POST("/login")
-    Call<JSONObject<userObject>> userlogin(@Field("username") String username,
-                                           @Field("password") String password);
+    Call<JSONObject<userObject>> userlogin(@Header ("Authorization") String backendToken,
+                                            @Body LoginParam loginParam);
 
     @POST("/register")
-    Call<JSONObject<userObject>> userregister(@Field("username") String username,
-                                              @Field("password") String password);
+    Call<JSONObject<userObject>> userregister(@Header ("Authorization") String backendToken,
+                                              @Body LoginParam loginParam);
 }

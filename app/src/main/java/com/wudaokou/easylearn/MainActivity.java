@@ -81,6 +81,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // 知识问答
+    public void showQA(View view) {
+        Intent intent = new Intent(this, QuAnActivity.class);
+        startActivity(intent);
+    }
+
     // 向后端请求搜索历史记录
     public void updateSearchHistory() {
         // 清除历史记录

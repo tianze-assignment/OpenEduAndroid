@@ -9,6 +9,7 @@ import com.wudaokou.easylearn.data.model.logException;
 import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 import com.wudaokou.easylearn.retrofit.JSONObject;
+import com.wudaokou.easylearn.retrofit.LoginParam;
 import com.wudaokou.easylearn.retrofit.entityLink.EntityLinkObject;
 import com.wudaokou.easylearn.retrofit.entityLink.JsonEntityLink;
 import com.wudaokou.easylearn.retrofit.userObject;
@@ -36,7 +37,8 @@ public class LoginDataSource {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         BackendService service = retrofit.create(BackendService.class);
-        Call<JSONObject<userObject>> call = service.userlogin(username, password);
+        Call<JSONObject<userObject>> call = service.userlogin(Constant.backendToken,
+                new LoginParam(username, password));
 
         try {
             // TODO: handle loggedInUser authentication
