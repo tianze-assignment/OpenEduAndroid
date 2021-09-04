@@ -49,12 +49,5 @@ public interface EduKGService {
     Call<JSONObject<KnowledgeCard>> getKnowledgeCard(@Field("id") String id,
                                                     @Field("course") String course,
                                                     @Field("uri") String uri);
-    @POST("login")
-    Call<JSONObject<userObject>> userlogin(@Field("username") String username,
-                                           @Field("password") String password);
-
-    @POST("register")
-    Call<JSONObject<userObject>> userregister(@Field("username") String username,
-                                              @Field("password") String password);
 }
 

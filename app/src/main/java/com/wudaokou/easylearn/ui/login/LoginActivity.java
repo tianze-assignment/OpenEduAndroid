@@ -23,6 +23,7 @@ import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.Result;
 import com.wudaokou.easylearn.data.model.LoggedInUser;
 import com.wudaokou.easylearn.data.model.logException;
+import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 import com.wudaokou.easylearn.retrofit.JSONObject;
 import com.wudaokou.easylearn.retrofit.userObject;
@@ -32,6 +33,13 @@ import com.wudaokou.easylearn.databinding.ActivityLoginBinding;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
@@ -40,7 +48,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
      binding = ActivityLoginBinding.inflate(getLayoutInflater());
      setContentView(binding.getRoot());
 
@@ -137,12 +144,17 @@ public class LoginActivity extends AppCompatActivity {
                 String password = passwordEditText.getText().toString();
                 //使用retrofit进行请求
                 Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(Constant.eduKGBaseUrl)
+                        .baseUrl(Constant.backendBaseUrl)
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
-                EduKGService service = retrofit.create(EduKGService.class);
+                BackendService service = retrofit.create(BackendService.class);
                 Call<JSONObject<userObject>> call = service.userregister(username, password);
-                Response<JSONObject<userObject>> response = call.execute();
+                Response<JSONObject<userObject>> response = null;
+                try {
+                    response = call.execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 JSONObject<userObject> rsp = response.body();
                 if(rsp == null){
                     //服务器错误
