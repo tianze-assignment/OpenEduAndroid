@@ -86,15 +86,16 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
         course = intent.getStringExtra("course");
         label = intent.getStringExtra("label");
         uri = intent.getStringExtra("uri");
-        if (label.length() < 10) {
-            binding.title.setText(label);
-        } else {
-            binding.title.setText(String.format("%s...", label.substring(0, 10)));
+        if (label != null) {
+            if (label.length() < 10) {
+                binding.title.setText(label);
+            } else {
+                binding.title.setText(String.format("%s...", label.substring(0, 10)));
+            }
         }
         searchResult = (SearchResult) intent.getSerializableExtra("searchResult");
-
         if (searchResult == null) {
-            Log.e("entity_info", "get null searchResult from intent");
+            Log.e("entity_info_activity", "get null searchResult from intent");
 
             Future<SearchResult> searchResultFuture = MyDatabase.databaseWriteExecutor.submit(new Callable<SearchResult>() {
                 @Override
@@ -107,19 +108,40 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
             try {
                 searchResult = searchResultFuture.get();
                 if (searchResult != null) {
-                    Log.e("entity_info", "get null searchResult from database");
+                    Log.e("entity_info_activity", "get a searchResult from database");
                 } else {
-                    Log.e("entity_info", "get a searchResult from database");
+                    Log.e("entity_info_activity", "get null searchResult from database");
                 }
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
 
+        if (searchResult == null) {
+            Log.e("entity_info_activity", "null searchResult after get from database");
+        }
+
         if (searchResult != null && searchResult.hasStar) {
             binding.imageButtonStar.setImageResource(R.drawable.star_fill);
         }
+        setStarListener();
+        bindPagerWithTab();
 
+        Retrofit backendRetrofit = new Retrofit.Builder()
+                .baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        backendService = backendRetrofit.create(BackendService.class);
+
+        if (searchResult != null) {
+            postClickEntity();
+        } else {
+            Log.e("entity_info_activity", "null searchResult");
+        }
+
+    }
+
+    public void setStarListener() {
         binding.imageButtonStar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,8 +161,8 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
 
                 if (searchResult.hasStar) {
                     service.starEntity(Constant.backendToken,
-                            new HistoryParam(searchResult.course.toUpperCase(),
-                            searchResult.label, searchResult.uri))
+                            new HistoryParam(searchResult.course.toUpperCase(), searchResult.label,
+                                    searchResult.uri, searchResult.category, searchResult.searchKey))
                             .enqueue(new Callback<BackendObject>() {
                                 @Override
                                 public void onResponse(@NotNull Call<BackendObject> call,
@@ -197,9 +219,9 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                 }
             }
         });
+    }
 
-        Log.e("EntityInfoActivity", String.format("title: %s", label));
-
+    public void bindPagerWithTab() {
         binding.viewPager2.setAdapter(new FragmentStateAdapter(getSupportFragmentManager(), getLifecycle()) {
             @NonNull
             @NotNull
@@ -242,43 +264,31 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                 tab.setCustomView(tabView);
             }
         }).attach();
+    }
 
-        FloatingActionButton fab = binding.fab;
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        Retrofit backendRetrofit = new Retrofit.Builder()
-                .baseUrl(Constant.backendBaseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        backendService = backendRetrofit.create(BackendService.class);
-
+    public void postClickEntity() {
+        // 向后端发送该实体已被浏览
         backendService.postClickEntity(Constant.backendToken,
-        new HistoryParam(course.toUpperCase(), label, uri))
-        .enqueue(new Callback<BackendObject>() {
-            @Override
-            public void onResponse(@NotNull Call<BackendObject> call,
-                                   @NotNull Response<BackendObject> response) {
-                if (response.code() == 200) {
-                    Log.e("home", "post click ok");
-                } else {
-                    Log.e("home", "post click fail");
-                    Log.e("home", String.format("code: %d", response.code()));
-                }
-            }
+                new HistoryParam(course.toUpperCase(),
+                        label, uri, searchResult.category, searchResult.searchKey))
+                .enqueue(new Callback<BackendObject>() {
+                    @Override
+                    public void onResponse(@NotNull Call<BackendObject> call,
+                                           @NotNull Response<BackendObject> response) {
+                        if (response.code() == 200) {
+                            Log.e("home", "post click ok");
+                        } else {
+                            Log.e("home", "post click fail");
+                            Log.e("home", String.format("code: %d", response.code()));
+                        }
+                    }
 
-            @Override
-            public void onFailure(@NotNull Call<BackendObject> call,
-                                  @NotNull Throwable t) {
-                Log.e("home", "post click error");
-            }
-        });
+                    @Override
+                    public void onFailure(@NotNull Call<BackendObject> call,
+                                          @NotNull Throwable t) {
+                        Log.e("home", "post click error");
+                    }
+                });
     }
 
     public void goBack(View view) {

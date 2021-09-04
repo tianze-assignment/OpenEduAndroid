@@ -62,27 +62,26 @@ public class HomePagerFragment extends Fragment {
     HomeCourseItemAdapter adapter;
     LoadingDialog loadingDialog;
 
+    boolean forStarHistory; // 为true表示用于展示历史收藏记录，无需请求数据
+
     public HomePagerFragment (String course) {
+        this.forStarHistory = false;
         this.course = course;
     }
 
-    public static HomePagerFragment newInstance(String course) {
-        return new HomePagerFragment(course);
+    public HomePagerFragment(boolean forStarHistory) {
+        this.forStarHistory = true;
     }
 
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        keyWordList = SubjectKeyWords.getMap().get(course);
-//        Log.e("home", String.format("keyWordList size: %d", keyWordList.length));
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constant.eduKGBaseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        service = retrofit.create(EduKGService.class);
 
-        homeCourseItemList = new ArrayList<>();
+        if (forStarHistory) {
+            initForStarHistory();
+        } else {
+            initForHomePage();
+        }
 
         binding = FragmentHomePagerBinding.inflate(inflater, container, false);
         binding.pagerRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -100,9 +99,55 @@ public class HomePagerFragment extends Fragment {
             }
         });
         binding.pagerRecyclerView.setAdapter(adapter);
+        return binding.getRoot();
+    }
 
+    public void initForStarHistory() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        BackendService backendService = retrofit.create(BackendService.class);
+        backendService.getHistoryStar(Constant.backendToken).enqueue(new Callback<List<BackendObject>>() {
+            @Override
+            public void onResponse(@NotNull Call<List<BackendObject>> call,
+                                   @NotNull Response<List<BackendObject>> response) {
+                if (response.body() != null) {
+                    homeCourseItemList = new ArrayList<>();
+                    for (BackendObject backendObject : response.body()) {
+                        SearchResult searchResult = new SearchResult(backendObject.name, backendObject.category,
+                                backendObject.uri, backendObject.course, backendObject.searchKey);
+                        homeCourseItemList.add(new HomeCourseItem(searchResult, null));
+                    }
+                    if (adapter != null) {
+                        adapter.updateData(homeCourseItemList);
+                        adapter.notifyDataSetChanged();
+                    }
+                } else {
+                    Log.e("home page for star", "get null history");
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<List<BackendObject>> call,
+                                  @NotNull Throwable t) {
+                loadingDialog.dismiss();
+                Log.e("home page for star", "retrofit connect backend error");
+            }
+        });
+    }
+
+    public void initForHomePage() {
         loadingDialog = new LoadingDialog(requireContext());
         loadingDialog.show();
+
+        keyWordList = SubjectKeyWords.getMap().get(course);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.eduKGBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        service = retrofit.create(EduKGService.class);
+        homeCourseItemList = new ArrayList<>();
 
         new Thread(new Runnable() {
             @Override
@@ -110,7 +155,6 @@ public class HomePagerFragment extends Fragment {
                 getCourseData();
             }
         }).start();
-        return binding.getRoot();
     }
 
     public void getCourseData() {

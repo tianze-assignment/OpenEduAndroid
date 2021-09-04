@@ -16,6 +16,7 @@ import com.wudaokou.easylearn.data.Question;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Locale;
 
 public class EntityQuestionAdapter
         extends RecyclerView.Adapter<EntityQuestionAdapter.VH>{
@@ -58,6 +59,8 @@ public class EntityQuestionAdapter
         }
         holder.qBodyText.setText(questionText);
 
+        holder.correctCount.setText(String.format(Locale.CHINA, "做对%d次", question.totalCount - question.wrongCount));
+        holder.wrongCount.setText(String.format(Locale.CHINA,"做错%d次", question.wrongCount));
         //判断是否设置了监听器
         if(mOnItemClickListener != null){
             //为ItemView设置监听器
@@ -82,9 +85,13 @@ public class EntityQuestionAdapter
 
     public static class VH extends RecyclerView.ViewHolder{
         public final TextView qBodyText;
+        public final TextView wrongCount;
+        public final TextView correctCount;
         public VH(View v) {
             super(v);
             qBodyText = (TextView) v.findViewById(R.id.qBodyText);
+            wrongCount = (TextView) v.findViewById(R.id.wrongCount);
+            correctCount = (TextView) v.findViewById(R.id.correctCount);
         }
     }
 

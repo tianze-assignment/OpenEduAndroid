@@ -12,4 +12,8 @@ public class BackendObject {
     public String name;
 
     public String uri;
+
+    public String category;
+
+    public String searchKey;
 }

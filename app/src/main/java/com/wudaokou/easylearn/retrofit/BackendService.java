@@ -40,13 +40,24 @@ public interface BackendService {
     public Call<BackendObject> postClickEntity(@Header ("Authorization") String backendToken,
                                                @Body HistoryParam param);
 
+    @GET("/api/history/info")
+    public Call<List<BackendObject>> getHistoryEntity(@Header ("Authorization") String backendToken);
+
+    @GET("/api/history/star")
+    public Call<List<BackendObject>> getHistoryStar(@Header ("Authorization") String backendToken);
+
     @FormUrlEncoded
     @PUT("/api/question/star")
     public Call<String> onStarQuestion(@Header ("Authorization") String backendToken,
                                        @Field("starOrUnstar") boolean starOrUnstar,
                                        @Field("id") int id,
+                                       @Field("qAnswer") String qAnswer,
+                                       @Field("qBody") String qBody,
                                        @Field("label") String label,
                                        @Field("course") String course); //课程名称大写
+
+    @GET("/api/question/star")
+    public Call<List<Question>>getStarQuestion(@Header ("Authorization") String backendToken);
 
 
     @FormUrlEncoded

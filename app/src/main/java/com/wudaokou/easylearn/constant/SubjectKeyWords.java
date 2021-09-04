@@ -19,7 +19,8 @@ public class SubjectKeyWords {
     };
     public static String[] english = {
             "english", "actor", "home", "search", "train", "me", "this", "be", "there", "human", "war",
-            "university", "work", "money", "hard", "tear", "mouth", "ear", "movie", "song", "ball"
+            "university", "work", "money", "hard", "tear", "mouth", "ear", "movie", "song", "ball",
+            "how", "what", "when", "good", "why", "do", "you", "and", "or", "love", "miss"
     };
     public static String[] physics = {
             "物理", "力", "能量", "速度", "电", "磁", "摩擦", "光", "功", "热", "声", "波", "辐射", "振动",

@@ -23,6 +23,7 @@ import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.Question;
 import com.wudaokou.easylearn.data.SearchResult;
 import com.wudaokou.easylearn.databinding.FragmentEntityQuestionBinding;
+import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 import com.wudaokou.easylearn.retrofit.JSONArray;
 import com.wudaokou.easylearn.utils.LoadingDialog;
@@ -52,10 +53,16 @@ public class EntityQuestionFragment extends Fragment {
     private EntityQuestionAdapter adapter;
     private LoadingDialog loadingDialog;
     private String label, course;
+    boolean forStarHistory;
 
     public EntityQuestionFragment(final String course, final String label) {
         this.course = course;
         this.label = label;
+        this.forStarHistory = false;
+    }
+
+    public EntityQuestionFragment(final boolean forStarHistory) {
+        this.forStarHistory = forStarHistory;
     }
 
     public void updateData(List<Question> data) {
@@ -73,11 +80,12 @@ public class EntityQuestionFragment extends Fragment {
         binding = FragmentEntityQuestionBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        loadingDialog = new LoadingDialog(requireContext());
-        loadingDialog.show();
-
-//        getEntityQuestion(label);
-
+        if (!forStarHistory) {
+            loadingDialog = new LoadingDialog(requireContext());
+            loadingDialog.show();
+        } else {
+            getStarQuestion();
+        }
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new EntityQuestionAdapter(data);
@@ -99,7 +107,35 @@ public class EntityQuestionFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        checkDatabase();
+        if (!forStarHistory) {
+            checkDatabase();
+        }
+    }
+
+    public void getStarQuestion() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        BackendService backendService = retrofit.create(BackendService.class);
+        backendService.getStarQuestion(Constant.backendToken).enqueue(new Callback<List<Question>>() {
+            @Override
+            public void onResponse(@NotNull Call<List<Question>> call,
+                                   @NotNull Response<List<Question>> response) {
+                if (response.body() != null) {
+                    data = response.body();
+                    if (adapter != null) {
+                        adapter.updateData(data);
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<List<Question>> call,
+                                  @NotNull Throwable t) {
+            }
+        });
     }
 
     public void checkDatabase() {

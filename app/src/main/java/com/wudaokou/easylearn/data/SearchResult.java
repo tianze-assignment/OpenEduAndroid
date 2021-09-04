@@ -1,6 +1,7 @@
 package com.wudaokou.easylearn.data;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import org.jetbrains.annotations.NotNull;
@@ -27,10 +28,24 @@ public class SearchResult implements Serializable {
 
     public int id;  // 收藏后后端生成的id
 
-    public SearchResult(final String label, final String category, final String uri) {
+    public SearchResult(final String label, final String category, @NotNull final String uri) {
         this.category = category;
         this.label = label;
         this.uri = uri;
+        this.searchKey = null;
+        this.course = null;
+        this.hasRead = false;
+        this.hasStar = false;
+    }
+
+    @Ignore
+    public SearchResult(final String label, final String category, @NotNull final String uri,
+                        final String course, final String searchKey) {
+        this.category = category;
+        this.label = label;
+        this.uri = uri;
+        this.course = course;
+        this.searchKey = searchKey;
         this.hasRead = false;
         this.hasStar = false;
     }

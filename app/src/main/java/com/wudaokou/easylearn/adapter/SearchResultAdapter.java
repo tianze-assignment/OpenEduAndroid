@@ -96,7 +96,7 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
                 if (searchResult.hasStar) {
                    service.starEntity(Constant.backendToken,
                            new HistoryParam(searchResult.course.toUpperCase(),
-                            searchResult.label, searchResult.uri))
+                            searchResult.label, searchResult.uri, searchResult.category, searchResult.searchKey))
                            .enqueue(new Callback<BackendObject>() {
                         @Override
                         public void onResponse(@NotNull Call<BackendObject> call,

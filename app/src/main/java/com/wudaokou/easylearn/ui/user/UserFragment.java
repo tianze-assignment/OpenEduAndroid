@@ -25,15 +25,23 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.wudaokou.easylearn.BrowsingHistoryActivity;
 import com.wudaokou.easylearn.R;
+import com.wudaokou.easylearn.StarHistoryActivity;
+import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.databinding.FragmentUserBinding;
+import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.ui.login.LoginActivity;
 import org.jetbrains.annotations.NotNull;
+
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class UserFragment extends Fragment implements View.OnClickListener{
 
     private UserViewModel userViewModel;
     private FragmentUserBinding binding;
+    BackendService backendService;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -41,6 +49,14 @@ public class UserFragment extends Fragment implements View.OnClickListener{
 
         binding = FragmentUserBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        backendService = retrofit.create(BackendService.class);
+
+
         //text组件设置
         //button设置
         final Button login = binding.loginButton;
@@ -104,12 +120,13 @@ public class UserFragment extends Fragment implements View.OnClickListener{
         startActivity(intent);
     }
     private void onClickButton_pik(View view) {
-        //注册逻辑
-        //进行http请求
+        Intent intent = new Intent(getActivity(), StarHistoryActivity.class);
+        startActivity(intent);
     }
 
     private void onClickButton_his(View view) {
-        //注册逻辑
+        Intent intent = new Intent(getActivity(), BrowsingHistoryActivity.class);
+        startActivity(intent);
     }
     @Override
     public void onCreateOptionsMenu(@NotNull Menu menu, MenuInflater inflater) {

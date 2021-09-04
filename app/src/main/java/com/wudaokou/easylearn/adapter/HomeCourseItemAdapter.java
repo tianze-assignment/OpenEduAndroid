@@ -60,7 +60,7 @@ public class HomeCourseItemAdapter
                 holder.entityLabel.setText(homeCourseItem.result.label);
                 holder.entityKeyWord.setText(String.format("关键词: %s", homeCourseItem.result.searchKey));
                 String category = homeCourseItem.result.category;
-                if (category.length() > 10) {
+                if (category != null && category.length() > 10) {
                     category = category.substring(0, 9) + "...";
                 }
                 holder.entityDescription.setText(String.format("分类: %s", category));

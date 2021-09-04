@@ -292,6 +292,10 @@ public class SearchResultActivity extends AppCompatActivity {
                     activeData = data;
                     Set<String> set = new HashSet<>();  //去重
                     for (SearchResult result : data) {
+                        result.course = course;
+                        result.searchKey = searchKey;
+                        result.hasRead = false;
+                        result.hasStar = false;
                         if (!set.contains(result.category)) {
                             set.add(result.category);
                             filterMethods.add(result.category);
@@ -302,10 +306,6 @@ public class SearchResultActivity extends AppCompatActivity {
                         MyDatabase.databaseWriteExecutor.submit(new Runnable() {
                             @Override
                             public void run() {
-                                searchResult.course = course;
-                                searchResult.searchKey = searchKey;
-                                searchResult.hasRead = false;
-                                searchResult.hasStar = false;
                                 MyDatabase.getDatabase(SearchResultActivity.this)
                                         .searchResultDAO().insertSearchResult(searchResult);
                             }

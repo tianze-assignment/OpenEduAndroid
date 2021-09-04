@@ -9,7 +9,7 @@ public class Constant {
 
     public static final String backendBaseUrl = "http://tianze.site:6789";
 
-    public static String backendToken = "Bearer ieyMlHM6iYRExfQjkrdkGaTrd7bThLDv9DnbbE4gr7ydViWDz0pWguaCgZoMgNma";
+    public static String backendToken = "Bearer 9H8ClRHUboIW2Ro7EjA0OvE4mhWniK2ssdpOMCK8UtPWOJmCEBli7j1mmLnz6x1a";
 
     public static final String[] subjectList = {"chinese", "math", "english",
             "physics", "chemistry", "biology", "history",

@@ -29,7 +29,7 @@ public interface SearchResultDAO {
     @Query("SELECT * FROM search_result WHERE course = :course AND searchKey = :searchKey")
     public List<SearchResult> loadSearchResultByCourseAndLabel(String course, String searchKey);
 
-    @Query("SELECT * FROM search_result WHERE uri = :uri")
+    @Query("SELECT * FROM search_result WHERE uri = :uri LIMIT 1")
     public SearchResult loadSearchResultByUri(String uri);
 
     // home page 使用

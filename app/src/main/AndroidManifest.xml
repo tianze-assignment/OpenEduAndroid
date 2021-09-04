@@ -12,16 +12,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyLearn"
         android:usesCleartextTraffic="true">
+        <activity android:name=".StarHistoryActivity"></activity>
+        <activity android:name=".BrowsingHistoryActivity" />
         <activity
             android:name=".QuAnActivity"
             android:exported="true" />
         <activity android:name=".AnswerActivity" />
-        <activity android:name=".QuestionRecommendActivity"></activity>
+        <activity android:name=".QuestionRecommendActivity" />
         <activity
             android:name=".EntityInfoActivity"
             android:label="@string/title_activity_entity_info"
-            android:theme="@style/Theme.EasyLearn.NoActionBar"></activity>
-        <activity android:name=".EntityLinkResultActivity"></activity>
+            android:theme="@style/Theme.EasyLearn.NoActionBar" />
+        <activity android:name=".EntityLinkResultActivity" />
         <activity android:name=".EntityLinkSearchActivity" />
         <activity
             android:name=".SearchResultActivity"
@@ -47,7 +49,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
         <activity
             android:name=".SubjectManageActivity"
             android:label="@string/title_activity_subject_manage"
@@ -58,12 +59,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
         <activity
             android:name=".ui.login.LoginActivity"
             android:exported="true"
             android:label="@string/title_activity_login" />
-
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">

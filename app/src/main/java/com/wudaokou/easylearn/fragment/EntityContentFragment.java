@@ -111,7 +111,12 @@ public class EntityContentFragment extends Fragment {
                 });
                 try {
                     searchResult = searchResultFuture.get();
-                    Log.e("entity_content", "load searchResult ok");
+                    if (searchResult != null) {
+                        Log.e("entity_content", "load searchResult ok");
+                    } else {
+                        Log.e("entity_content", "load null searchResult from database");
+                    }
+
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                     Log.e("entity_content", "load searchResult fail");

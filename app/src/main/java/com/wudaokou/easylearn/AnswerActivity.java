@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Queue;
 
 import retrofit2.Call;
@@ -91,13 +92,13 @@ public class AnswerActivity extends AppCompatActivity implements ChoiceQuestionF
         });
         binding.questionViewPager2.setCurrentItem(position, true);
         // 设置初始位置
-        binding.workProgress.setText(String.format("%d/%d", position + 1, questionList.size()));
+        binding.workProgress.setText(String.format(Locale.CHINA, "%d/%d", position + 1, questionList.size()));
         binding.questionViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 Question question = questionList.get(position);
-                binding.workProgress.setText(String.format("%d/%d",
+                binding.workProgress.setText(String.format(Locale.CHINA, "%d/%d",
                         binding.questionViewPager2.getCurrentItem() + 1, questionList.size()));
                 if (question.hasStar) {
                     binding.starQuestionButton.setImageResource(R.drawable.star_fill);
@@ -132,6 +133,7 @@ public class AnswerActivity extends AppCompatActivity implements ChoiceQuestionF
                 .build();
         BackendService backendService = retrofit.create(BackendService.class);
         backendService.onStarQuestion(Constant.backendToken, question.hasStar, question.id,
+                question.qAnswer, question.qAnswer,
                 question.label, question.course.toUpperCase()).enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NotNull Call<String> call,
