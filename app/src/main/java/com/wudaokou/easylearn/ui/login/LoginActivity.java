@@ -173,25 +173,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     }
                 });
-
-
-//                Response<JSONObject<userObject>> response = null;
-//                try {
-//                    response = call.execute();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                JSONObject<userObject> rsp = response.body();
-//                if(rsp == null){
-//                    //服务器错误
-//
-//                    return;
-//                }
-//                if(rsp.getCode().equals("409")){
-//
-//                    return;
-//                }
-
             }
         });
     }

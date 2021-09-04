@@ -43,7 +43,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="96dp"
-        android:hint="Phonenumber"
+        android:hint="账号"
         android:inputType="textEmailAddress"
         android:selectAllOnFocus="true"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,7 +55,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:hint="@string/prompt_password"
+        android:hint="密码"
         android:imeActionLabel="@string/action_sign_in_short"
         android:imeOptions="actionDone"
         android:inputType="textPassword"
@@ -77,8 +77,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintTop_toBottomOf="@+id/password" />
 
     <ProgressBar
         android:id="@+id/loading"
@@ -100,7 +99,7 @@
         android:layout_height="48dp"
         android:layout_marginTop="32dp"
         android:background="#EFEDED"
-        android:text="注册并登录"
+        android:text="注册"
         android:textColor="#050505"
         android:textColorHint="#050505"
         android:textColorLink="#131313"

@@ -21,6 +21,8 @@ import com.wudaokou.easylearn.databinding.ActivityMainBinding;
 import com.wudaokou.easylearn.retrofit.BackendObject;
 import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.EduKGService;
+import com.wudaokou.easylearn.retrofit.EduLoginRet;
+import com.wudaokou.easylearn.retrofit.LoginParam;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -41,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        updateEduKGID();
 
 //        去除activity的工具栏
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -87,6 +91,32 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // 更新和服务器通信使用的id
+    public void updateEduKGID() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.eduKGLoginUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        EduKGService service = retrofit.create(EduKGService.class);
+        service.eduLogin(Constant.eduKGPhone, Constant.eduKGPassword)
+                .enqueue(new Callback<EduLoginRet>() {
+            @Override
+            public void onResponse(@NotNull Call<EduLoginRet> call,
+                                   @NotNull Response<EduLoginRet> response) {
+                if (response.body() != null) {
+                    Constant.eduKGId = response.body().id;
+                    Log.e("main_activity", "update edukgId ok");
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<EduLoginRet> call,
+                                  @NotNull Throwable t) {
+                Log.e("main_activity", "update edukgId error");
+            }
+        });
+    }
+
     // 向后端请求搜索历史记录
     public void updateSearchHistory() {
         // 清除历史记录
@@ -131,6 +161,5 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("main_activity", "update search record error");
             }
         });
-
     }
 }
