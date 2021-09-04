@@ -52,6 +52,7 @@ public class LoginViewModel extends ViewModel {
 
     // A placeholder username validation check
     private boolean isUserNameValid(String username) {
+        //在这里实现账号检查，查看账号是否valid，但是我不打算做，因为没有必要
         if (username == null) {
             return false;
         }
@@ -64,6 +65,7 @@ public class LoginViewModel extends ViewModel {
 
     // A placeholder password validation check
     private boolean isPasswordValid(String password) {
+        //在这里实现密码格式检查，查看密码是否valid，但是我不打算做，因为实在不需要
         return password != null && password.trim().length() > 5;
     }
 }

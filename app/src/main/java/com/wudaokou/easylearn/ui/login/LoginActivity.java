@@ -19,14 +19,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wudaokou.easylearn.R;
+import com.wudaokou.easylearn.constant.Constant;
+import com.wudaokou.easylearn.data.Result;
+import com.wudaokou.easylearn.data.model.LoggedInUser;
+import com.wudaokou.easylearn.data.model.logException;
+import com.wudaokou.easylearn.retrofit.EduKGService;
+import com.wudaokou.easylearn.retrofit.JSONObject;
+import com.wudaokou.easylearn.retrofit.userObject;
 import com.wudaokou.easylearn.ui.login.LoginViewModel;
 import com.wudaokou.easylearn.ui.login.LoginViewModelFactory;
 import com.wudaokou.easylearn.databinding.ActivityLoginBinding;
 
+import org.jetbrains.annotations.NotNull;
+
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
-private ActivityLoginBinding binding;
+    private ActivityLoginBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,6 +50,7 @@ private ActivityLoginBinding binding;
         final EditText usernameEditText = binding.username;
         final EditText passwordEditText = binding.password;
         final Button loginButton = binding.login;
+        final Button registerButton = binding.register;
         final ProgressBar loadingProgressBar = binding.loading;
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
@@ -116,6 +126,35 @@ private ActivityLoginBinding binding;
                 loadingProgressBar.setVisibility(View.VISIBLE);
                 loginViewModel.login(usernameEditText.getText().toString(),
                         passwordEditText.getText().toString());
+            }
+        });
+
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadingProgressBar.setVisibility(View.VISIBLE);
+                String username = usernameEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+                //使用retrofit进行请求
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(Constant.eduKGBaseUrl)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+                EduKGService service = retrofit.create(EduKGService.class);
+                Call<JSONObject<userObject>> call = service.userregister(username, password);
+                Response<JSONObject<userObject>> response = call.execute();
+                JSONObject<userObject> rsp = response.body();
+                if(rsp == null){
+                    //服务器错误
+                    Toast.makeText(LoginActivity.this,"服务器错误", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(rsp.getCode().equals("406")){
+                    Toast.makeText(LoginActivity.this,"用户已经存在", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                loginViewModel.login(username,password);
+                return;
             }
         });
     }

@@ -6,14 +6,57 @@
     android:layout_height="match_parent"
     tools:context=".ui.user.UserFragment">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/exploreBackButton"
+            android:layout_width="60dp"
+            android:layout_height="25dp"
+            android:background="#FFFFFF"
+            android:onClick="backToHomePage"
+            android:scaleType="fitCenter"
+            android:src="@drawable/backward_arrow"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_conversion_absoluteHeight="50dp"
+            tools:layout_conversion_absoluteWidth="206dp" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-thin"
+            android:gravity="center"
+            android:text="用户"
+            android:textColor="#B9000000"
+            android:textSize="19sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/exploreBackButton"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_conversion_absoluteHeight="50dp"
+            tools:layout_conversion_absoluteWidth="206dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
     <Button
         android:id="@+id/login_button"
         android:layout_width="300dp"
         android:layout_height="48dp"
-        android:layout_marginTop="104dp"
+        android:layout_marginTop="212dp"
+        android:rotationX="0"
         android:text="登录"
+        app:backgroundTint="#4CAF50"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,6 +65,7 @@
         android:layout_width="300dp"
         android:layout_height="48dp"
         android:text="个人收藏"
+        app:backgroundTint="#BC3F3F"
         app:layout_constraintEnd_toEndOf="@+id/login_button"
         app:layout_constraintStart_toStartOf="@+id/login_button"
         app:layout_constraintTop_toBottomOf="@+id/login_button" />
@@ -31,21 +75,33 @@
         android:layout_width="300dp"
         android:layout_height="48dp"
         android:text="历史记录"
+        app:backgroundTint="#FFEB3B"
         app:layout_constraintEnd_toEndOf="@+id/pick_button"
         app:layout_constraintStart_toStartOf="@+id/pick_button"
         app:layout_constraintTop_toBottomOf="@+id/pick_button" />
 
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="85dp"
-        android:layout_height="85dp"
-        android:adjustViewBounds="true"
-        android:background="#224ED3"
-        android:contentDescription="information"
-        android:src="@drawable/user"
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="80dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="76dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/user" />
+        app:srcCompat="@drawable/img"
+        tools:src="@drawable/user"
+        tools:srcCompat="@drawable/img" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="176dp"
+        android:text="请登录"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
