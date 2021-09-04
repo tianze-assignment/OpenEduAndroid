@@ -6,7 +6,6 @@ import com.wudaokou.easylearn.data.Question;
 import com.wudaokou.easylearn.data.RelatedSubject;
 import com.wudaokou.easylearn.data.SearchResult;
 import com.wudaokou.easylearn.retrofit.entityLink.JsonEntityLink;
-import com.wudaokou.easylearn.retrofit.userObject;
 
 import retrofit2.Call;
 import retrofit2.http.Field;

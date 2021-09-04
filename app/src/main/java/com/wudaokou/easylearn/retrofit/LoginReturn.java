@@ -1,13 +1,13 @@
 package com.wudaokou.easylearn.retrofit;
 
-public class userObject {
+public class LoginReturn {
     String token;
 
-    public userObject(String token) {
+    public LoginReturn(String token) {
         this.token = token;
     }
 
-    public String get_token() {
+    public String getToken() {
         return this.token;
     }
 }
