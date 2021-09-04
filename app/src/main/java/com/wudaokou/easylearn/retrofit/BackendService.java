@@ -11,6 +11,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface BackendService {
@@ -35,4 +36,23 @@ public interface BackendService {
     @POST("/api/history/info")
     public Call<BackendObject> postClickEntity(@Header ("Authorization") String backendToken,
                                                @Body HistoryParam param);
+
+    @FormUrlEncoded
+    @PUT("/api/question/star")
+    public Call<String> onStarQuestion(@Header ("Authorization") String backendToken,
+                                       @Field("starOrUnstar") boolean starOrUnstar,
+                                       @Field("id") int id,
+                                       @Field("label") String label,
+                                       @Field("course") String course); //课程名称大写
+
+
+    @FormUrlEncoded
+    @PUT("/api/question/count")
+    public Call<String> putQuestionCount(@Header ("Authorization") String backendToken,
+                                         @Field("id") int id,
+                                         @Field("wrong") boolean wrong,
+                                         @Field("qAnswer") String qAnswer,
+                                         @Field("qBody") String qBody,
+                                         @Field("label") String label,
+                                         @Field("course") String course);  //课程名称大写
 }

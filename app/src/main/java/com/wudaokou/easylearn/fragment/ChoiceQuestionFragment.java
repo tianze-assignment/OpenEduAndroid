@@ -1,7 +1,9 @@
 package com.wudaokou.easylearn.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -11,12 +13,24 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 
 import com.wudaokou.easylearn.R;
+import com.wudaokou.easylearn.constant.Constant;
+import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.Question;
 import com.wudaokou.easylearn.databinding.FragmentChoiceQuestionBinding;
+import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.utils.LoadingDialog;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class ChoiceQuestionFragment extends Fragment {
 
@@ -25,20 +39,31 @@ public class ChoiceQuestionFragment extends Fragment {
     String[] choices;
     FragmentChoiceQuestionBinding binding;
     List<RadioButton> radioButtonList;
+    int selectedOption;
+    Question question;
 
-    public ChoiceQuestionFragment(Question question) {
+    //定义回调接口
+    public interface MyListener{
+        public void sendValue(int option);
+    }
+
+    private MyListener myListener;
+
+
+    public ChoiceQuestionFragment(Question question, int selectedOption) {
         // Required empty public constructor
+        this.question = question;
+        this.selectedOption = selectedOption;
         qAnswer = question.qAnswer;
         qBody = question.qBody;
-        String ch = ".";
-        int aPos = qBody.lastIndexOf("A" + ch);
-        if (aPos == -1) {
-            ch = "、";
-            aPos = qBody.lastIndexOf("A" + ch);
-        }
-        if (aPos == -1) {
-            ch = "．";
-            aPos = qBody.lastIndexOf("A" + ch);
+        int aPos = 0;
+        String ch = null;
+        for (String splitChar : Constant.choiceSplitChars) {
+            aPos = qBody.lastIndexOf("A" + splitChar);
+            if (aPos != -1) {
+                ch = splitChar;
+                break;
+            }
         }
         int bPos = qBody.lastIndexOf("B" + ch);
         int cPos = qBody.lastIndexOf("C" + ch);
@@ -73,7 +98,16 @@ public class ChoiceQuestionFragment extends Fragment {
                     RadioButton radioButton1 = (RadioButton) v;
                     String text = (String) radioButton1.getText();
 
-                    if (text.substring(0, 1).equals(qAnswer)) {
+                    int option = (int)(text.charAt(0) - 'A');
+                    if (option < 0 || option > 3) {
+                        option = -1;
+                        Log.e("choice question", String.format("illegal option: %d", option));
+                    }
+                    selectedOption = option;
+                    myListener.sendValue(option);
+
+                    boolean isCorrect = text.substring(0, 1).equals(qAnswer);
+                    if (isCorrect) {
 //                        radioButton1.setButtonDrawable(R.drawable.correct_answer);
                         radioButton1.setTextColor(getResources().getColor(R.color.green_A700));
                     } else {
@@ -84,11 +118,48 @@ public class ChoiceQuestionFragment extends Fragment {
                     for (RadioButton button : radioButtonList) {
                         button.setEnabled(false);
                     }
+
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl(Constant.backendBaseUrl)
+                            .addConverterFactory(ScalarsConverterFactory.create())
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
+                    BackendService backendService = retrofit.create(BackendService.class);
+                    backendService.putQuestionCount(Constant.backendToken, question.id, !isCorrect,
+                            qAnswer, qBody, question.label, question.course.toUpperCase())
+                            .enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(@NotNull Call<String> call,
+                                               @NotNull Response<String> response) {
+                            if (response.code() == 200) {
+                                Log.e("question", "send answer ok");
+                            } else {
+                                Log.e("question", "send answer fail");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NotNull Call<String> call,
+                                              @NotNull Throwable t) {
+                            Log.e("question", "send answer error");
+                        }
+                    });
                 }
             });
             binding.radioGroup.addView(radioButton);
             radioButtonList.add(radioButton);
         }
+
+        if (selectedOption != -1) {
+            radioButtonList.get(selectedOption).callOnClick();
+        }
         return root;
+    }
+
+    @Override
+    public void onAttach(@NonNull @NotNull Context context) {
+        super.onAttach(context);
+        //获取实现接口的activity
+        myListener = (MyListener) getActivity();
     }
 }

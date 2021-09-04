@@ -77,7 +77,7 @@ public class EntityQuestionFragment extends Fragment {
         loadingDialog.show();
 
 //        getEntityQuestion(label);
-        checkDatabase();
+
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new EntityQuestionAdapter(data);
@@ -94,6 +94,12 @@ public class EntityQuestionFragment extends Fragment {
         });
         binding.recyclerView.setAdapter(adapter);
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkDatabase();
     }
 
     public void checkDatabase() {

@@ -32,6 +32,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.wudaokou.easylearn.R;
 import com.wudaokou.easylearn.SearchableActivity;
 import com.wudaokou.easylearn.SubjectManageActivity;
+import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.constant.SubjectMap;
 import com.wudaokou.easylearn.constant.SubjectMapChineseToEnglish;
 import com.wudaokou.easylearn.databinding.FragmentHomeBinding;
@@ -56,6 +57,26 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        // 启动后检查是否勾选学科为空，是则默认添加语数英
+
+        final String[] keys = Constant.subjectList;
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(requireContext());
+        boolean oneSelected = false;
+        for (String key : keys) {
+            if (sharedPreferences.getBoolean(key, false)) {
+                oneSelected = true;
+                break;
+            }
+        }
+        if (!oneSelected) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("chinese", true);
+            editor.putBoolean("math", true);
+            editor.putBoolean("english", true);
+            editor.apply();
+        }
 
 //        intiSearchView();
 
@@ -102,10 +123,10 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        final String[] keys = {"chinese", "math", "english",
-                    "physics", "chemistry", "biology", "history",
-                    "geo", "politics"};
+
         HashMap<String, String> map = SubjectMap.getMap();
+
+        final String[] keys = Constant.subjectList;
 
         final Vector<String> courseList = new Vector<>();
 
