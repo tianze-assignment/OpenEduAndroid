@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationSet;
@@ -17,12 +18,21 @@ import androidx.annotation.Nullable;
 
 import com.wudaokou.easylearn.R;
 
+import retrofit2.Call;
+
 public class LoadingDialog extends Dialog {
     private ImageView loadingImage;
     private AnimationSet animationSet;
 
+    private Call<?> call;
+
     public LoadingDialog(@NonNull Context context) {
         super(context);
+    }
+
+    public LoadingDialog(@NonNull Context context, Call<?> call) {
+        super(context);
+        this.call = call;
     }
 
     public LoadingDialog(@NonNull Context context, int themeResId) {
@@ -63,6 +73,9 @@ public class LoadingDialog extends Dialog {
 
     @Override
     protected void onStop() {
+        if (call != null){
+            call.cancel();
+        }
         super.onStop();
     }
 

@@ -162,4 +162,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    // 试题推荐onClick
+    public void showQuestionRecommend(View view) {
+        Intent intent = new Intent(this, QuestionRecommendActivity.class);
+        startActivity(intent);
+    }
 }
