@@ -2,6 +2,7 @@ package com.wudaokou.easylearn;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
@@ -13,7 +14,25 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.wudaokou.easylearn.constant.Constant;
+import com.wudaokou.easylearn.data.MyDatabase;
+import com.wudaokou.easylearn.data.SearchRecord;
 import com.wudaokou.easylearn.databinding.ActivityMainBinding;
+import com.wudaokou.easylearn.retrofit.BackendObject;
+import com.wudaokou.easylearn.retrofit.BackendService;
+import com.wudaokou.easylearn.retrofit.EduKGService;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.sql.Timestamp;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
 //        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+        updateSearchHistory();
     }
 
     @Override
@@ -58,5 +79,52 @@ public class MainActivity extends AppCompatActivity {
     public void showEntitySearch(View view) {
         Intent intent = new Intent(this, EntityLinkSearchActivity.class);
         startActivity(intent);
+    }
+
+    // 向后端请求搜索历史记录
+    public void updateSearchHistory() {
+        // 清除历史记录
+        MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                MyDatabase.getDatabase(MainActivity.this).searchRecordDAO().deleteAllRecord();
+            }
+        });
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        BackendService backendService = retrofit.create(BackendService.class);
+        backendService.getHistorySearch(Constant.backendToken)
+                .enqueue(new Callback<List<BackendObject>>() {
+            @Override
+            public void onResponse(@NotNull Call<List<BackendObject>> call,
+                                   @NotNull Response<List<BackendObject>> response) {
+                if (response.body() != null) {
+                    for (BackendObject backendObject : response.body()) {
+                        String timeStr = backendObject.createdAt.replace("T", " ");
+                        Timestamp timestamp = Timestamp.valueOf(timeStr);
+                        MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                            @Override
+                            public void run() {
+                                MyDatabase.getDatabase(MainActivity.this).searchRecordDAO()
+                                        .insertRecord(new SearchRecord(timestamp.getTime(),
+                                                backendObject.name, backendObject.course.toLowerCase()));
+                            }
+                        });
+                    }
+                    Log.e("main_activity", "update search record ok");
+                } else {
+                    Log.e("main_activity", "update null search record");
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<List<BackendObject>> call, @NotNull Throwable t) {
+                Log.e("main_activity", "update search record error");
+            }
+        });
+
     }
 }

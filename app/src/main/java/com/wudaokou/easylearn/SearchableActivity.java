@@ -124,7 +124,7 @@ public class SearchableActivity extends AppCompatActivity
             public boolean onQueryTextSubmit(String query) {
                 Log.e("SearchableActivity", String.format("query string: %s", query));
                 String subject = sharedPreferences.getString("searchType", "chinese");
-                int timestamp = (int) System.currentTimeMillis();
+                long timestamp = System.currentTimeMillis();
                 SearchRecord searchRecord = new SearchRecord(timestamp, query, subject);
 
                 // 往数据库线程池中添加任务插入搜索记录
@@ -222,6 +222,24 @@ public class SearchableActivity extends AppCompatActivity
             }
         });
         initSearchRecord();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        BackendService backendService = retrofit.create(BackendService.class);
+
+        backendService.deleteAllHistorySearch(Constant.backendToken).enqueue(new Callback<BackendObject>() {
+            @Override
+            public void onResponse(@NotNull Call<BackendObject> call,
+                                   @NotNull Response<BackendObject> response) {
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<BackendObject> call,
+                                  @NotNull Throwable t) {
+            }
+        });
     }
 
     private void doMySearch(String queryType, String queryContent) {
