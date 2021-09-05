@@ -102,7 +102,8 @@ public class EntityContentFragment extends Fragment {
                 intent.putExtra("course", course);
                 intent.putExtra("label", label);
                 intent.putExtra("uri", uri);
-                Future<SearchResult> searchResultFuture = MyDatabase.databaseWriteExecutor.submit(new Callable<SearchResult>() {
+                Future<SearchResult> searchResultFuture = MyDatabase.databaseWriteExecutor.submit(
+                        new Callable<SearchResult>() {
                     @Override
                     public SearchResult call() throws Exception {
                         return MyDatabase.getDatabase(getContext()).searchResultDAO()
@@ -120,10 +121,15 @@ public class EntityContentFragment extends Fragment {
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                     Log.e("entity_content", "load searchResult fail");
-                    searchResult = new SearchResult(course, label, uri);
-                    searchResult.hasRead = false;
-                    searchResult.hasStar = false;
                 } finally {
+                    // 不能在catch里初始化searchResult
+                    if (searchResult == null) {
+                        searchResult = new SearchResult(label, null ,uri);
+                        searchResult.course = course;
+                        searchResult.category = null;
+                        searchResult.hasRead = false;
+                        searchResult.hasStar = false;
+                    }
                     MyDatabase.databaseWriteExecutor.submit(new Runnable() {
                         @Override
                         public void run() {
@@ -132,6 +138,8 @@ public class EntityContentFragment extends Fragment {
                         }
                     });
                     intent.putExtra("searchResult", searchResult);
+                    Log.e("entity_content", String.format("searchResult == null ? %s",
+                            Boolean.toString(searchResult == null)));
                     startActivity(intent);
                 }
             }

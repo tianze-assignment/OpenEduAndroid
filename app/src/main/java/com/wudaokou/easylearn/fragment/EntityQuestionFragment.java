@@ -112,6 +112,14 @@ public class EntityQuestionFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onStop() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+        super.onStop();
+    }
+
     public void getStarQuestion() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.backendBaseUrl)

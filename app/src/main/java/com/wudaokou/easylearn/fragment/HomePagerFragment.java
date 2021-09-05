@@ -95,11 +95,21 @@ public class HomePagerFragment extends Fragment {
                 intent.putExtra("label", homeCourseItem.result.label);
                 intent.putExtra("uri", homeCourseItem.result.uri);
                 intent.putExtra("searchResult", homeCourseItem.result);
+                Log.e("homePagerFragment", String.format("searchResult == null ? %s",
+                        Boolean.toString(homeCourseItem.result == null)));
                 startActivity(intent);
             }
         });
         binding.pagerRecyclerView.setAdapter(adapter);
         return binding.getRoot();
+    }
+
+    @Override
+    public void onStop() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+        super.onStop();
     }
 
     public void initForStarHistory() {

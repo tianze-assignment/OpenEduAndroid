@@ -36,6 +36,7 @@ public class SearchResult implements Serializable {
         this.course = null;
         this.hasRead = false;
         this.hasStar = false;
+        this.id = 0;
     }
 
     @Ignore
@@ -48,6 +49,7 @@ public class SearchResult implements Serializable {
         this.searchKey = searchKey;
         this.hasRead = false;
         this.hasStar = false;
+        this.id = 0;
     }
 
     public SearchResult(final SearchResult result) {
@@ -61,4 +63,68 @@ public class SearchResult implements Serializable {
         this.id = result.id;
     }
 
+    @NotNull
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(@NotNull String uri) {
+        this.uri = uri;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public boolean isHasRead() {
+        return hasRead;
+    }
+
+    public void setHasRead(boolean hasRead) {
+        this.hasRead = hasRead;
+    }
+
+    public boolean isHasStar() {
+        return hasStar;
+    }
+
+    public void setHasStar(boolean hasStar) {
+        this.hasStar = hasStar;
+    }
+
+    public String getCourse() {
+        return course;
+    }
+
+    public void setCourse(String course) {
+        this.course = course;
+    }
+
+    public String getSearchKey() {
+        return searchKey;
+    }
+
+    public void setSearchKey(String searchKey) {
+        this.searchKey = searchKey;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

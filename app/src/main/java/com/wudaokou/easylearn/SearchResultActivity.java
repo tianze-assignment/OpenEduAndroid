@@ -102,6 +102,8 @@ public class SearchResultActivity extends AppCompatActivity {
                 intent.putExtra("label", searchResult.label);
                 intent.putExtra("uri", searchResult.uri);
                 intent.putExtra("searchResult", searchResult);
+                Log.e("searchResultActivity", String.format("searchResult == null ? %s",
+                        Boolean.toString(searchResult == null)));
                 startActivity(intent);
             }
         });

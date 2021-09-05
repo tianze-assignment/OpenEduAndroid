@@ -86,6 +86,8 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
         course = intent.getStringExtra("course");
         label = intent.getStringExtra("label");
         uri = intent.getStringExtra("uri");
+        Log.e("entity_info_activity", String.format("course == null? %s",
+                Boolean.toString(course == null)));
         if (label != null) {
             if (label.length() < 10) {
                 binding.title.setText(label);
@@ -97,7 +99,8 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
         if (searchResult == null) {
             Log.e("entity_info_activity", "get null searchResult from intent");
 
-            Future<SearchResult> searchResultFuture = MyDatabase.databaseWriteExecutor.submit(new Callable<SearchResult>() {
+            Future<SearchResult> searchResultFuture = MyDatabase.databaseWriteExecutor.submit(
+                    new Callable<SearchResult>() {
                 @Override
                 public SearchResult call() throws Exception {
                     return MyDatabase.getDatabase(EntityInfoActivity.this)
@@ -141,17 +144,27 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
 
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
     public void setStarListener() {
         binding.imageButtonStar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.e("entity_info_activity", "on click star");
                 searchResult.hasStar = !searchResult.hasStar;
 
+                Log.e("entity_info_activity", "after modify hasStar");
                 if (searchResult.hasStar) {
                     binding.imageButtonStar.setImageResource(R.drawable.star_fill);
                 } else {
                     binding.imageButtonStar.setImageResource(R.drawable.star_blank);
                 }
+
+                Log.e("entity_info_activity", "after set star logo");
 
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(Constant.backendBaseUrl)
@@ -160,6 +173,7 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                 BackendService service = retrofit.create(BackendService.class);
 
                 if (searchResult.hasStar) {
+                    Log.e("entity_info_activity", "send star");
                     service.starEntity(Constant.backendToken,
                             new HistoryParam(searchResult.course.toUpperCase(), searchResult.label,
                                     searchResult.uri, searchResult.category, searchResult.searchKey))
@@ -191,6 +205,7 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                                 }
                             });
                 } else {
+                    Log.e("entity_info_activity", "send unstar");
                     service.cancelStarEntity(Constant.backendToken,
                             searchResult.id).enqueue(new Callback<BackendObject>() {
                         @Override
