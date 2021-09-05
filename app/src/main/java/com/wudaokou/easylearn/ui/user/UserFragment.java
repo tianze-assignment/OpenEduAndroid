@@ -15,12 +15,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.wudaokou.easylearn.BrowsingHistoryActivity;
+import com.wudaokou.easylearn.ChangePasswordActivity;
 import com.wudaokou.easylearn.LoginActivity;
 import com.wudaokou.easylearn.StarHistoryActivity;
+import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.databinding.FragmentUserBinding;
 
 import org.jetbrains.annotations.NotNull;
@@ -46,12 +47,24 @@ public class UserFragment extends Fragment{
             startActivity(intent);
         });
 
-        binding.logoffButton.setOnClickListener(v -> {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("token", "-1");
-            editor.apply();
-            arrangeLayout();
-        });
+        binding.logoffButton.setOnClickListener(v -> new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("确认退出登录？")
+                .setMessage("这将会删除本地所有的个人数据及历史记录")
+                .setNegativeButton("取消", (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .setPositiveButton("确认", (dialog, which) -> {
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("token", "-1");
+                    editor.apply();
+                    Constant.backendToken = "";
+                    arrangeLayout();
+
+                    // TODO 删库
+
+                    dialog.dismiss();
+                })
+                .show());
 
         binding.starButton.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), StarHistoryActivity.class);
@@ -60,6 +73,11 @@ public class UserFragment extends Fragment{
 
         binding.historyButton.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), BrowsingHistoryActivity.class);
+            startActivity(intent);
+        });
+
+        binding.changePasswordButton.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), ChangePasswordActivity.class);
             startActivity(intent);
         });
 
@@ -73,11 +91,13 @@ public class UserFragment extends Fragment{
             binding.nameText.setText(text);
             binding.loginButton.setVisibility(View.VISIBLE);
             binding.logoffButton.setVisibility(View.GONE);
+            binding.changePasswordButton.setVisibility(View.GONE);
         } else {
             String text = "欢迎  " + sharedPreferences.getString("username", "");
             binding.nameText.setText(text);
             binding.loginButton.setVisibility(View.INVISIBLE);
             binding.logoffButton.setVisibility(View.VISIBLE);
+            binding.changePasswordButton.setVisibility(View.VISIBLE);
         }
     }
 

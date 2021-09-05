@@ -86,4 +86,7 @@ public interface BackendService {
 
     @POST("/checkUsername")
     Call<CheckUsernameReturn> checkUsername(@Body LoginParam loginParam);
+
+    @PUT("/changePassword")
+    Call<String> changePassword(@Body ChangePassParam changePassParam);
 }

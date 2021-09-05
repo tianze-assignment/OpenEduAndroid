@@ -14,27 +14,25 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.retrofit.BackendService;
-import com.wudaokou.easylearn.retrofit.CheckUsernameReturn;
-import com.wudaokou.easylearn.retrofit.LoginParam;
-import com.wudaokou.easylearn.retrofit.LoginReturn;
+import com.wudaokou.easylearn.retrofit.ChangePassParam;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
-public class RegisterActivity extends AppCompatActivity {
+public class ChangePasswordActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
 
-    TextInputEditText usernameInput;
-    TextInputLayout usernameLayout;
+    TextInputEditText oldPasswordInput;
+    TextInputLayout oldPasswordLayout;
     TextInputEditText passwordInput;
     TextInputLayout passwordLayout;
     TextInputEditText confirmPasswordInput;
@@ -43,12 +41,12 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_change_password);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        usernameInput = findViewById(R.id.usernameInput);
-        usernameLayout = findViewById(R.id.usernameLayout);
+        oldPasswordInput = findViewById(R.id.oldPasswordInput);
+        oldPasswordLayout = findViewById(R.id.oldPasswordLayout);
         passwordInput = findViewById(R.id.passwordInput);
         passwordLayout = findViewById(R.id.passwordLayout);
         confirmPasswordInput = findViewById(R.id.confirmPasswordInput);
@@ -58,40 +56,19 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void setTextLayoutError() {
-        usernameInput.setOnFocusChangeListener((v, hasFocus) -> {
+        oldPasswordInput.setOnFocusChangeListener((v, hasFocus) -> {
             if(hasFocus) {
-                usernameLayout.setError(null);
+                oldPasswordLayout.setError(null);
                 return;
             }
-            Editable usernameEdit = usernameInput.getText();
-            if(usernameEdit == null) return;
-            String username = usernameEdit.toString();
-            if(username.isEmpty()) {
-                usernameLayout.setError("请输入用户名");
-                return;
+            Editable oldPasswordEdit = oldPasswordInput.getText();
+            if(oldPasswordEdit == null) return;
+            String oldPass = oldPasswordEdit.toString();
+            if(oldPass.isEmpty()) {
+                oldPasswordLayout.setError("请输入原密码");
             }
-            if(!Pattern.matches("^[0-9a-zA-Z_]+$", username)) {
-                usernameLayout.setError("不符合格式：字母、数字或下划线");
-                return;
-            }
-            new Retrofit.Builder().baseUrl(Constant.backendBaseUrl)
-                    .addConverterFactory(GsonConverterFactory.create()).build()
-                    .create(BackendService.class)
-                    .checkUsername(new LoginParam(username, ""))
-                    .enqueue(new Callback<CheckUsernameReturn>() {
-                @Override
-                public void onResponse(@NotNull Call<CheckUsernameReturn> call, @NotNull Response<CheckUsernameReturn> response) {
-                    CheckUsernameReturn rsp = response.body();
-                    if(rsp == null) return;
-                    if(rsp.isValid()) usernameLayout.setError(null);
-                    else usernameLayout.setError("用户名已存在");
-                }
-                @Override
-                public void onFailure(@NotNull Call<CheckUsernameReturn> call, @NotNull Throwable t) {}
-            });
-
         });
-        usernameInput.setOnClickListener(v -> usernameLayout.setError(null));
+        oldPasswordInput.setOnClickListener(v -> oldPasswordLayout.setError(null));
         passwordInput.setOnFocusChangeListener((v, hasFocus) -> {
             if(hasFocus) {
                 passwordLayout.setError(null);
@@ -101,7 +78,7 @@ public class RegisterActivity extends AppCompatActivity {
             if(passwordEdit == null) return;
             String password = passwordEdit.toString();
             if(password.isEmpty()){
-                passwordLayout.setError("请输入密码");
+                passwordLayout.setError("请输入新密码");
             }
         });
         passwordInput.setOnClickListener(v -> passwordLayout.setError(null));
@@ -136,59 +113,49 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    public void register(View view) {
+    public void changePassword(View view) {
         if(confirmPasswordLayout.getError() != null) return;
-        Editable usernameEdit = usernameInput.getText();
-        if(usernameEdit == null) return;
-        String username = usernameEdit.toString();
-        if(username.isEmpty()){
-            usernameLayout.setError("请输入用户名");
+        Editable oldPassEdit = oldPasswordInput.getText();
+        if(oldPassEdit == null) return;
+        String oldPass = oldPassEdit.toString();
+        if(oldPass.isEmpty()){
+            oldPasswordLayout.setError("请输入原密码");
             return;
         }
         Editable passwordEdit = passwordInput.getText();
         if(passwordEdit == null) return;
         String password = passwordEdit.toString();
         if(password.isEmpty()) {
-            passwordLayout.setError("请输入密码");
+            passwordLayout.setError("请输入新密码");
             return;
         }
 
+        String username = sharedPreferences.getString("username", "");
+        String hashedOldPass = LoginActivity.hashPassword(oldPass);
         String hashedPassword = LoginActivity.hashPassword(password);
 
+
+
         new Retrofit.Builder().baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create()).build()
                 .create(BackendService.class)
-                .userRegister(new LoginParam(username, hashedPassword))
-                .enqueue(new Callback<LoginReturn>() {
-            @Override
-            public void onResponse(@NotNull Call<LoginReturn> call, @NotNull Response<LoginReturn> response) {
-                int code = response.code();
-                if(code == 409){
-                    usernameLayout.setError("用户名已存在");
-                    return;
-                }
-                LoginReturn rsp = response.body();
-                if(rsp == null){
-                    Toast.makeText(RegisterActivity.this, "服务器错误", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                String token = rsp.getToken();
-                // 保存
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("token", "Bearer " + token);
-                editor.putString("username", username);
-                editor.apply();
+                .changePassword(new ChangePassParam(username, hashedOldPass, hashedPassword))
+                .enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
+                        int code = response.code();
+                        if(code == 406){
+                            passwordLayout.setError("密码错误");
+                            return;
+                        }
+                        Toast.makeText(ChangePasswordActivity.this, "修改密码成功", Toast.LENGTH_SHORT).show();
+                        ChangePasswordActivity.this.finish();
+                    }
 
-                Constant.backendToken = token;
-
-                Toast.makeText(RegisterActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
-
-                RegisterActivity.this.finish();
-            }
-
-            @Override
-            public void onFailure(@NotNull Call<LoginReturn> call, @NotNull Throwable t) { }
-        });
+                    @Override
+                    public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) { }
+                });
 
     }
 }
