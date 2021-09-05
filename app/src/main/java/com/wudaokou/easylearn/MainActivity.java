@@ -16,6 +16,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 
+import com.wudaokou.easylearn.bean.SubjectChannelBean;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.SearchRecord;
@@ -25,11 +26,15 @@ import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 import com.wudaokou.easylearn.retrofit.EduLoginRet;
 import com.wudaokou.easylearn.retrofit.LoginParam;
+import com.wudaokou.easylearn.utils.ListDataSave;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.security.auth.Subject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -67,12 +72,39 @@ public class MainActivity extends AppCompatActivity {
 //        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
+        initSharedPreferences();
+        updateSearchHistory();
+    }
+
+    public void initSharedPreferences() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String token = sharedPreferences.getString("token", "-1");
         if(!token.equals("-1"))
             Constant.backendToken = token;
 
-        updateSearchHistory();
+        boolean isFirst = sharedPreferences.getBoolean("isFirst", true);
+        if (isFirst) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("isFirst", false);
+            editor.apply();
+
+            List<SubjectChannelBean> myChannelList = new ArrayList<>();
+            myChannelList.add(new SubjectChannelBean("语文", "chinese"));
+            myChannelList.add(new SubjectChannelBean("数学", "math"));
+            myChannelList.add(new SubjectChannelBean("英语", "english"));
+
+            List<SubjectChannelBean> moreChannelList =  new ArrayList<>();
+            moreChannelList.add(new SubjectChannelBean("物理", "physics"));
+            moreChannelList.add(new SubjectChannelBean("化学", "chemistry"));
+            moreChannelList.add(new SubjectChannelBean("生物", "biology"));
+            moreChannelList.add(new SubjectChannelBean("历史", "history"));
+            moreChannelList.add(new SubjectChannelBean("地理", "geo"));
+            moreChannelList.add(new SubjectChannelBean("政治", "politics"));
+
+            ListDataSave listDataSave = new ListDataSave(this, "channel");
+            listDataSave.setDataList("myChannel", myChannelList);
+            listDataSave.setDataList("moreChannel", moreChannelList);
+        }
     }
 
     @Override

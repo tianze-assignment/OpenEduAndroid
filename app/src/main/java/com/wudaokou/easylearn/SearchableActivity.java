@@ -105,15 +105,11 @@ public class SearchableActivity extends AppCompatActivity
         String course = item.toString();
         typeButton.setText(course);
         editor.putString("searchType", SubjectMapChineseToEnglish.getMap().get(course));
-//        Log.e("menu", course);
-//        Log.e("menu", SubjectMapChineseToEnglish.getMap().get(course));
         editor.apply();
         return false;
     }
 
     public void initSearchView() {
-//        Log.e("SearchableActivity", "initSearchView");
-//        searchView = findViewById(R.id.searchView2);
         searchView = binding.searchView2;
         searchView.setActivated(true);
         searchView.setIconifiedByDefault(false);

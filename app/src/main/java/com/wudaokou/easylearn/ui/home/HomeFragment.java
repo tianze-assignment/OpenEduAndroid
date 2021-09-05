@@ -32,15 +32,18 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.wudaokou.easylearn.R;
 import com.wudaokou.easylearn.SearchableActivity;
 import com.wudaokou.easylearn.SubjectManageActivity;
+import com.wudaokou.easylearn.bean.SubjectChannelBean;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.constant.SubjectMap;
 import com.wudaokou.easylearn.constant.SubjectMapChineseToEnglish;
 import com.wudaokou.easylearn.databinding.FragmentHomeBinding;
 import com.wudaokou.easylearn.fragment.HomePagerFragment;
+import com.wudaokou.easylearn.utils.ListDataSave;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 public class HomeFragment extends Fragment {
@@ -48,7 +51,7 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
 
-    private final int subjectManageRequestCode = 1;
+    private final int subjectManageRequestCode = 789;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -61,22 +64,22 @@ public class HomeFragment extends Fragment {
         // 启动后检查是否勾选学科为空，是则默认添加语数英
 
         final String[] keys = Constant.subjectList;
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(requireContext());
-        boolean oneSelected = false;
-        for (String key : keys) {
-            if (sharedPreferences.getBoolean(key, false)) {
-                oneSelected = true;
-                break;
-            }
-        }
-        if (!oneSelected) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("chinese", true);
-            editor.putBoolean("math", true);
-            editor.putBoolean("english", true);
-            editor.apply();
-        }
+//        SharedPreferences sharedPreferences =
+//                PreferenceManager.getDefaultSharedPreferences(requireContext());
+//        boolean oneSelected = false;
+//        for (String key : keys) {
+//            if (sharedPreferences.getBoolean(key, false)) {
+//                oneSelected = true;
+//                break;
+//            }
+//        }
+//        if (!oneSelected) {
+//            SharedPreferences.Editor editor = sharedPreferences.edit();
+//            editor.putBoolean("chinese", true);
+//            editor.putBoolean("math", true);
+//            editor.putBoolean("english", true);
+//            editor.apply();
+//        }
 
 //        intiSearchView();
 
@@ -98,6 +101,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), SubjectManageActivity.class);
+                intent.putExtra("tabPosition", binding.pager.getCurrentItem());
                 startActivityForResult(intent, subjectManageRequestCode);
             }
         });
@@ -123,21 +127,12 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-
-        HashMap<String, String> map = SubjectMap.getMap();
-
-        final String[] keys = Constant.subjectList;
-
-        final Vector<String> courseList = new Vector<>();
-
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(requireContext());
-        for (String key : keys) {
-            boolean value = sharedPreferences.getBoolean(key, false);
-            if (value) {
-                courseList.add(key);
-//                Log.w("HomeFragment",String.format("[%s] has been selected!", key));
-            }
+        Vector<String> courseList = new Vector<>();
+        ListDataSave listDataSave = new ListDataSave(requireContext(), "channel");
+        List<SubjectChannelBean> subjectChannelBeanList = listDataSave
+                .getDataList("myChannel", SubjectChannelBean.class);
+        for (SubjectChannelBean subjectChannelBean : subjectChannelBeanList) {
+            courseList.add(subjectChannelBean.tid);
         }
 
         binding.pager.setAdapter(new FragmentStateAdapter(getChildFragmentManager(),
@@ -156,6 +151,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        HashMap<String, String> map = SubjectMap.getMap();
         new TabLayoutMediator(binding.tabs, binding.pager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull @NotNull TabLayout.Tab tab, int position) {
@@ -175,7 +171,8 @@ public class HomeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case subjectManageRequestCode:
-                // 获取选择展示的学科目录
+                // 获取当前展示的学科目录
+//                Intent intent =
                 break;
             default:
                 break;
