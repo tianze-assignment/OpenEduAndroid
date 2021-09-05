@@ -79,6 +79,9 @@ public class BrowsingHistoryActivity extends AppCompatActivity {
                         SearchResult searchResult = new SearchResult(
                                 backendObject.name, backendObject.category, backendObject.uri,
                                 backendObject.course.toLowerCase(), backendObject.searchKey);
+                        searchResult.hasStar = false;  // 后端传数据过来
+                        searchResult.hasRead = true;
+                        searchResult.id = backendObject.id;
                         homeCourseItemList.add(new HomeCourseItem(searchResult, null));
                     }
                     adapter.updateData(homeCourseItemList);

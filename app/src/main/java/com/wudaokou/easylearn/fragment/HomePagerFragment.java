@@ -91,7 +91,7 @@ public class HomePagerFragment extends Fragment {
             public void onItemClick(View view, int position) {
                 HomeCourseItem homeCourseItem = homeCourseItemList.get(position);
                 Intent intent = new Intent(getActivity(), EntityInfoActivity.class);
-                intent.putExtra("course", course);
+                intent.putExtra("course", homeCourseItem.result.course);
                 intent.putExtra("label", homeCourseItem.result.label);
                 intent.putExtra("uri", homeCourseItem.result.uri);
                 intent.putExtra("searchResult", homeCourseItem.result);
@@ -126,7 +126,10 @@ public class HomePagerFragment extends Fragment {
                     homeCourseItemList = new ArrayList<>();
                     for (BackendObject backendObject : response.body()) {
                         SearchResult searchResult = new SearchResult(backendObject.name, backendObject.category,
-                                backendObject.uri, backendObject.course, backendObject.searchKey);
+                                backendObject.uri, backendObject.course.toLowerCase(), backendObject.searchKey);
+                        searchResult.hasStar = false; // todo 等后端传递数据
+                        searchResult.id = backendObject.id;
+                        searchResult.hasRead = true;
                         homeCourseItemList.add(new HomeCourseItem(searchResult, null));
                     }
                     if (adapter != null) {

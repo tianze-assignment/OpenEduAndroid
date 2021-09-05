@@ -41,6 +41,8 @@ public class ChoiceQuestionFragment extends Fragment {
     List<RadioButton> radioButtonList;
     int selectedOption;
     Question question;
+    boolean isValidChoiceQuestion;
+    int optionNum;
 
     //定义回调接口
     public interface MyListener{
@@ -65,15 +67,46 @@ public class ChoiceQuestionFragment extends Fragment {
                 break;
             }
         }
-        int bPos = qBody.lastIndexOf("B" + ch);
-        int cPos = qBody.lastIndexOf("C" + ch);
-        int dPos = qBody.lastIndexOf("D" + ch);
-        choices = new String[4];
-        choices[0] = qBody.substring(aPos, bPos);
-        choices[1] = qBody.substring(bPos, cPos);
-        choices[2] = qBody.substring(cPos, dPos);
-        choices[3] = qBody.substring(dPos);
-        qBody = qBody.substring(0, aPos);
+        isValidChoiceQuestion = (ch != null);
+        if (isValidChoiceQuestion) {
+            optionNum = 0;
+            int bPos = qBody.lastIndexOf("B" + ch);
+            int cPos = qBody.lastIndexOf("C" + ch);
+            int dPos = qBody.lastIndexOf("D" + ch);
+            choices = new String[4];
+            try {
+                choices[0] = qBody.substring(aPos, bPos);
+                optionNum++;
+            } catch (IndexOutOfBoundsException e) {
+                Log.d("choice question", "split option A fail");
+            }
+
+            try {
+                choices[1] = qBody.substring(bPos, cPos);
+                optionNum++;
+            } catch (IndexOutOfBoundsException e) {
+                Log.d("choice question", "split option B fail");
+            }
+
+            try {
+                if (dPos != -1)
+                    choices[2] = qBody.substring(cPos, dPos);
+                else
+                    choices[2] = qBody.substring(cPos);
+                optionNum++;
+            } catch (IndexOutOfBoundsException e) {
+                Log.d("choice question", "split option C fail");
+            }
+
+            try {
+                choices[3] = qBody.substring(dPos);
+                optionNum++;
+            } catch (IndexOutOfBoundsException e) {
+                Log.d("choice question", "split option C fail");
+            }
+
+            qBody = qBody.substring(0, aPos);
+        }
     }
 
     @Override
@@ -86,11 +119,14 @@ public class ChoiceQuestionFragment extends Fragment {
         binding.choiceQuestionBody.setText(qBody);
         binding.choiceQuestionAnswer.setText(qAnswer);
 
+        if (!isValidChoiceQuestion)
+            return root;
+
         radioButtonList = new ArrayList<>();
 
-        for (String choice : choices) {
+        for (int i = 0; i != optionNum; i++) {
             RadioButton radioButton = new RadioButton(getActivity());
-            radioButton.setText(choice);
+            radioButton.setText(choices[i]);
             radioButton.setTextSize(20);
             radioButton.setOnClickListener(new View.OnClickListener() {
                 @Override

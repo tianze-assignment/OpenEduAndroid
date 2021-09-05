@@ -133,7 +133,7 @@ public class AnswerActivity extends AppCompatActivity implements ChoiceQuestionF
                 .build();
         BackendService backendService = retrofit.create(BackendService.class);
         backendService.onStarQuestion(Constant.backendToken, question.hasStar, question.id,
-                question.qAnswer, question.qAnswer,
+                question.qAnswer, question.qBody,
                 question.label, question.course.toUpperCase()).enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NotNull Call<String> call,

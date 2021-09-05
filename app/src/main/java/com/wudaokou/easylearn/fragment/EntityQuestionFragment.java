@@ -62,7 +62,8 @@ public class EntityQuestionFragment extends Fragment {
     }
 
     public EntityQuestionFragment(final boolean forStarHistory) {
-        this.forStarHistory = forStarHistory;
+        this.forStarHistory = true;
+        this.label = "收藏习题";
     }
 
     public void updateData(List<Question> data) {
