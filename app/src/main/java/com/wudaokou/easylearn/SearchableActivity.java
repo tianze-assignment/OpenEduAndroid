@@ -3,6 +3,7 @@ package com.wudaokou.easylearn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -19,6 +20,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.wudaokou.easylearn.adapter.SearchRecordAdapter;
+import com.wudaokou.easylearn.adapter.SearchResultAdapter;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.constant.SubjectMap;
 import com.wudaokou.easylearn.constant.SubjectMapChineseToEnglish;
@@ -31,6 +33,8 @@ import com.wudaokou.easylearn.retrofit.HistoryParam;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -49,19 +53,19 @@ public class SearchableActivity extends AppCompatActivity
 
     public ActivitySearchableBinding binding;
     public SearchView searchView;
-    public ListView listView;
     public MyDatabase myDatabase;
     SharedPreferences sharedPreferences;
     public Button typeButton;
-    public Button clearRecordButton;
     HashMap<String, String> map;
+
+    SearchRecordAdapter popularAdapter;
+    List<SearchRecord> popularList;
+    BackendService backendService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_searchable);
-
-        Intent intent = getIntent();
 
         binding = ActivitySearchableBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -72,19 +76,67 @@ public class SearchableActivity extends AppCompatActivity
         map = SubjectMap.getMap();
         typeButton.setText(map.get(selectedType));
 
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        backendService = retrofit.create(BackendService.class);
+
         initSearchView();
 
         // 先获取数据库
         myDatabase = MyDatabase.getDatabase(this);
 
-        // 再获取历史搜索记录
-//        initSearchRecord();
+        // 设置热门搜索记录
+        getPopularSearchKeys();
+        binding.popularRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        popularAdapter = new SearchRecordAdapter(popularList, true);
+        popularAdapter.setOnItemClickListener(new SearchResultAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                SearchRecord searchRecord = popularList.get(position);
+                if (searchRecord != null) {
+                    doMySearch(searchRecord.subject, searchRecord.content);
+                }
+            }
+        });
+        binding.popularRecyclerView.setAdapter(popularAdapter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         initSearchRecord();
+    }
+
+    private void getPopularSearchKeys() {
+        backendService.getPopularSearchKeys().enqueue(new Callback<List<BackendObject>>() {
+            @Override
+            public void onResponse(@NotNull Call<List<BackendObject>> call,
+                                   @NotNull Response<List<BackendObject>> response) {
+                if (response.body() != null) {
+                    popularList = new ArrayList<>();
+                    for (BackendObject backendObject : response.body()) {
+                        String timestamp = backendObject.createdAt.replace('T', ' ');
+                        long ts = Timestamp.valueOf(timestamp).getTime();
+                        SearchRecord record = new SearchRecord(ts, backendObject.name,
+                                backendObject.course.toLowerCase());
+                        popularList.add(record);
+                    }
+                    if (popularAdapter != null) {
+                        popularAdapter.updateData(popularList);
+                        popularAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<List<BackendObject>> call,
+                                  @NotNull Throwable t) {
+
+            }
+        });
     }
 
     public void showPopup(View v) {
@@ -132,13 +184,8 @@ public class SearchableActivity extends AppCompatActivity
                 });
 
                 // 将搜索历史记录传递给后端
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(Constant.backendBaseUrl)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
 
-                BackendService service = retrofit.create(BackendService.class);
-                service.postHistorySearch(Constant.backendToken,
+                backendService.postHistorySearch(Constant.backendToken,
                         new HistoryParam(subject.toUpperCase(), query))
                         .enqueue(new Callback<List<BackendObject>>() {
                     @Override
@@ -174,37 +221,27 @@ public class SearchableActivity extends AppCompatActivity
                 new Callable<List<SearchRecord>>() {
                     @Override
                     public List<SearchRecord> call() throws Exception {
-                        return myDatabase.searchRecordDAO().loadLimitedRecords(10);
+                        return myDatabase.searchRecordDAO().loadLimitedRecords(Constant.maxSearchRecordCount);
                     }
                 }
         );
         try {
-            List<SearchRecord> searchRecords = future.get();
-            clearRecordButton = binding.clearRecordButton;
+            List<SearchRecord> searchRecordList = future.get();
 
-            if (searchRecords.size() == 0) {
-                clearRecordButton.setVisibility(View.INVISIBLE);
-            } else {
-                clearRecordButton.setVisibility(View.VISIBLE);
-            }
+            Log.e("SearchableActivity", String.format("record total: %d", searchRecordList.size()));
 
-            Log.e("SearchableActivity", String.format("record total: %d", searchRecords.size()));
-
-            SearchRecordAdapter searchRecordAdapter = new SearchRecordAdapter(
-                    getLayoutInflater(), R.layout.search_record_item, searchRecords);
-            listView = binding.recordList;
-            listView.setAdapter(searchRecordAdapter);
-            // 监听ListView选项被点击
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            SearchRecordAdapter adapter = new SearchRecordAdapter(searchRecordList, false);
+            adapter.setOnItemClickListener(new SearchResultAdapter.OnItemClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    SearchRecord record = searchRecordAdapter.getItem(position);
-                    if (record != null) {
-                        doMySearch(record.subject, record.content);
+                public void onItemClick(View view, int position) {
+                    SearchRecord searchRecord = searchRecordList.get(position);
+                    if (searchRecord != null) {
+                        doMySearch(searchRecord.subject, searchRecord.content);
                     }
                 }
             });
-            Log.e("SearchableActivity", "after setAdapter");
+            binding.recordRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+            binding.recordRecyclerView.setAdapter(adapter);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }

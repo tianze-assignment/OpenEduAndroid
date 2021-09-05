@@ -75,6 +75,9 @@ public interface BackendService {
                                                @Query("number") int number,
                                                @Query("openEduId") String openEduId);
 
+    @GET("/popular_search_keys")
+    public Call<List<BackendObject>> getPopularSearchKeys();
+
     @POST("/login")
     Call<LoginReturn> userLogin(@Body LoginParam loginParam);
 

@@ -11,6 +11,8 @@ public class Constant {
 
     public static String backendToken = "";
 
+    public static final int maxSearchRecordCount = 12; // 最多展示的历史记录数目
+
     public static final String[] subjectList = {"chinese", "math", "english",
             "physics", "chemistry", "biology", "history",
             "geo", "politics"};
