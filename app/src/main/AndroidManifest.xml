@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyLearn"
         android:usesCleartextTraffic="true">
+        <activity android:name=".TestActivity"/>
         <activity android:name=".StarHistoryActivity"/>
         <activity android:name=".BrowsingHistoryActivity" />
         <activity android:name=".RegisterActivity"/>

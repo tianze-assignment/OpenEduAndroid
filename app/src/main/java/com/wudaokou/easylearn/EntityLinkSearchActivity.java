@@ -4,17 +4,21 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 
 public class EntityLinkSearchActivity extends AppCompatActivity {
 
+    TextInputLayout chooseSubjectLayout;
     AutoCompleteTextView chooseSubject;
+    TextInputLayout searchTextLayout;
     TextInputEditText searchText;
 
     @Override
@@ -24,12 +28,23 @@ public class EntityLinkSearchActivity extends AppCompatActivity {
 
         searchText = findViewById(R.id.text);
         chooseSubject = findViewById(R.id.chooseSubject);
+        chooseSubjectLayout = findViewById(R.id.chooseSubjectLayout);
+        searchTextLayout = findViewById(R.id.textInputLayout);
 
         // 选择学科
         String[] subjects = getResources().getStringArray(R.array.subjects);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                 this, R.layout.dropdown_subject_item, subjects);
         chooseSubject.setAdapter(arrayAdapter);
+
+        chooseSubject.setOnItemClickListener((parent, view, position, id) -> chooseSubjectLayout.setError(null));
+        searchText.addTextChangedListener(new TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            public void afterTextChanged(Editable s) {
+                searchTextLayout.setError(null);
+            }
+        });
 
     }
 
@@ -40,15 +55,17 @@ public class EntityLinkSearchActivity extends AppCompatActivity {
 
     public void search(View view) {
         String subject = chooseSubject.getText().toString();
+        boolean valid = true;
         if(subject.equals("")){
-            Toast.makeText(this, "请选择学科", Toast.LENGTH_SHORT).show();
-            return;
+            chooseSubjectLayout.setError("请选择学科");
+            valid = false;
         }
         String text = String.valueOf(searchText.getText());
         if(text.equals("")) {
-            Toast.makeText(this, "请填写搜索文本", Toast.LENGTH_SHORT).show();
-            return;
+            searchTextLayout.setError("请输入搜索文本");
+            valid = false;
         }
+        if(!valid) return;
         Intent intent = new Intent(this, EntityLinkResultActivity.class);
         intent.putExtra("subject", subject);
         intent.putExtra("text", text);
