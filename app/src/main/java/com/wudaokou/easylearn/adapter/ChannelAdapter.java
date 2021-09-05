@@ -197,7 +197,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ChannelV
                     }
                 }
                 moveMyToOther(position);
-                startAnimation(mRecyclerView, currentView, targetX, targetY);
+//                startAnimation(mRecyclerView, currentView, targetX, targetY);
             } else {
                 if (channelItemClickListener != null) {
                     channelItemClickListener.onChannelItemClick(mMyChannelItems, position - mMyHeaderCount);
@@ -261,7 +261,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ChannelV
                     targetX += targetView.getWidth() + 2 * Constant.ITEM_SPACE;
                 }
                 moveOtherToMy(position);
-                startAnimation(mRecyclerView, currentView, targetX, targetY);
+//                startAnimation(mRecyclerView, currentView, targetX, targetY);
             } else {
                 moveOtherToMy(position);
             }

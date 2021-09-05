@@ -93,7 +93,7 @@ public class EntityQuestionFragment extends Fragment {
         adapter.setOnItemClickListener(new SearchResultAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                // 跳转到实体详情页
+                // 跳转到试题详情页
                 Intent intent = new Intent(requireActivity(), AnswerActivity.class);
                 intent.putExtra("position", position);
                 intent.putExtra("questionList", (Serializable)data);

@@ -82,20 +82,21 @@ public class SubjectManageActivity extends AppCompatActivity {
                 .getDataList("myChannel", SubjectChannelBean.class);
         for (int i = 0; i < list.size(); i ++){
             SubjectChannelBean SubjectChannelBean = list.get(i);
-            if (i == tabPosition){
-                SubjectChannelBean.tabType = Constant.ITEM_DEFAULT;
-            } else {
-                // 判断i是否为0或者1,如果为0设置标题为红色（当前浏览的tab标签），
-                // 如果为1则设置type为1（不可编辑移动），不为1则type为2
-                // type为2表示该标签可供编辑移动
-//                int type;
-//                if (i == 0  || i == 1){
-//                    type = 1;
-//                } else {
-//                    type = 2;
-//                }
-                SubjectChannelBean.tabType = 2;
-            }
+//            if (i == tabPosition){
+//                SubjectChannelBean.tabType = Constant.ITEM_DEFAULT;
+//            } else {
+//                // 判断i是否为0或者1,如果为0设置标题为红色（当前浏览的tab标签），
+//                // 如果为1则设置type为1（不可编辑移动），不为1则type为2
+//                // type为2表示该标签可供编辑移动
+////                int type;
+////                if (i == 0  || i == 1){
+////                    type = 1;
+////                } else {
+////                    type = 2;
+////                }
+//
+//            }
+            SubjectChannelBean.tabType = 2;
             myChannelList.add(SubjectChannelBean);
         }
 

@@ -2,6 +2,7 @@ package com.wudaokou.easylearn;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,18 +17,39 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.constant.SubjectMapChineseToEnglish;
+import com.wudaokou.easylearn.data.MyDatabase;
+import com.wudaokou.easylearn.data.Question;
+import com.wudaokou.easylearn.retrofit.EduKGService;
+import com.wudaokou.easylearn.retrofit.JSONArray;
+import com.wudaokou.easylearn.utils.LoadingDialog;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TestActivity extends AppCompatActivity {
 
     TextInputLayout chooseSubjectLayout;
     AutoCompleteTextView chooseSubject;
     LinearLayout keywordLayout;
+    LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +59,7 @@ public class TestActivity extends AppCompatActivity {
         chooseSubject = findViewById(R.id.chooseSubject);
         keywordLayout = findViewById(R.id.keyword_layout);
         chooseSubjectLayout = findViewById(R.id.chooseSubjectLayout);
+        loadingDialog = new LoadingDialog(this);
 
         // 选择学科
         String[] subjects = getResources().getStringArray(R.array.subjects);
@@ -117,7 +140,96 @@ public class TestActivity extends AppCompatActivity {
         }
         if(!valid) return;
 
-        // TODO
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getQuestion(labels);
+            }
+        }).start();
+    }
+
+    public void getQuestion(List<String> labelList) {
+        Log.e("test_activity", "enter get question");
+        List<Question> questionList = new ArrayList<>();
+        CountDownLatch latch = new CountDownLatch(labelList.size());
+        Log.e("test_activity", String.format("init latch with %d thread", questionList.size()));
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.eduKGBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        EduKGService service = retrofit.create(EduKGService.class);
+
+
+        runOnUiThread(() -> loadingDialog.show());
+
+        MyDatabase myDatabase = MyDatabase.getDatabase(this);
+
+        for (String label : labelList) {
+            service.questionListByUriName(Constant.eduKGId, label).enqueue(
+                    new Callback<JSONArray<Question>>() {
+                @Override
+                public void onResponse(@NotNull Call<JSONArray<Question>> call,
+                                       @NotNull Response<JSONArray<Question>> response) {
+                    if (response.body() != null) {
+                        for (Question question : response.body().data) {
+                            if (question.qAnswer.length() == 1) {
+//                                 只看选择题
+                                Future<Question> questionFuture = MyDatabase.databaseWriteExecutor.submit(new Callable<Question>() {
+                                    @Override
+                                    public Question call() throws Exception {
+                                        return myDatabase.questionDAO().loadQuestionById(question.id);
+                                    }
+                                });
+                                try {
+                                    Question localQuestion = questionFuture.get();
+                                    if (localQuestion != null) {
+                                        question.course = localQuestion.course;
+                                        question.wrongCount = localQuestion.wrongCount;
+                                        question.totalCount = localQuestion.totalCount;
+                                        question.hasStar = localQuestion.hasStar;
+                                        question.label = localQuestion.label;
+                                    } else {
+                                        question.hasStar = false;
+                                    }
+                                } catch (InterruptedException | ExecutionException e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    questionList.add(question);
+                                }
+                            }
+                        }
+                    }
+                    latch.countDown();
+                    Log.e("test_activity", "latch count down");
+                }
+
+                @Override
+                public void onFailure(@NotNull Call<JSONArray<Question>> call,
+                                      @NotNull Throwable t) {
+                    latch.countDown();
+                    Log.e("test_activity", "latch count down");
+                }
+            });
+        }
+
+        try {
+            latch.await();
+            Log.e("test_activity", "latch end wait");
+            if (questionList.size() != 0) {
+                Log.e("test_activity", "get some question");
+                Collections.shuffle(questionList);
+                Intent intent = new Intent(this, AnswerActivity.class);
+                intent.putExtra("position", 0);
+                intent.putExtra("questionList", (Serializable)questionList);
+                intent.putExtra("label", "专项测试");
+                startActivity(intent);
+            }
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            runOnUiThread(() -> {loadingDialog.dismiss();});
+        }
 
     }
 }

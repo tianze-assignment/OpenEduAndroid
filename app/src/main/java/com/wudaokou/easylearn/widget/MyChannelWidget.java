@@ -41,7 +41,7 @@ public class MyChannelWidget implements IChannelType {
         final MyChannelHeaderViewHolder myHolder = (MyChannelHeaderViewHolder) holder;
         myHolder.mChannelTitleTv.setText(data.getTname());
         // 设置文字大小，通过判断tab中的文字长度，如果有4或者4个字以上则为16sp大小
-        int textSize = data.getTname().length() >= 4 ? 25 : 22;
+        int textSize = data.getTname().length() >= 4 ? 14 : 16;
         myHolder.mChannelTitleTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
         // 通过channelbean的type值设置其文字背景颜色
         int type = data.getTabType();

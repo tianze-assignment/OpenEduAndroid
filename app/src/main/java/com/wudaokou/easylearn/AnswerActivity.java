@@ -38,7 +38,7 @@ public class AnswerActivity extends AppCompatActivity implements ChoiceQuestionF
 
     private ActivityAnswerBinding binding;
     private List<Question> questionList;
-    private List<Integer> questionAnswerList; // -1 for unselected, 0~3 for A ~ B
+    private List<Integer> questionAnswerList; // -1 for unselected, 0~3 for A ~ D
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,25 +132,33 @@ public class AnswerActivity extends AppCompatActivity implements ChoiceQuestionF
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         BackendService backendService = retrofit.create(BackendService.class);
+        String course = question.course == null ? "" : question.course.toUpperCase();
+        String label = question.label == null ? "" : question.label;
         backendService.onStarQuestion(Constant.backendToken, question.hasStar, question.id,
                 question.qAnswer, question.qBody,
-                question.label, question.course.toUpperCase()).enqueue(new Callback<String>() {
+                label, course).enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NotNull Call<String> call,
                                    @NotNull Response<String> response) {
                 if (response.code() == 200) {
-                    Toast.makeText(AnswerActivity.this, "收藏题目成功!", Toast.LENGTH_LONG).show();
+                    String msg = question.hasStar ? "收藏题目成功!" : "取消收藏成功!";
+                    Toast.makeText(AnswerActivity.this, msg, Toast.LENGTH_LONG).show();
                     Log.e("question", "star ok");
                 } else {
+                    String msg = question.hasStar ? "收藏题目失败!" : "取消收藏失败!";
                     Toast.makeText(AnswerActivity.this, "收藏题目失败!", Toast.LENGTH_LONG).show();
                     Log.e("question", "star fail");
+                    Log.e("question", String.valueOf(response.code()));
+                    Log.e("question", response.message());
+                    Log.e("asd", response.body());
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call<String> call,
                                   @NotNull Throwable t) {
-                Toast.makeText(AnswerActivity.this, "收藏题目失败!", Toast.LENGTH_LONG).show();
+                String msg = question.hasStar ? "收藏题目失败!" : "取消收藏失败!";
+                Toast.makeText(AnswerActivity.this, msg, Toast.LENGTH_LONG).show();
                 Log.e("question", "star error");
                 Log.e("question", t.toString());
             }

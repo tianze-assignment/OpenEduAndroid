@@ -36,7 +36,7 @@ public class RecChannelWidget implements IChannelType {
     public void bindViewHolder(final ChannelAdapter.ChannelViewHolder holder, int position, SubjectChannelBean data) {
         RecChannelHeaderViewHolder recHolder = (RecChannelHeaderViewHolder) holder;
         recHolder.mChannelTitleTv.setText(data.getTname());
-        int textSize = data.getTname().length() >= 4 ? 25 : 22;
+        int textSize = data.getTname().length() >= 4 ? 14 : 16;
         recHolder.mChannelTitleTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
         recHolder.mChannelTitleTv.setOnClickListener(new View.OnClickListener() {
             @Override

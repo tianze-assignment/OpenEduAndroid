@@ -27,4 +27,7 @@ public interface QuestionDAO {
 
     @Query("SELECT * FROM question WHERE course = :course AND label = :label")
     public List<Question> loadQuestionByCourseAndLabel(String course, String label);
+
+    @Query("SELECT * FROM question WHERE id = :id")
+    public Question loadQuestionById(int id);
 }

@@ -14,5 +14,5 @@
         android:paddingRight="2dp"
         android:text="热门"
         android:textColor="#333333"
-        android:textSize="34sp" />
+        android:textSize="24sp" />
 </RelativeLayout>

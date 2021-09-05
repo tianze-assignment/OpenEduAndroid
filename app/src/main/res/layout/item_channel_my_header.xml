@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:text="我的分类"
         android:textColor="#333333"
-        android:textSize="20sp" />
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/id_my_header_tip_tv"
@@ -20,7 +20,7 @@
         android:layout_weight="1"
         android:text="长按拖拽可以排序"
         android:textColor="#666666"
-        android:textSize="20sp" />
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/id_edit_mode"
@@ -34,5 +34,5 @@
         android:paddingBottom="2dp"
         android:text="编辑"
         android:textColor="#00BFFF"
-        android:textSize="20sp" />
+        android:textSize="16sp" />
 </LinearLayout>
