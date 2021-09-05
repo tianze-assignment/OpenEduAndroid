@@ -144,6 +144,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 Constant.backendToken = token;
 
+                Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+
                 LoginActivity.this.finish();
             }
 
