@@ -208,4 +208,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, QuestionRecommendActivity.class);
         startActivity(intent);
     }
+
+    // 专项测试onClick
+    public void showTest(View view) {
+        Intent intent = new Intent(this, TestActivity.class);
+        startActivity(intent);
+    }
 }

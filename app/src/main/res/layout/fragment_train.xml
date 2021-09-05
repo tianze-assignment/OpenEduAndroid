@@ -70,6 +70,7 @@
                 android:layout_marginBottom="10dp"
                 android:clickable="true"
                 android:focusable="true"
+                android:onClick="showTest"
                 android:foreground="?android:attr/selectableItemBackground"
                 app:cardCornerRadius="30dp"
                 app:cardElevation="5dp"
@@ -200,7 +201,7 @@
                             android:layout_weight="1"
                             android:gravity="center_vertical"
                             android:paddingBottom="15dp"
-                            android:text="根据历史纪录推荐试题" />
+                            android:text="根据历史记录推荐试题" />
                     </LinearLayout>
 
                 </LinearLayout>
