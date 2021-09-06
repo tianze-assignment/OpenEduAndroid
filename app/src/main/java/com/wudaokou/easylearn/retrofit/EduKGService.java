@@ -39,7 +39,7 @@ public interface EduKGService {
 
     @FormUrlEncoded
     @POST("relatedsubject")
-    Call<JSONArray<RelatedSubject>> relatedSubject(@Field("id") String id,
+    Call<JSONObject<RelatedSubject>> relatedSubject(@Field("id") String id,
                                                    @Field("course") String course,
                                                    @Field("subjectName") String subjectName);
 
@@ -53,5 +53,11 @@ public interface EduKGService {
     @POST("user/login")
     Call<EduLoginRet> eduLogin(@Field("phone") String phone,
                                @Field("password") String password);
+
+    @FormUrlEncoded
+    @POST("inputQuestion")
+    Call<JSONObject<Answers>> eduinputQuestion(@Field("course") String course,
+                                       @Field("inputQuestion") String inputQuestion,
+                                       @Field("id") String id);
 }
 

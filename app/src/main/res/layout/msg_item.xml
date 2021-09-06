@@ -5,12 +5,20 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/left_pic"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="left"
+        android:background="@drawable/teachers"
+        android:orientation="vertical"></LinearLayout>
+
+    <LinearLayout
         android:id="@+id/left_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
-        android:orientation="vertical"
-        android:background="@drawable/message">
+        android:background="@drawable/message"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/left_msg"
@@ -18,9 +26,17 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black" />
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/right_pic"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="right"
+        android:background="@drawable/students"
+        android:orientation="vertical"></LinearLayout>
 
     <LinearLayout
         android:id="@+id/right_layout"
