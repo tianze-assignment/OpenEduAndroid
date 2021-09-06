@@ -61,18 +61,21 @@ public class QuAnActivity extends AppCompatActivity {
         msgRecyclerView.setLayoutManager(layoutManager);
         msgRecyclerView.setAdapter(adapter);
 
-        msgList.add(new Msg("Please send subject first,then send your question.",Msg.TYPE_RECEIVED));
+        msgList.add(new Msg("请先发送想询问的学科！",Msg.TYPE_RECEIVED));
         adapter.notifyItemInserted(msgList.size()-1);
         msgRecyclerView.scrollToPosition(msgList.size()-1);
 
-        msgList.add(new Msg("You can sellect subject from bellow:",Msg.TYPE_RECEIVED));
+        msgList.add(new Msg("有以下学科可选择：",Msg.TYPE_RECEIVED));
         adapter.notifyItemInserted(msgList.size()-1);
         msgRecyclerView.scrollToPosition(msgList.size()-1);
 
-        msgList.add(new Msg("chinese,english,math,physics,chemistry,biology,history,geo,politics.",Msg.TYPE_RECEIVED));
+        msgList.add(new Msg("chinese,english,math,physics,chemistry,",Msg.TYPE_RECEIVED));
         adapter.notifyItemInserted(msgList.size()-1);
         msgRecyclerView.scrollToPosition(msgList.size()-1);
 
+        msgList.add(new Msg("biology,history,geo,politics.",Msg.TYPE_RECEIVED));
+        adapter.notifyItemInserted(msgList.size()-1);
+        msgRecyclerView.scrollToPosition(msgList.size()-1);
 /*       说明：by dhw ：为button建立一个监听器，将编辑框的内容发送到 RecyclerView 上：
             ①获取内容，将需要发送的消息添加到 List 当中去。
             ②调用适配器的notifyItemInserted方法，通知有新的数据加入了，赶紧将这个数据加到 RecyclerView 上面去。
@@ -91,7 +94,7 @@ public class QuAnActivity extends AppCompatActivity {
                         adapter.notifyItemInserted(msgList.size()-1);
                         msgRecyclerView.scrollToPosition(msgList.size()-1);
                         inputText.setText("");//清空输入框中的内容
-                        msgList.add(new Msg("Subject Setting success!",Msg.TYPE_RECEIVED));
+                        msgList.add(new Msg("学科选择成功!",Msg.TYPE_RECEIVED));
                         adapter.notifyItemInserted(msgList.size()-1);
                         msgRecyclerView.scrollToPosition(msgList.size()-1);
                     }
@@ -100,6 +103,7 @@ public class QuAnActivity extends AppCompatActivity {
                         adapter.notifyItemInserted(msgList.size()-1);
                         msgRecyclerView.scrollToPosition(msgList.size()-1);
                         inputText.setText("");//清空输入框中的内容
+
                         //向后端请求
                         Retrofit retrofit = new Retrofit.Builder()
                                 .baseUrl(Constant.eduKGBaseUrl)
@@ -107,12 +111,12 @@ public class QuAnActivity extends AppCompatActivity {
                                 .build();
                         EduKGService service = retrofit.create(EduKGService.class);
 
-                        Call<JSONObject<Answers>> call = service.eduinputQuestion(subject, content, Constant.eduKGId);
+                        Call<JSONArray<Answer>> call = service.eduinputQuestion(subject, content, Constant.eduKGId);
 
-                        call.enqueue(new Callback<JSONObject<Answers>>() {
+                        call.enqueue(new Callback<JSONArray<Answer>>() {
                             @Override
-                            public void onResponse(@NotNull Call<JSONObject<Answers>> call, @NotNull Response<JSONObject<Answers>> response) {
-                                JSONObject<Answers> rsp = response.body();
+                            public void onResponse(@NotNull Call<JSONArray<Answer>> call, @NotNull Response<JSONArray<Answer>> response) {
+                                JSONArray<Answer> rsp = response.body();
                                 // 返回错误，服务器错误
                                 if(rsp == null){
                                     msgList.add(new Msg("服务器错误！请稍后再试！",Msg.TYPE_RECEIVED));
@@ -121,7 +125,7 @@ public class QuAnActivity extends AppCompatActivity {
                                     return;
                                 }
                                 // 实体列表
-                                List<Answer> data = rsp.getData().getResults();
+                                List<Answer> data = rsp.getData();
                                 // 搜索结果为空
                                 if(data.isEmpty()){
                                     msgList.add(new Msg("抱歉，暂时无法为您解答这个问题。",Msg.TYPE_RECEIVED));
@@ -131,14 +135,18 @@ public class QuAnActivity extends AppCompatActivity {
                                 }
                                 else{
                                     Double max = 0.0;
-                                    String best = "没有合适的回答！";
+                                    String best = "以上是所有回答！";
                                     for(Integer i = 0; i < data.size(); i++){
                                         Answer a = data.get(i);
                                         Double score = a.getScore();
-                                        if (score > max){
-                                            max = score;
-                                            best = a.getValue();
-                                        }
+                                        String answer = a.getValue();
+                                        msgList.add(new Msg(answer,Msg.TYPE_RECEIVED));
+                                        adapter.notifyItemInserted(msgList.size()-1);
+                                        msgRecyclerView.scrollToPosition(msgList.size()-1);
+//                                        if (score > max){
+//                                            max = score;
+//                                            best = a.getValue();
+//                                        }
                                     }
                                     msgList.add(new Msg(best,Msg.TYPE_RECEIVED));
                                     adapter.notifyItemInserted(msgList.size()-1);
@@ -147,7 +155,7 @@ public class QuAnActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onFailure(@NotNull Call<JSONObject<Answers>> call, @NotNull Throwable t) {
+                            public void onFailure(@NotNull Call<JSONArray<Answer>> call, @NotNull Throwable t) {
                                 msgList.add(new Msg("网络错误！请检查网络设置！",Msg.TYPE_RECEIVED));
                                 adapter.notifyItemInserted(msgList.size()-1);
                                 msgRecyclerView.scrollToPosition(msgList.size()-1);

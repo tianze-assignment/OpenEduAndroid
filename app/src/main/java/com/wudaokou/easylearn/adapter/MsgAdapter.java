@@ -56,6 +56,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
             //此处隐藏右面的消息布局用的是 View.GONE
 //            holder.rightLayout.setVisibility(View.GONE);
             holder.right_pic.setVisibility(View.GONE);
+            holder.right_msg.setVisibility(View.GONE);
         }else if(msg.getType() == Msg.TYPE_SEND){
             //如果是发出的消息，则显示右边的消息布局，将左边的消息布局隐藏
 //            holder.rightLayout.setVisibility(View.VISIBLE);
@@ -65,6 +66,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
             //同样使用View.GONE
 //            holder.leftLayout.setVisibility(View.GONE);
             holder.left_pic.setVisibility(View.GONE);
+            holder.left_msg.setVisibility(View.GONE);
         }
     }
 

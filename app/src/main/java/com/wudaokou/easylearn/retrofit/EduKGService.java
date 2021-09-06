@@ -6,6 +6,8 @@ import com.wudaokou.easylearn.data.Question;
 import com.wudaokou.easylearn.data.RelatedSubject;
 import com.wudaokou.easylearn.data.SearchResult;
 import com.wudaokou.easylearn.retrofit.entityLink.JsonEntityLink;
+import com.wudaokou.easylearn.retrofit.Answer;
+import com.wudaokou.easylearn.retrofit.Answers;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -56,8 +58,8 @@ public interface EduKGService {
 
     @FormUrlEncoded
     @POST("inputQuestion")
-    Call<JSONObject<Answers>> eduinputQuestion(@Field("course") String course,
-                                       @Field("inputQuestion") String inputQuestion,
-                                       @Field("id") String id);
+    Call<JSONArray<Answer>> eduinputQuestion(@Field("course") String course,
+                                               @Field("inputQuestion") String inputQuestion,
+                                               @Field("id") String id);
 }
 
