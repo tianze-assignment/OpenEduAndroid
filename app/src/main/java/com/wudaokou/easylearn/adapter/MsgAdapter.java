@@ -3,6 +3,7 @@ package com.wudaokou.easylearn.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -23,17 +24,21 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
     static class ViewHolder extends RecyclerView.ViewHolder{
         LinearLayout leftLayout;
         TextView left_msg;
+        ImageView left_pic;
 
         LinearLayout rightLayout;
         TextView right_msg;
+        ImageView right_pic;
 
         public ViewHolder(View view){
             super(view);
             leftLayout = view.findViewById(R.id.left_layout);
             left_msg = view.findViewById(R.id.left_msg);
+            left_pic = view.findViewById(R.id.left_pic);
 
             rightLayout = view.findViewById(R.id.right_layout);
             right_msg = view.findViewById(R.id.right_msg);
+            right_pic = view.findViewById(R.id.right_pic);
         }
     }
 
@@ -54,6 +59,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
 
             //此处隐藏右面的消息布局用的是 View.GONE
             holder.rightLayout.setVisibility(View.GONE);
+            holder.right_pic.setVisibility(View.GONE);
         }else if(msg.getType() == Msg.TYPE_SEND){
             //如果是发出的消息，则显示右边的消息布局，将左边的消息布局隐藏
             holder.rightLayout.setVisibility(View.VISIBLE);
@@ -61,6 +67,7 @@ public class MsgAdapter extends RecyclerView.Adapter<MsgAdapter.ViewHolder>{
 
             //同样使用View.GONE
             holder.leftLayout.setVisibility(View.GONE);
+            holder.left_pic.setVisibility(View.GONE);
         }
     }
 
