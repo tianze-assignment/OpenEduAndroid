@@ -12,11 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyLearn"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ChangePasswordActivity"/>
-        <activity android:name=".TestActivity"/>
-        <activity android:name=".StarHistoryActivity"/>
+        <activity android:name=".KnowledgeQueryActivity"></activity>
+        <activity android:name=".ChangePasswordActivity" />
+        <activity android:name=".TestActivity" />
+        <activity android:name=".StarHistoryActivity" />
         <activity android:name=".BrowsingHistoryActivity" />
-        <activity android:name=".RegisterActivity"/>
+        <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity" />
         <activity
             android:name=".QuAnActivity"

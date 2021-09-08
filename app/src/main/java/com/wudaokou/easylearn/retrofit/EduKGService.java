@@ -58,8 +58,7 @@ public interface EduKGService {
 
     @FormUrlEncoded
     @POST("inputQuestion")
-    Call<JSONArray<Answer>> eduinputQuestion(@Field("course") String course,
-                                               @Field("inputQuestion") String inputQuestion,
-                                               @Field("id") String id);
+    Call<JSONArray<Answer>> eduInputQuestion(@Field("id") String id,
+            @Field("course") String course, @Field("inputQuestion") String inputQuestion);
 }
 

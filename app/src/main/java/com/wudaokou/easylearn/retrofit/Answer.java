@@ -10,6 +10,55 @@ public class Answer {
     String filterStr;
     String subjectUri;
     String predicate;
+
+    public String getAll() {
+        return all;
+    }
+
+    public String getFsanswer() {
+        return fsanswer;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getTamplateContent() {
+        return tamplateContent;
+    }
+
+    public Integer getFs() {
+        return fs;
+    }
+
+    public String getFilterStr() {
+        return filterStr;
+    }
+
+    public String getSubjectUri() {
+        return subjectUri;
+    }
+
+    public String getPredicate() {
+        return predicate;
+    }
+
+    public Boolean getAnswerflag() {
+        return answerflag;
+    }
+
+    public String getAttention() {
+        return attention;
+    }
+
+    public String getFsscore() {
+        return fsscore;
+    }
+
     Double score;
     Boolean answerflag;
     String attention;

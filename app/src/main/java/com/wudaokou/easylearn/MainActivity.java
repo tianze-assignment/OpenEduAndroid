@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 知识问答
     public void showQA(View view) {
-        Intent intent = new Intent(this, QuAnActivity.class);
+        Intent intent = new Intent(this, KnowledgeQueryActivity.class);
         startActivity(intent);
     }
 

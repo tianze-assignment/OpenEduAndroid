@@ -111,7 +111,7 @@ public class QuAnActivity extends AppCompatActivity {
                                 .build();
                         EduKGService service = retrofit.create(EduKGService.class);
 
-                        Call<JSONArray<Answer>> call = service.eduinputQuestion(subject, content, Constant.eduKGId);
+                        Call<JSONArray<Answer>> call = service.eduInputQuestion(Constant.eduKGId, subject, content);
 
                         call.enqueue(new Callback<JSONArray<Answer>>() {
                             @Override
