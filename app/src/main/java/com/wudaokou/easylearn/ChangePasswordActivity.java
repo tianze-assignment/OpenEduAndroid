@@ -146,7 +146,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
                         int code = response.code();
                         if(code == 406){
-                            passwordLayout.setError("密码错误");
+                            oldPasswordLayout.setError("密码错误");
                             return;
                         }
                         Toast.makeText(ChangePasswordActivity.this, "修改密码成功", Toast.LENGTH_SHORT).show();
