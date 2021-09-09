@@ -92,7 +92,7 @@ public class SearchableActivity extends AppCompatActivity
         getPopularSearchKeys();
         binding.popularRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         popularAdapter = new SearchRecordAdapter(popularList, true);
-        popularAdapter.setOnItemClickListener(new SearchResultAdapter.OnItemClickListener() {
+        popularAdapter.setOnItemClickListener(new SearchRecordAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 SearchRecord searchRecord = popularList.get(position);
@@ -231,7 +231,7 @@ public class SearchableActivity extends AppCompatActivity
             Log.e("SearchableActivity", String.format("record total: %d", searchRecordList.size()));
 
             SearchRecordAdapter adapter = new SearchRecordAdapter(searchRecordList, false);
-            adapter.setOnItemClickListener(new SearchResultAdapter.OnItemClickListener() {
+            adapter.setOnItemClickListener(new SearchRecordAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
                     SearchRecord searchRecord = searchRecordList.get(position);

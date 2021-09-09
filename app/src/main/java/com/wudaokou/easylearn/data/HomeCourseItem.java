@@ -19,4 +19,6 @@ public class HomeCourseItem {
         this.propertyList = propertyList;
         this.result = searchResult;
     }
+
+    public String createdAt; // 用于浏览时间
 }

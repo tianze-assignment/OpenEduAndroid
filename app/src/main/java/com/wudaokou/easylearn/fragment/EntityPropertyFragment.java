@@ -18,14 +18,21 @@ import com.wudaokou.easylearn.data.EntityInfo;
 import com.wudaokou.easylearn.data.KnowledgeCard;
 import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.Property;
+import com.wudaokou.easylearn.data.SearchResult;
 import com.wudaokou.easylearn.databinding.FragmentEntityPropertyBinding;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 import com.wudaokou.easylearn.retrofit.JSONObject;
 import com.wudaokou.easylearn.utils.LoadingDialog;
 
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MutableCallSite;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -87,6 +94,53 @@ public class EntityPropertyFragment extends Fragment {
         return root;
     }
 
+    public void sortData() {
+        data.sort(new Comparator<Property>() {
+            @Override
+            public int compare(Property o1, Property o2) {
+                if (o1.predicateLabel.equals("出处")) //放在最后
+                    return 1;
+                else if (o2.predicateLabel.equals("出处"))
+                    return -1;
+                else if (o1.predicateLabel.equals("图片")) // 放在最上方
+                    return -1;
+                else if (o2.predicateLabel.equals("图片"))
+                    return 1;
+
+                // A-Z排序
+                HanyuPinyinOutputFormat outputFormat = new HanyuPinyinOutputFormat();
+                outputFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+                String label1 = o1.predicateLabel,
+                        label2 = o2.predicateLabel;
+
+                for (int i = 0; i != label1.length() && i != label2.length(); i++) {
+                    int codePoint1 = label1.charAt(i);
+                    int codePoint2 = label2.charAt(i);
+
+                    if (Character.isSupplementaryCodePoint(codePoint1) ||
+                            Character.isSupplementaryCodePoint(codePoint2)) {
+                        i++;
+                    }
+
+                    if (codePoint1 != codePoint2) {
+                        String pinyin1 = PinyinHelper.toHanyuPinyinStringArray((char) codePoint1) == null
+                                ? null : PinyinHelper.toHanyuPinyinStringArray((char) codePoint1)[0];
+                        String pinyin2 = PinyinHelper.toHanyuPinyinStringArray((char) codePoint2) == null
+                                ? null : PinyinHelper.toHanyuPinyinStringArray((char) codePoint2)[0];
+                        if (pinyin1 != null && pinyin2 != null) { // 两个字符都是汉字
+                            if (!pinyin1.equals(pinyin2)) {
+                                return pinyin1.compareTo(pinyin2);
+                            }
+                        } else {
+                            return codePoint1 - codePoint2;
+                        }
+                    }
+                }
+                return label1.length() - label2.length();
+            }
+        });
+    }
+
     public void checkDatabase() {
         Future<List<Property>> listFuture = MyDatabase.databaseWriteExecutor.submit(new Callable<List<Property>>() {
             @Override
@@ -99,6 +153,7 @@ public class EntityPropertyFragment extends Fragment {
             List<Property> localList = listFuture.get();
             if (localList != null && localList.size() != 0) {
                 data = localList;
+                sortData();
                 updateData(data);
             } else {
                 getEntityInfo();
@@ -122,6 +177,7 @@ public class EntityPropertyFragment extends Fragment {
                         Log.e("retrofit", String.format("property size: %s",
                                 jsonObject.data.property.size()));
                         data = jsonObject.data.property;
+                        sortData();
                         updateData(data);
                         for (Property property : data) {
                             property.course = course;

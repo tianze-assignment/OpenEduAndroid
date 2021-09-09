@@ -222,6 +222,7 @@ public class TestActivity extends AppCompatActivity {
                 intent.putExtra("position", 0);
                 intent.putExtra("questionList", (Serializable)questionList);
                 intent.putExtra("label", "专项测试");
+                intent.putExtra("immediateAnswer", false);
                 startActivity(intent);
             }
 

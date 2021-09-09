@@ -17,6 +17,7 @@ import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.Question;
 import com.wudaokou.easylearn.databinding.ActivityAnswerBinding;
 import com.wudaokou.easylearn.fragment.ChoiceQuestionFragment;
+import com.wudaokou.easylearn.fragment.ChoiceQuestionSubmitFragment;
 import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 
@@ -34,11 +35,18 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
-public class AnswerActivity extends AppCompatActivity implements ChoiceQuestionFragment.MyListener {
+public class AnswerActivity extends AppCompatActivity
+        implements ChoiceQuestionFragment.MyListener, ChoiceQuestionSubmitFragment.MyListener {
 
     private ActivityAnswerBinding binding;
     private List<Question> questionList;
     private List<Integer> questionAnswerList; // -1 for unselected, 0~3 for A ~ D
+    private List<Integer> questionStatusList; // -1 for unselected, 0 for false, 1 for correct
+    private boolean immediateAnswer; // true for show answer immediately
+    private boolean hasSubmit = false;
+
+    List<ChoiceQuestionFragment> choiceQuestionFragmentList;
+    ChoiceQuestionSubmitFragment choiceQuestionSubmitFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,25 +58,29 @@ public class AnswerActivity extends AppCompatActivity implements ChoiceQuestionF
         // 获取试题信息
         Intent intent = getIntent();
         questionList = (List<Question>) intent.getSerializableExtra("questionList");
+        immediateAnswer = intent.getBooleanExtra("immediateAnswer", true);
+        int position = intent.getIntExtra("position", 0);
+        String label = intent.getStringExtra("label");
+
+        // 初始化答案列表
         questionAnswerList = new ArrayList<>();
+        questionStatusList = new ArrayList<>();
         if (questionList != null) {
             for (Question question : questionList){
                 questionAnswerList.add(-1);
-                if (question.qBody != null) {
-                    Log.e("serializable body", question.qBody);
-                } else {
-                    Log.e("serializable body", "null body");
-                }
-                if (question.qAnswer != null) {
-                    Log.e("serializable answer", question.qAnswer);
-                } else {
-                    Log.e("serializable body", "null answer");
-                }
+                questionStatusList.add(-1);
             }
-            Log.e("serializable size", String.valueOf(questionList.size()));
         }
-        int position = intent.getIntExtra("position", 0);
-        String label = intent.getStringExtra("label");
+
+        for (int i = 0; i < questionAnswerList.size(); i++) {
+            Log.e("answer", String.format("questionAnswerList[%d] = %d", i, questionAnswerList.get(i)));
+        }
+
+        choiceQuestionFragmentList = new ArrayList<>();
+        for (int i = 0; i != questionList.size(); i++) {
+            choiceQuestionFragmentList.add(new ChoiceQuestionFragment(questionList.get(i),
+                    questionAnswerList.get(i), immediateAnswer, i));
+        }
 
         // 为viewpager2设置adapter
         binding.questionViewPager2.setAdapter(new FragmentStateAdapter(getSupportFragmentManager(),
@@ -78,14 +90,23 @@ public class AnswerActivity extends AppCompatActivity implements ChoiceQuestionF
             @Override
             public Fragment createFragment(int position) {
                 // assert: questionList != null
-                return new ChoiceQuestionFragment(questionList.get(position),
-                        questionAnswerList.get(position));
+                if (position != questionList.size()) {
+                    return choiceQuestionFragmentList.get(position);
+                }
+                else {
+                    if (choiceQuestionSubmitFragment == null) {
+                        choiceQuestionSubmitFragment = new ChoiceQuestionSubmitFragment(questionStatusList);
+                    }
+                    return choiceQuestionSubmitFragment;
+                }
             }
 
             @Override
             public int getItemCount() {
-                if (questionList != null) {
+                if (questionList != null && immediateAnswer) {
                     return questionList.size();
+                } else if (questionList != null && !immediateAnswer) {
+                    return questionList.size() + 1;
                 }
                 return 0;
             }
@@ -97,13 +118,21 @@ public class AnswerActivity extends AppCompatActivity implements ChoiceQuestionF
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                Question question = questionList.get(position);
-                binding.workProgress.setText(String.format(Locale.CHINA, "%d/%d",
-                        binding.questionViewPager2.getCurrentItem() + 1, questionList.size()));
-                if (question.hasStar) {
-                    binding.starQuestionButton.setImageResource(R.drawable.star_fill);
+                if (position != questionList.size()) {
+                    binding.starQuestionButton.setVisibility(View.VISIBLE);
+                    binding.workProgress.setVisibility(View.VISIBLE);
+                    Question question = questionList.get(position);
+                    binding.workProgress.setText(String.format(Locale.CHINA, "%d/%d",
+                            binding.questionViewPager2.getCurrentItem() + 1, questionList.size()));
+                    if (question.hasStar) {
+                        binding.starQuestionButton.setImageResource(R.drawable.star_fill);
+                    } else {
+                        binding.starQuestionButton.setImageResource(R.drawable.star_blank);
+                    }
                 } else {
-                    binding.starQuestionButton.setImageResource(R.drawable.star_blank);
+                    choiceQuestionSubmitFragment.updateData(questionStatusList);
+                    binding.starQuestionButton.setVisibility(View.GONE);
+                    binding.workProgress.setVisibility(View.GONE);
                 }
             }
         });
@@ -143,14 +172,9 @@ public class AnswerActivity extends AppCompatActivity implements ChoiceQuestionF
                 if (response.code() == 200) {
                     String msg = question.hasStar ? "收藏题目成功!" : "取消收藏成功!";
                     Toast.makeText(AnswerActivity.this, msg, Toast.LENGTH_LONG).show();
-                    Log.e("question", "star ok");
                 } else {
                     String msg = question.hasStar ? "收藏题目失败!" : "取消收藏失败!";
                     Toast.makeText(AnswerActivity.this, "收藏题目失败!", Toast.LENGTH_LONG).show();
-                    Log.e("question", "star fail");
-                    Log.e("question", String.valueOf(response.code()));
-                    Log.e("question", response.message());
-                    Log.e("asd", response.body());
                 }
             }
 
@@ -159,8 +183,6 @@ public class AnswerActivity extends AppCompatActivity implements ChoiceQuestionF
                                   @NotNull Throwable t) {
                 String msg = question.hasStar ? "收藏题目失败!" : "取消收藏失败!";
                 Toast.makeText(AnswerActivity.this, msg, Toast.LENGTH_LONG).show();
-                Log.e("question", "star error");
-                Log.e("question", t.toString());
             }
         });
 
@@ -174,9 +196,35 @@ public class AnswerActivity extends AppCompatActivity implements ChoiceQuestionF
     }
 
     @Override
-    public void sendValue(int option) {
+    public void sendValue(int position, int option) {
         // 修改选中的选项值
-        int position = binding.questionViewPager2.getCurrentItem();
         questionAnswerList.set(position, option);
+        Question question = questionList.get(position);
+        boolean isCorrect = (question.qAnswer.charAt(0) - 'A') == option;
+        if (isCorrect) {
+            questionStatusList.set(position, 1);
+        } else {
+            questionStatusList.set(position, 0);
+        }
+        Log.e("sendValue", String.format("question: %d, option: %s", position + 1, String.valueOf(isCorrect)));
     }
+
+    @Override
+    public void submitAnswer() {
+        this.hasSubmit = true;
+        for (ChoiceQuestionFragment fragment : choiceQuestionFragmentList){
+            fragment.setImmediate(true);
+        }
+    }
+
+    @Override
+    public void goToTargetQuestion(int position) {
+        binding.questionViewPager2.setCurrentItem(position);
+    }
+
+    @Override
+    public void goBack() {
+        this.finish();
+    }
+
 }

@@ -85,7 +85,7 @@ public class HomePagerFragment extends Fragment {
 
         binding = FragmentHomePagerBinding.inflate(inflater, container, false);
         binding.pagerRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new HomeCourseItemAdapter(homeCourseItemList);
+        adapter = new HomeCourseItemAdapter(homeCourseItemList, false);
         adapter.setOnItemClickListener(new HomeCourseItemAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {

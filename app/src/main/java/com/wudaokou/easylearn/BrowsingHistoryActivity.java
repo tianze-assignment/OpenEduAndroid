@@ -13,6 +13,7 @@ import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.HomeCourseItem;
 import com.wudaokou.easylearn.data.SearchResult;
 import com.wudaokou.easylearn.databinding.ActivityBrowsingHistoryBinding;
+import com.wudaokou.easylearn.fragment.HomePagerFragment;
 import com.wudaokou.easylearn.retrofit.BackendObject;
 import com.wudaokou.easylearn.retrofit.BackendService;
 
@@ -40,7 +41,7 @@ public class BrowsingHistoryActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new HomeCourseItemAdapter(homeCourseItemList);
+        adapter = new HomeCourseItemAdapter(homeCourseItemList, true);
         adapter.setOnItemClickListener(new HomeCourseItemAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -82,7 +83,9 @@ public class BrowsingHistoryActivity extends AppCompatActivity {
                         searchResult.hasStar = false;  // 后端传数据过来
                         searchResult.hasRead = true;
                         searchResult.id = backendObject.id;
-                        homeCourseItemList.add(new HomeCourseItem(searchResult, null));
+                        HomeCourseItem item = new HomeCourseItem(searchResult, null);
+                        item.createdAt = backendObject.createdAt;
+                        homeCourseItemList.add(item);
                     }
                     adapter.updateData(homeCourseItemList);
                     adapter.notifyDataSetChanged();
