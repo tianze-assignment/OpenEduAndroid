@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyLearn"
         android:usesCleartextTraffic="true">
-        <activity android:name=".KnowledgeQueryActivity"></activity>
+        <activity android:name=".OrganizeResultActivity"></activity>
+        <activity android:name=".OrganizeActivity" />
+        <activity android:name=".KnowledgeQueryActivity" />
         <activity android:name=".ChangePasswordActivity" />
         <activity android:name=".TestActivity" />
         <activity android:name=".StarHistoryActivity" />

@@ -214,4 +214,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, TestActivity.class);
         startActivity(intent);
     }
+
+    // 知识梳理onClick
+    public void showOrganize(View view) {
+        Intent intent = new Intent(this, OrganizeActivity.class);
+        startActivity(intent);
+    }
 }
