@@ -219,6 +219,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
+                android:onClick="showOrganize"
                 app:cardCornerRadius="30dp"
                 app:cardElevation="5dp"
                 app:contentPadding="20dp">
