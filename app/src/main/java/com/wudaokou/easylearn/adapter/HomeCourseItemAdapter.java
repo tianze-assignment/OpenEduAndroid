@@ -15,11 +15,13 @@ import com.wudaokou.easylearn.data.SearchResult;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeCourseItemAdapter
         extends RecyclerView.Adapter<HomeCourseItemAdapter.VH>{
+    boolean forHistory;
 
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
@@ -58,7 +60,12 @@ public class HomeCourseItemAdapter
             HomeCourseItem homeCourseItem = data.get(position);
             if (homeCourseItem.result != null) {
                 holder.entityLabel.setText(homeCourseItem.result.label);
-                holder.entityKeyWord.setText(String.format("关键词: %s", homeCourseItem.result.searchKey));
+
+                if (forHistory) {
+                    holder.entityKeyWord.setText(homeCourseItem.createdAt.replace('T', ' '));
+                } else {
+                    holder.entityKeyWord.setText(String.format("关键词: %s", homeCourseItem.result.searchKey));
+                }
                 String category = homeCourseItem.result.category;
                 if (category != null && category.length() > 10) {
                     category = category.substring(0, 9) + "...";
@@ -123,7 +130,8 @@ public class HomeCourseItemAdapter
         this.data = data;
     }
 
-    public HomeCourseItemAdapter(List<HomeCourseItem> data) {
+    public HomeCourseItemAdapter(List<HomeCourseItem> data, boolean forHistory) {
+        this.forHistory = forHistory;
         this.data = data;
     }
 

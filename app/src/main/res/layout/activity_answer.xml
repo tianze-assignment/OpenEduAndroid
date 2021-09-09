@@ -62,21 +62,9 @@
             android:onClick="onStarQuestionClick"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/shareQuestionButton"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/star_blank" />
-
-        <ImageButton
-            android:id="@+id/shareQuestionButton"
-            android:layout_width="27dp"
-            android:layout_height="23dp"
-            android:layout_marginEnd="8dp"
-            android:background="@color/white"
-            android:scaleType="centerInside"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/share" />
+            app:srcCompat="@drawable/star_blank" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

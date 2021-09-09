@@ -43,19 +43,25 @@ public class ChoiceQuestionFragment extends Fragment {
     Question question;
     boolean isValidChoiceQuestion;
     int optionNum;
+    boolean immediateAnswer;
+    boolean hasSubmit = false;
+    int position; //记录给页面在试题页面中的顺序,从0开始
 
     //定义回调接口
     public interface MyListener{
-        public void sendValue(int option);
+        public void sendValue(int position, int option);
     }
 
     private MyListener myListener;
 
 
-    public ChoiceQuestionFragment(Question question, int selectedOption) {
+    public ChoiceQuestionFragment(Question question, int selectedOption,
+                                  boolean immediateAnswer, int position) {
         // Required empty public constructor
         this.question = question;
         this.selectedOption = selectedOption;
+        this.immediateAnswer = immediateAnswer;
+        this.position = position;
         qAnswer = question.qAnswer;
         qBody = question.qBody;
         int aPos = 0;
@@ -140,46 +146,53 @@ public class ChoiceQuestionFragment extends Fragment {
                         Log.e("choice question", String.format("illegal option: %d", option));
                     }
                     selectedOption = option;
-                    myListener.sendValue(option);
 
-                    boolean isCorrect = text.substring(0, 1).equals(qAnswer);
-                    if (isCorrect) {
-//                        radioButton1.setButtonDrawable(R.drawable.correct_answer);
-                        radioButton1.setTextColor(getResources().getColor(R.color.green_A700));
-                    } else {
-//                        radioButton1.setButtonDrawable(R.drawable.false_answer);
-                        radioButton1.setTextColor(getResources().getColor(R.color.red_900));
-                    }
-                    binding.answerLayout.setVisibility(View.VISIBLE);
-                    for (RadioButton button : radioButtonList) {
-                        button.setEnabled(false);
+                    if (!hasSubmit) {
+                        myListener.sendValue(position, option);
                     }
 
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl(Constant.backendBaseUrl)
-                            .addConverterFactory(ScalarsConverterFactory.create())
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
-                    BackendService backendService = retrofit.create(BackendService.class);
-                    backendService.putQuestionCount(Constant.backendToken, question.id, !isCorrect,
-                            qAnswer, qBody, question.label, question.course.toUpperCase())
-                            .enqueue(new Callback<String>() {
-                        @Override
-                        public void onResponse(@NotNull Call<String> call,
-                                               @NotNull Response<String> response) {
-                            if (response.code() == 200) {
-                                Log.e("question", "send answer ok");
-                            } else {
-                                Log.e("question", "send answer fail");
-                            }
+                    if (immediateAnswer) { // 点击后立即显示答案，判断对错
+                        boolean isCorrect = text.substring(0, 1).equals(qAnswer);
+                        if (isCorrect) {
+                            radioButton1.setTextColor(getResources().getColor(R.color.green_A700));
+                        } else {
+                            radioButton1.setTextColor(getResources().getColor(R.color.red_900));
+                        }
+                        binding.answerLayout.setVisibility(View.VISIBLE);
+                        for (RadioButton button : radioButtonList) {
+                            button.setEnabled(false);
                         }
 
-                        @Override
-                        public void onFailure(@NotNull Call<String> call,
-                                              @NotNull Throwable t) {
-                            Log.e("question", "send answer error");
+                        if (question.course != null) {
+                            Retrofit retrofit = new Retrofit.Builder()
+                                    .baseUrl(Constant.backendBaseUrl)
+                                    .addConverterFactory(ScalarsConverterFactory.create())
+                                    .addConverterFactory(GsonConverterFactory.create())
+                                    .build();
+                            BackendService backendService = retrofit.create(BackendService.class);
+                            backendService.putQuestionCount(Constant.backendToken, question.id, !isCorrect,
+                                qAnswer, qBody, question.label, question.course.toUpperCase())
+                                .enqueue(new Callback<String>() {
+                                    @Override
+                                    public void onResponse(@NotNull Call<String> call,
+                                                           @NotNull Response<String> response) {
+                                        if (response.code() == 200) {
+                                            Log.e("question", "send answer ok");
+                                        } else {
+                                            Log.e("question", "send answer fail");
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(@NotNull Call<String> call,
+                                                          @NotNull Throwable t) {
+                                        Log.e("question", "send answer error");
+                                    }
+                                });
                         }
-                    });
+                    } else { // 做完全部题目后显示
+                        radioButton1.setTextColor(getResources().getColor(R.color.blue_500));
+                    }
                 }
             });
             binding.radioGroup.addView(radioButton);
@@ -197,5 +210,13 @@ public class ChoiceQuestionFragment extends Fragment {
         super.onAttach(context);
         //获取实现接口的activity
         myListener = (MyListener) getActivity();
+    }
+
+    public void setImmediate(boolean newImmediate) {
+        this.immediateAnswer = newImmediate;
+    }
+
+    public void onSubmit() {
+        this.hasSubmit = true;
     }
 }

@@ -68,9 +68,9 @@ public class SearchRecordAdapter extends RecyclerView.Adapter<SearchRecordAdapte
         void onItemLongClick(View view, int position);
     }
 
-    private SearchResultAdapter.OnItemClickListener mOnItemClickListener;
+    private OnItemClickListener mOnItemClickListener;
 
-    public void setOnItemClickListener(SearchResultAdapter.OnItemClickListener mOnItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
         this.mOnItemClickListener = mOnItemClickListener;
     }
 
