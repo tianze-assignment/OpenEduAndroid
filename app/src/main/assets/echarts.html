@@ -8,16 +8,25 @@
 <div id="container" style="height: 100%"></div>
 <script type="text/javascript" src="./echarts.min.js"></script>
 <script type="text/javascript">
-            var dom =document.getElementById("container");
-            var myChart =echarts.init(dom);
-            var app ={};
-            function loadEcharts(echartJson){
-                console.log("加载option");
-                var option = JSON.parse(echartJson);
-                if (option &&typeof option ==="object") {
-                    myChart.setOption(option,true);
-                }
-            }
-        </script>
+    var dom =document.getElementById("container");
+    var myChart =echarts.init(dom);
+    var app ={};
+    function loadEcharts(echartJson, label){
+        console.log("加载option");
+        var option = JSON.parse(echartJson);
+        if (option &&typeof option ==="object") {
+            option.series[0].data.unshift({
+                fixed: true,
+                x: myChart.getWidth() / 2,
+                y: myChart.getHeight() / 2,
+                symbolSize: 70,
+                name: label,
+                id: '-1',
+                category: 0
+            });
+            myChart.setOption(option,true);
+        }
+    }
+</script>
 </body>
 </html>

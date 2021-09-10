@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
 import android.view.Gravity;
@@ -148,6 +149,15 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
 
 
         bindPagerWithTab();
+
+
+        binding.viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                binding.viewPager2.setUserInputEnabled(position != 2);
+            }
+        });
 
         Retrofit backendRetrofit = new Retrofit.Builder()
                 .baseUrl(Constant.backendBaseUrl)
