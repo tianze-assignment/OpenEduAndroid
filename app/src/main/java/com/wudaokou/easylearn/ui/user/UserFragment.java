@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.wudaokou.easylearn.BrowsingHistoryActivity;
@@ -67,11 +68,25 @@ public class UserFragment extends Fragment{
                 .show());
 
         binding.starButton.setOnClickListener(v -> {
+            String token = sharedPreferences.getString("token", "-1");
+            if(token.equals("-1")){
+                Toast.makeText(requireContext(), "请先登录", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(requireContext(), LoginActivity.class);
+                startActivity(intent);
+                return;
+            }
             Intent intent = new Intent(requireContext(), StarHistoryActivity.class);
             startActivity(intent);
         });
 
         binding.historyButton.setOnClickListener(v -> {
+            String token = sharedPreferences.getString("token", "-1");
+            if(token.equals("-1")){
+                Toast.makeText(requireContext(), "请先登录", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(requireContext(), LoginActivity.class);
+                startActivity(intent);
+                return;
+            }
             Intent intent = new Intent(requireContext(), BrowsingHistoryActivity.class);
             startActivity(intent);
         });

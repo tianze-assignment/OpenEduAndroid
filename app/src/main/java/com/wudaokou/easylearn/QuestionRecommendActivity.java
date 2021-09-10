@@ -1,9 +1,14 @@
 package com.wudaokou.easylearn;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -12,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.android.material.slider.Slider;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.constant.SubjectMapChineseToEnglish;
 import com.wudaokou.easylearn.data.Question;
@@ -22,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,22 +38,56 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class QuestionRecommendActivity extends AppCompatActivity {
 
+    SharedPreferences sharedPreferences;
+
+    TextInputLayout chooseSubjectLayout;
     AutoCompleteTextView chooseSubject;
     Slider chooseNumber;
+    TextInputLayout numberTextLayout;
+    TextInputEditText numberText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_recommend);
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        chooseSubjectLayout = findViewById(R.id.chooseSubjectLayout);
         chooseSubject = findViewById(R.id.chooseSubject);
         chooseNumber = findViewById(R.id.chooseNumber);
+        numberTextLayout = findViewById(R.id.numberTextLayout);
+        numberText = findViewById(R.id.numberText);
 
         // 选择学科
         String[] subjects = getResources().getStringArray(R.array.subjects);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                 this, R.layout.dropdown_subject_item, subjects);
         chooseSubject.setAdapter(arrayAdapter);
+
+        chooseSubject.setOnItemClickListener((parent, view, position, id) -> chooseSubjectLayout.setError(null));
+        chooseNumber.addOnChangeListener((slider, value, fromUser) -> numberText.setText( String.valueOf( (int) value ) ));
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        new Thread(() -> {
+            try {
+                TimeUnit.MILLISECONDS.sleep(300);
+            } catch (InterruptedException ignored) {}
+            String token = sharedPreferences.getString("token", "-1");
+            if(token.equals("-1")){
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "请先登录", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    startActivity(intent);
+                    QuestionRecommendActivity.this.finish();
+                });
+            }
+        }).start();
+
     }
 
     public void getBack(View view) {
@@ -57,7 +98,7 @@ public class QuestionRecommendActivity extends AppCompatActivity {
 
         String subject = chooseSubject.getText().toString();
         if(subject.equals("")){
-            Toast.makeText(this, "请选择学科", Toast.LENGTH_SHORT).show();
+            chooseSubjectLayout.setError("请选择学科");
             return;
         }
         subject = SubjectMapChineseToEnglish.getMap().get(subject);
