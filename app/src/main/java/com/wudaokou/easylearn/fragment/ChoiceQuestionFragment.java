@@ -133,6 +133,8 @@ public class ChoiceQuestionFragment extends Fragment {
 
         for (int i = 0; i != optionNum; i++) {
             RadioButton radioButton = new RadioButton(getActivity());
+            radioButton.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
             radioButton.setText(choices[i]);
             radioButton.setTextSize(20);
             radioButton.setTextColor(getResources().getColor(R.color.grey_900));
@@ -214,6 +216,17 @@ public class ChoiceQuestionFragment extends Fragment {
         super.onAttach(context);
         //获取实现接口的activity
         myListener = (MyListener) getActivity();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (hasSubmit) {
+            for (RadioButton button : radioButtonList) {
+                button.setEnabled(false);
+            }
+            binding.answerLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     public void setImmediate(boolean newImmediate) {

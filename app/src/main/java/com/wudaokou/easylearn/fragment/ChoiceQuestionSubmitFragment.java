@@ -40,7 +40,7 @@ public class ChoiceQuestionSubmitFragment extends Fragment {
     QuestionAnswerAdapter adapter;
     ConstraintLayout beforeLayout;
     LinearLayout afterLayout;
-    boolean hasSubmit = false;
+    public boolean hasSubmit = false;
     float accuracy;
 
     //定义回调接口

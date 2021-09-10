@@ -57,7 +57,7 @@ public class KnowledgeQueryActivity extends AppCompatActivity {
     final String userId = "0";
     final String serverId = "1";
 
-    final String userAvatar = null;
+    final String userAvatar = "file:///android_res/drawable/hacker.png";
     final String serverAvatar = "https://z3.ax1x.com/2021/09/08/hbeaid.png";
 
     @Override
@@ -79,7 +79,6 @@ public class KnowledgeQueryActivity extends AppCompatActivity {
                 this, R.layout.dropdown_subject_item, subjects);
         chooseSubjectText.setAdapter(arrayAdapter);
 
-        // todo 后续再加载头像
         adapter = new MessagesListAdapter<>(userId, new ImageLoader() {
             @Override
             public void loadImage(ImageView imageView,
@@ -108,7 +107,7 @@ public class KnowledgeQueryActivity extends AppCompatActivity {
 
 
     public void sendGreetings() {
-        Message message1 = new Message(serverId, "欢迎向我提问",
+        Message message1 = new Message(serverId, "你好，欢迎向我提问",
                 new Date(), new Author(serverId, "EduKG", serverAvatar));
         Message message2 = new Message(serverId, "你可以在左下角选择提问的科目哦",
                 new Date(), new Author(serverId, "EduKG", serverAvatar));
@@ -156,7 +155,7 @@ public class KnowledgeQueryActivity extends AppCompatActivity {
                             bestAnswer.getMessage() : bestAnswer.getValue();
                     sendAnswer(value);
                 } else {
-                    sendAnswer("暂时找不到你想要的答案");
+                    sendAnswer("暂时找不到答案");
                 }
             }
 

@@ -258,6 +258,7 @@ public class AnswerActivity extends AppCompatActivity
         this.hasSubmit = true;
         for (ChoiceQuestionFragment fragment : choiceQuestionFragmentList){
             fragment.setImmediate(true);
+            fragment.onSubmit();
         }
     }
 
