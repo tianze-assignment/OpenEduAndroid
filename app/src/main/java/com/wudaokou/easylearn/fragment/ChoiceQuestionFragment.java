@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RadioButton;
 
 import com.wudaokou.easylearn.R;
@@ -116,7 +117,7 @@ public class ChoiceQuestionFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentChoiceQuestionBinding.inflate(inflater, container, false);
@@ -134,6 +135,7 @@ public class ChoiceQuestionFragment extends Fragment {
             RadioButton radioButton = new RadioButton(getActivity());
             radioButton.setText(choices[i]);
             radioButton.setTextSize(20);
+            radioButton.setTextColor(getResources().getColor(R.color.grey_900));
             radioButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -191,6 +193,8 @@ public class ChoiceQuestionFragment extends Fragment {
                                 });
                         }
                     } else { // 做完全部题目后显示
+                        for (RadioButton button : radioButtonList)
+                            button.setTextColor(getResources().getColor(R.color.grey_900));
                         radioButton1.setTextColor(getResources().getColor(R.color.blue_500));
                     }
                 }

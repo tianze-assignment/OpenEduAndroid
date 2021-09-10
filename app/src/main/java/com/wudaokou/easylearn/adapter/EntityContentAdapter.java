@@ -42,13 +42,13 @@ public class EntityContentAdapter
         public final TextView predicateLabel;
         public final ImageView relationImageView;
         public final ListView listView;
-        public final ImageButton imageButton;
+//        public final ImageButton imageButton;
         public VH(View v) {
             super(v);
             subOrObjectLabel = (TextView) v.findViewById(R.id.subOrObjectLabel);
             predicateLabel = (TextView) v.findViewById(R.id.entityContentLabel);
             relationImageView = (ImageView) v.findViewById(R.id.relationImageView);
-            imageButton = (ImageButton) v.findViewById(R.id.collapseButton);
+//            imageButton = (ImageButton) v.findViewById(R.id.collapseButton);
             listView = (ListView) v.findViewById(R.id.collapseListView);
         }
     }
@@ -73,20 +73,18 @@ public class EntityContentAdapter
             holder.relationImageView.setImageResource(R.drawable.arrow_subject);
         }
 
-        // todo 设置监听器
-        // todo 设置监听器
-        holder.imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (holder.listView.getVisibility() == View.VISIBLE) {
-                    holder.listView.setVisibility(View.INVISIBLE);
-                    holder.imageButton.setImageResource(R.drawable.expand);
-                } else {
-                    holder.listView.setVisibility(View.VISIBLE);
-                    holder.imageButton.setImageResource(R.drawable.collapse);
-                }
-            }
-        });
+//        holder.imageButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (holder.listView.getVisibility() == View.VISIBLE) {
+//                    holder.listView.setVisibility(View.INVISIBLE);
+//                    holder.imageButton.setImageResource(R.drawable.expand);
+//                } else {
+//                    holder.listView.setVisibility(View.VISIBLE);
+//                    holder.imageButton.setImageResource(R.drawable.collapse);
+//                }
+//            }
+//        });
 
         if (mOnItemClickListener != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {

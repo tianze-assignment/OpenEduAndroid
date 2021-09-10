@@ -14,6 +14,8 @@ import com.wudaokou.easylearn.databinding.FragmentEntityRelatedSubjectBinding;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 import com.wudaokou.easylearn.utils.LoadingDialog;
 
+import org.jetbrains.annotations.NotNull;
+
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -32,7 +34,7 @@ public class EntityRelatedSubjectFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentEntityRelatedSubjectBinding.inflate(inflater, container, false);
         View root = binding.getRoot();

@@ -75,7 +75,7 @@ public class EntityQuestionFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentEntityQuestionBinding.inflate(inflater, container, false);
@@ -98,6 +98,7 @@ public class EntityQuestionFragment extends Fragment {
                 intent.putExtra("position", position);
                 intent.putExtra("questionList", (Serializable)data);
                 intent.putExtra("label", label);
+                intent.putExtra("immediateAnswer", false);
                 startActivity(intent);
             }
         });

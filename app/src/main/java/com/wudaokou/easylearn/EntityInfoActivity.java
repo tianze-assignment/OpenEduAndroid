@@ -36,6 +36,7 @@ import com.wudaokou.easylearn.data.Question;
 import com.wudaokou.easylearn.data.SearchResult;
 import com.wudaokou.easylearn.databinding.ActivityEntityInfoBinding;
 import com.wudaokou.easylearn.fragment.EntityContentFragment;
+import com.wudaokou.easylearn.fragment.EntityGraphFragment;
 import com.wudaokou.easylearn.fragment.EntityPropertyFragment;
 import com.wudaokou.easylearn.fragment.EntityQuestionFragment;
 import com.wudaokou.easylearn.retrofit.BackendObject;
@@ -65,6 +66,7 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
     private EntityPropertyFragment entityPropertyFragment;
     private EntityContentFragment entityContentFragment;
     private EntityQuestionFragment entityQuestionFragment;
+    private EntityGraphFragment entityGraphFragment;
 
     String course, label, uri;
     IWBAPI mWBAPI;
@@ -255,6 +257,11 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                             entityContentFragment = new EntityContentFragment(course, label);
                         }
                         return entityContentFragment;
+                    case 2:
+                        if (entityGraphFragment == null) {
+                            entityGraphFragment = new EntityGraphFragment(course, label);
+                        }
+                        return entityGraphFragment;
                     default:
                         // 实体相关习题列表
                         if (entityQuestionFragment == null) {
@@ -265,7 +272,7 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
             }
             @Override
             public int getItemCount() {
-                return 3;
+                return 4;
             }
         });
 
@@ -274,7 +281,7 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
             public void onConfigureTab(@NonNull @NotNull TabLayout.Tab tab, int position) {
                 TextView tabView = new TextView(EntityInfoActivity.this);
                 tabView.setGravity(Gravity.CENTER);
-                String[] titles = {"知识属性", "知识关联", "相关习题"} ;
+                String[] titles = {"知识属性", "知识关联", "关联图谱", "相关习题"} ;
                 tabView.setText(titles[position]);
                 tab.setCustomView(tabView);
             }
