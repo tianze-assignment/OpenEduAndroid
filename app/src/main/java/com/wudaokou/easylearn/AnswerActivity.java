@@ -2,11 +2,14 @@ package com.wudaokou.easylearn;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -45,6 +48,8 @@ public class AnswerActivity extends AppCompatActivity
     private boolean immediateAnswer; // true for show answer immediately
     private boolean hasSubmit = false;
 
+    SharedPreferences sharedPreferences;
+
     List<ChoiceQuestionFragment> choiceQuestionFragmentList;
     ChoiceQuestionSubmitFragment choiceQuestionSubmitFragment;
 
@@ -54,6 +59,8 @@ public class AnswerActivity extends AppCompatActivity
 
         binding = ActivityAnswerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // 获取试题信息
         Intent intent = getIntent();
@@ -114,16 +121,45 @@ public class AnswerActivity extends AppCompatActivity
         binding.questionViewPager2.setCurrentItem(position, true);
         // 设置初始位置
         binding.workProgress.setText(String.format(Locale.CHINA, "%d/%d", position + 1, questionList.size()));
+
+        // 如果没有登陆
+        String token = sharedPreferences.getString("token", "-1");
+        if(token.equals("-1")){
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.workProgress.getLayoutParams();
+            params.endToEnd = R.id.parent;
+            binding.workProgress.setLayoutParams(params);
+            binding.starQuestionButton.setVisibility(View.GONE);
+        }
+
         binding.questionViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 if (position != questionList.size()) {
-                    binding.starQuestionButton.setVisibility(View.VISIBLE);
                     binding.workProgress.setVisibility(View.VISIBLE);
                     Question question = questionList.get(position);
                     binding.workProgress.setText(String.format(Locale.CHINA, "%d/%d",
                             binding.questionViewPager2.getCurrentItem() + 1, questionList.size()));
+
+                    // 恢复标题
+                    ConstraintLayout.LayoutParams titleParams = (ConstraintLayout.LayoutParams) binding.entityTitle.getLayoutParams();
+                    titleParams.startToStart = ConstraintLayout.LayoutParams.UNSET;
+                    titleParams.endToEnd = ConstraintLayout.LayoutParams.UNSET;
+                    titleParams.startToEnd = R.id.goBackButton;
+                    titleParams.endToStart = R.id.workProgress;
+                    binding.entityTitle.setLayoutParams(titleParams);
+
+                    // 如果没有登陆
+                    String token = sharedPreferences.getString("token", "-1");
+                    if(token.equals("-1")){
+                        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.workProgress.getLayoutParams();
+                        params.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+                        binding.workProgress.setLayoutParams(params);
+                        binding.starQuestionButton.setVisibility(View.GONE);
+                        return;
+                    }
+
+                    binding.starQuestionButton.setVisibility(View.VISIBLE);
                     if (question.hasStar) {
                         binding.starQuestionButton.setImageResource(R.drawable.star_fill);
                     } else {
@@ -131,6 +167,14 @@ public class AnswerActivity extends AppCompatActivity
                     }
                 } else {
                     choiceQuestionSubmitFragment.updateData(questionStatusList);
+                    // 设置标题居中
+                    ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) binding.entityTitle.getLayoutParams();
+                    params.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
+                    params.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+                    params.startToEnd = ConstraintLayout.LayoutParams.UNSET;
+                    params.endToStart = ConstraintLayout.LayoutParams.UNSET;
+                    binding.entityTitle.setLayoutParams(params);
+                    // 去除
                     binding.starQuestionButton.setVisibility(View.GONE);
                     binding.workProgress.setVisibility(View.GONE);
                 }

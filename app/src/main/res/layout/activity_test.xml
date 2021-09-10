@@ -45,48 +45,15 @@
             tools:layout_conversion_absoluteWidth="206dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/chooseSubjectLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/searchButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topBar">
-
-        <AutoCompleteTextView
-            android:id="@+id/chooseSubject"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="学科"
-            android:inputType="none" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <Button
-        android:id="@+id/searchButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:onClick="generate"
-        android:text="生成"
-        app:cornerRadius="100dp"
-        app:layout_constraintBottom_toBottomOf="@+id/chooseSubjectLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/chooseSubjectLayout" />
-
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:text="请输入知识点"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chooseSubjectLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/topBar" />
 
     <Button
         android:id="@+id/button5"
@@ -111,17 +78,37 @@
         app:layout_constraintTop_toBottomOf="@+id/button5">
 
         <LinearLayout
-            android:id="@+id/keyword_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
             android:orientation="vertical">
-
+            <LinearLayout
+                android:id="@+id/keyword_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="vertical">
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="75dp"/>
 
         </LinearLayout>
 
     </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:onClick="generate"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:icon="@drawable/search"
+        android:text="生成题目"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

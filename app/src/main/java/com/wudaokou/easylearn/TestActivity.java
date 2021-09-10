@@ -7,13 +7,16 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -46,8 +49,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TestActivity extends AppCompatActivity {
 
-    TextInputLayout chooseSubjectLayout;
-    AutoCompleteTextView chooseSubject;
     LinearLayout keywordLayout;
     LoadingDialog loadingDialog;
 
@@ -56,18 +57,13 @@ public class TestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
 
-        chooseSubject = findViewById(R.id.chooseSubject);
         keywordLayout = findViewById(R.id.keyword_layout);
-        chooseSubjectLayout = findViewById(R.id.chooseSubjectLayout);
         loadingDialog = new LoadingDialog(this);
 
         // 选择学科
         String[] subjects = getResources().getStringArray(R.array.subjects);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                 this, R.layout.dropdown_subject_item, subjects);
-        chooseSubject.setAdapter(arrayAdapter);
-
-        chooseSubject.setOnItemClickListener((parent, view, position, id) -> chooseSubjectLayout.setError(null));
 
         increaseKeywordLayout();
     }
@@ -100,6 +96,13 @@ public class TestActivity extends AppCompatActivity {
                 newInputLayout.setError(null);
             }
         });
+        newEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if(actionId == EditorInfo.IME_ACTION_SEARCH){
+                generate(v);
+                return true;
+            }
+            return false;
+        });
         return newEditText;
     }
 
@@ -119,12 +122,6 @@ public class TestActivity extends AppCompatActivity {
 
     public void generate(View view) {
         boolean valid = true;
-        String subject = chooseSubject.getText().toString();
-        String subjectInEnglish = SubjectMapChineseToEnglish.getMap().get(subject);
-        if(subject.equals("")){
-            chooseSubjectLayout.setError("请选择学科");
-            valid = false;
-        }
         List<String> labels = new ArrayList<>();
         for(int i = 0; i < keywordLayout.getChildCount(); i++){
             LinearLayout iLayout = (LinearLayout) keywordLayout.getChildAt(i);
