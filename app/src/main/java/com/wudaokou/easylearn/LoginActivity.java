@@ -156,14 +156,13 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
 
                 BackendHandler.initDatabaseFromBackend(LoginActivity.this);
+                BackendHandler.initPreference(LoginActivity.this);
                 LoginActivity.this.finish();
             }
 
             @Override
             public void onFailure(@NotNull Call<LoginReturn> call, @NotNull Throwable t) { }
         });
-
-
     }
 
     public void registerButtonOnClick(View view) {

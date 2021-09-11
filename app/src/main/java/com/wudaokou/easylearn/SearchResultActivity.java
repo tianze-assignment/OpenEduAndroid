@@ -313,6 +313,9 @@ public class SearchResultActivity extends AppCompatActivity {
                     adapter.updateData(activeData);
                     adapter.notifyDataSetChanged();
                 }
+                if (data.size() == 0) {
+                    binding.notFoundLayout.setVisibility(View.VISIBLE);
+                }
                 setFilter();
             }
 
@@ -320,6 +323,7 @@ public class SearchResultActivity extends AppCompatActivity {
             public void onFailure(@NotNull Call<JSONArray<SearchResult>> call,
                                   @NotNull Throwable t) {
                 setFilter();
+                binding.notFoundLayout.setVisibility(View.VISIBLE);
             }
         });
     }

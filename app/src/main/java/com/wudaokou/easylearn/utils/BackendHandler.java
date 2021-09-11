@@ -1,8 +1,12 @@
 package com.wudaokou.easylearn.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.preference.PreferenceManager;
+
+import com.wudaokou.easylearn.bean.SubjectChannelBean;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.data.SearchRecord;
@@ -12,6 +16,7 @@ import com.wudaokou.easylearn.retrofit.BackendService;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -64,5 +69,42 @@ public class BackendHandler {
                 Log.e("backend_handler", "update search record error");
             }
         });
+    }
+
+    public static void initPreference(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String token = sharedPreferences.getString("token", "-1");
+        if(!token.equals("-1"))
+            Constant.backendToken = token;
+
+        boolean isFirst = sharedPreferences.getBoolean("isFirst", true);
+        if (isFirst) {
+            Log.e("main", "first login");
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("isFirst", false);
+
+            List<SubjectChannelBean> myChannelList = new ArrayList<>();
+            myChannelList.add(new SubjectChannelBean("语文", "chinese"));
+            myChannelList.add(new SubjectChannelBean("数学", "math"));
+            myChannelList.add(new SubjectChannelBean("英语", "english"));
+
+            List<SubjectChannelBean> moreChannelList =  new ArrayList<>();
+            moreChannelList.add(new SubjectChannelBean("物理", "physics"));
+            moreChannelList.add(new SubjectChannelBean("化学", "chemistry"));
+            moreChannelList.add(new SubjectChannelBean("生物", "biology"));
+            moreChannelList.add(new SubjectChannelBean("历史", "history"));
+            moreChannelList.add(new SubjectChannelBean("地理", "geo"));
+            moreChannelList.add(new SubjectChannelBean("政治", "politics"));
+
+            ListDataSave listDataSave = new ListDataSave(context, "channel");
+            listDataSave.setDataList("myChannel", myChannelList);
+            listDataSave.setDataList("moreChannel", moreChannelList);
+
+            // 设置试题批阅方式
+            editor.putBoolean("setting_test_info_instant", false);
+            editor.putBoolean("setting_test_test_instant", false);
+            editor.putBoolean("setting_test_recommend_instant", true);
+            editor.apply();
+        }
     }
 }

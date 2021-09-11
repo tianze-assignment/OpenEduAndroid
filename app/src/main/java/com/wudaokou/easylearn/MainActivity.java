@@ -78,39 +78,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initSharedPreferences() {
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String token = sharedPreferences.getString("token", "-1");
-        if(!token.equals("-1"))
-            Constant.backendToken = token;
-
-        boolean isFirst = sharedPreferences.getBoolean("isFirst", true);
-        if (isFirst) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("isFirst", false);
-
-            List<SubjectChannelBean> myChannelList = new ArrayList<>();
-            myChannelList.add(new SubjectChannelBean("语文", "chinese"));
-            myChannelList.add(new SubjectChannelBean("数学", "math"));
-            myChannelList.add(new SubjectChannelBean("英语", "english"));
-
-            List<SubjectChannelBean> moreChannelList =  new ArrayList<>();
-            moreChannelList.add(new SubjectChannelBean("物理", "physics"));
-            moreChannelList.add(new SubjectChannelBean("化学", "chemistry"));
-            moreChannelList.add(new SubjectChannelBean("生物", "biology"));
-            moreChannelList.add(new SubjectChannelBean("历史", "history"));
-            moreChannelList.add(new SubjectChannelBean("地理", "geo"));
-            moreChannelList.add(new SubjectChannelBean("政治", "politics"));
-
-            ListDataSave listDataSave = new ListDataSave(this, "channel");
-            listDataSave.setDataList("myChannel", myChannelList);
-            listDataSave.setDataList("moreChannel", moreChannelList);
-
-            // 设置试题批阅方式
-            editor.putBoolean("setting_test_info_instant", false);
-            editor.putBoolean("setting_test_test_instant", false);
-            editor.putBoolean("setting_test_recommend_instant", true);
-            editor.apply();
-        }
+        BackendHandler.initPreference(MainActivity.this);
     }
 
     @Override

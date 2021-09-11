@@ -18,6 +18,7 @@ import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.CheckUsernameReturn;
 import com.wudaokou.easylearn.retrofit.LoginParam;
 import com.wudaokou.easylearn.retrofit.LoginReturn;
+import com.wudaokou.easylearn.utils.BackendHandler;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -192,6 +193,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 Toast.makeText(RegisterActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
 
+                BackendHandler.initPreference(RegisterActivity.this);
                 RegisterActivity.this.finish();
             }
 

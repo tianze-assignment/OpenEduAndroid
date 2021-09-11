@@ -64,6 +64,7 @@ public class UserFragment extends Fragment{
                 .setPositiveButton("确认", (dialog, which) -> {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("token", "-1");
+                    editor.putBoolean("isFirst", true);
                     editor.apply();
                     Constant.backendToken = "";
                     arrangeLayout();
@@ -148,7 +149,7 @@ public class UserFragment extends Fragment{
     }
 
     @Override
-    public void onCreateOptionsMenu(@NotNull Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NotNull Menu menu, @NotNull MenuInflater inflater) {
         menu.clear();
     }
 }

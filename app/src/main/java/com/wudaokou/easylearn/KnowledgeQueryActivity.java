@@ -36,6 +36,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
+import java.util.RandomAccess;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -157,7 +159,12 @@ public class KnowledgeQueryActivity extends AppCompatActivity {
                             bestAnswer.getMessage() : bestAnswer.getValue();
                     sendAnswer(value);
                 } else {
-                    sendAnswer("暂时找不到答案");
+                    String[] answerArray = {
+                            "问题太难了，暂时还找不到答案哦", "笨笨的后端不知道怎么回答，重新换个问题吧",
+                            "我实在想不出答案", "问我简单点的问题吧，这么难的问题我不知道怎么回答"
+                    };
+                    Random random = new Random();
+                    sendAnswer(answerArray[random.nextInt() % answerArray.length]);
                 }
             }
 
