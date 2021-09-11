@@ -202,7 +202,7 @@ public class EntityGraphFragment extends Fragment {
             public void onResponse(@NotNull Call<JSONObject<EntityInfo>> call,
                                    @NotNull Response<JSONObject<EntityInfo>> response) {
                 JSONObject<EntityInfo> jsonObject = response.body();
-                if (jsonObject != null) {
+                if (jsonObject != null && jsonObject.data != null) {
                     if (jsonObject.data.content != null) {
 
                         data = jsonObject.data.content;

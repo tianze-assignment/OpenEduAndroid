@@ -89,13 +89,14 @@ public class BrowsingHistoryActivity extends AppCompatActivity {
                     }
                     adapter.updateData(homeCourseItemList);
                     adapter.notifyDataSetChanged();
+                    binding.progressBar2.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call<List<BackendObject>> call,
                                   @NotNull Throwable t) {
-
+                binding.progressBar2.setVisibility(View.GONE);
             }
         });
     }

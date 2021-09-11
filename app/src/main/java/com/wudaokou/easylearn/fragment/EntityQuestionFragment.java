@@ -120,7 +120,9 @@ public class EntityQuestionFragment extends Fragment {
     }
 
     public void hideNotFoundLayout(){
-        binding.notFoundLayout.setVisibility(View.GONE);
+//        requireActivity().findViewById(R.id.not_found_layout).setVisibility(View.GONE);
+        if (binding != null)
+            binding.notFoundLayout.setVisibility(View.GONE);
     }
 
     public void getStarQuestion() {
@@ -133,6 +135,7 @@ public class EntityQuestionFragment extends Fragment {
             @Override
             public void onResponse(@NotNull Call<List<Question>> call,
                                    @NotNull Response<List<Question>> response) {
+                binding.progressBar.setVisibility(View.GONE);
                 if (response.body() != null) {
                     data = response.body();
                     for (Question question : data)
@@ -147,6 +150,7 @@ public class EntityQuestionFragment extends Fragment {
             @Override
             public void onFailure(@NotNull Call<List<Question>> call,
                                   @NotNull Throwable t) {
+                binding.progressBar.setVisibility(View.GONE);
             }
         });
     }
