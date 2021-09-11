@@ -134,6 +134,7 @@ public class QuestionRecommendActivity extends AppCompatActivity {
                 Intent intent = new Intent(QuestionRecommendActivity.this, AnswerActivity.class);
                 intent.putExtra("questionList", (Serializable) rsp);
                 intent.putExtra("label", "推荐");
+                intent.putExtra("immediateAnswer", sharedPreferences.getBoolean("setting_test_recommend_instant", true));
                 loadingDialog.dismiss();
                 startActivity(intent);
             }

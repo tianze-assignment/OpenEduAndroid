@@ -1,8 +1,10 @@
 package com.wudaokou.easylearn;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -51,12 +53,14 @@ public class TestActivity extends AppCompatActivity {
 
     LinearLayout keywordLayout;
     LoadingDialog loadingDialog;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         keywordLayout = findViewById(R.id.keyword_layout);
         loadingDialog = new LoadingDialog(this);
 
@@ -215,7 +219,7 @@ public class TestActivity extends AppCompatActivity {
                 intent.putExtra("position", 0);
                 intent.putExtra("questionList", (Serializable)questionList);
                 intent.putExtra("label", "专项测试");
-                intent.putExtra("immediateAnswer", false);
+                intent.putExtra("immediateAnswer", sharedPreferences.getBoolean("setting_test_test_instant", false));
                 startActivity(intent);
             }
 

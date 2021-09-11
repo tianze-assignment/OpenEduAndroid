@@ -21,6 +21,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.wudaokou.easylearn.BrowsingHistoryActivity;
 import com.wudaokou.easylearn.ChangePasswordActivity;
 import com.wudaokou.easylearn.LoginActivity;
+import com.wudaokou.easylearn.SettingActivity;
 import com.wudaokou.easylearn.StarHistoryActivity;
 import com.wudaokou.easylearn.constant.Constant;
 import com.wudaokou.easylearn.data.MyDatabase;
@@ -44,6 +45,11 @@ public class UserFragment extends Fragment{
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
         arrangeLayout();
 
+        binding.settingButton.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), SettingActivity.class);
+            startActivity(intent);
+        });
+
         binding.loginButton.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), LoginActivity.class);
             startActivity(intent);
@@ -62,7 +68,6 @@ public class UserFragment extends Fragment{
                     Constant.backendToken = "";
                     arrangeLayout();
 
-                    // TODO 删库
                     MyDatabase.databaseWriteExecutor.submit(new Runnable() {
                         @Override
                         public void run() {

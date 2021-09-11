@@ -105,6 +105,12 @@ public class MainActivity extends AppCompatActivity {
             ListDataSave listDataSave = new ListDataSave(this, "channel");
             listDataSave.setDataList("myChannel", myChannelList);
             listDataSave.setDataList("moreChannel", moreChannelList);
+
+            // 设置试题批阅方式
+            editor.putBoolean("setting_test_info_instant", false);
+            editor.putBoolean("setting_test_test_instant", false);
+            editor.putBoolean("setting_test_recommend_instant", true);
+            editor.apply();
         }
     }
 

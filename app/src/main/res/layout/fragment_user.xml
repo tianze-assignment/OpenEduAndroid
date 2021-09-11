@@ -43,6 +43,19 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_conversion_absoluteHeight="50dp"
             tools:layout_conversion_absoluteWidth="206dp" />
+
+        <ImageButton
+            android:id="@+id/setting_button"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_baseline_settings"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -50,7 +63,7 @@
         android:id="@+id/login_button"
         android:layout_width="300dp"
         android:layout_height="48dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="48dp"
         android:rotationX="0"
         android:text="登录"
         android:visibility="invisible"

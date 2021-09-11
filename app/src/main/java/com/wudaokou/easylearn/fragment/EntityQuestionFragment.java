@@ -1,9 +1,11 @@
 package com.wudaokou.easylearn.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
@@ -55,6 +57,7 @@ public class EntityQuestionFragment extends Fragment {
 //    private LoadingDialog loadingDialog;
     private String label, course;
     boolean forStarHistory;
+    SharedPreferences sharedPreferences;
 
     public EntityQuestionFragment(final String course, final String label) {
         this.course = course;
@@ -89,6 +92,8 @@ public class EntityQuestionFragment extends Fragment {
         binding = FragmentEntityQuestionBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
+
         if (forStarHistory) {
             getStarQuestion();
         }
@@ -103,7 +108,7 @@ public class EntityQuestionFragment extends Fragment {
                 intent.putExtra("position", position);
                 intent.putExtra("questionList", (Serializable)data);
                 intent.putExtra("label", label);
-                intent.putExtra("immediateAnswer", false);
+                intent.putExtra("immediateAnswer", sharedPreferences.getBoolean("setting_test_info_instant", false));
                 startActivity(intent);
             }
         });

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/exploreBackButton"
+            android:layout_width="60dp"
+            android:layout_height="25dp"
+            android:background="#FFFFFF"
+            android:scaleType="fitCenter"
+            android:src="@drawable/backward_arrow"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_conversion_absoluteHeight="50dp"
+            tools:layout_conversion_absoluteWidth="206dp" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="设置"
+            android:textColor="#B9000000"
+            android:textSize="19sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/exploreBackButton"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_conversion_absoluteHeight="50dp"
+            tools:layout_conversion_absoluteWidth="206dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/topBar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="详情页试题批阅方式" />
+                <RadioGroup
+                    android:id="@+id/setting_test_info_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:checkedButton="@id/setting_test_info_final">
+                    <RadioButton
+                        android:id="@+id/setting_test_info_instant"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="作答一题后立即批阅"/>
+                    <RadioButton
+                        android:id="@+id/setting_test_info_final"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="全部作答后统一打分"/>
+                </RadioGroup>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="专项测试页试题批阅方式" />
+                <RadioGroup
+                    android:id="@+id/setting_test_test_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:checkedButton="@id/setting_test_test_final">
+                    <RadioButton
+                        android:id="@+id/setting_test_test_instant"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="作答一题后立即批阅"/>
+                    <RadioButton
+                        android:id="@+id/setting_test_test_final"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="全部作答后统一打分"/>
+                </RadioGroup>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="试题推荐页试题批阅方式" />
+                <RadioGroup
+                    android:id="@+id/setting_test_recommend_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:checkedButton="@id/setting_test_recommend_instant">
+                    <RadioButton
+                        android:id="@+id/setting_test_recommend_instant"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="作答一题后立即批阅"/>
+                    <RadioButton
+                        android:id="@+id/setting_test_recommend_final"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="全部作答后统一打分"/>
+                </RadioGroup>
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

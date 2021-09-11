@@ -14,7 +14,8 @@
         android:theme="@style/Theme.EasyLearn"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup">
-        <activity android:name=".OrganizeResultActivity"></activity>
+        <activity android:name=".SettingActivity"></activity>
+        <activity android:name=".OrganizeResultActivity" />
         <activity android:name=".OrganizeActivity" />
         <activity android:name=".KnowledgeQueryActivity" />
         <activity android:name=".ChangePasswordActivity" />
