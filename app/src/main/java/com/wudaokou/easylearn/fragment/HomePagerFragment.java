@@ -78,14 +78,15 @@ public class HomePagerFragment extends Fragment {
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        binding = FragmentHomePagerBinding.inflate(inflater, container, false);
 
         if (forStarHistory) {
+            binding.processBar.setVisibility(View.GONE);
             initForStarHistory();
         } else {
             initForHomePage();
         }
 
-        binding = FragmentHomePagerBinding.inflate(inflater, container, false);
         binding.pagerRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new HomeCourseItemAdapter(homeCourseItemList, false);
         adapter.setOnItemClickListener(new HomeCourseItemAdapter.OnItemClickListener() {
@@ -144,13 +145,6 @@ public class HomePagerFragment extends Fragment {
     }
 
     public void initForHomePage() {
-//        loadingDialog = new LoadingDialog(requireContext());
-//        loadingDialog.show();
-//        binding.loading.show();
-//        binding.loading.setVisibilityAfterHide(View.GONE);
-
-
-
         keyWordList = SubjectKeyWords.getMap().get(course);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.eduKGBaseUrl)

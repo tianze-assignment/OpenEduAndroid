@@ -79,13 +79,7 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
         holder.starButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchResult.hasStar = !searchResult.hasStar;
-
-                if (searchResult.hasStar) {
-                    holder.starButton.setImageResource(R.drawable.heart_fill);
-                } else {
-                    holder.starButton.setImageResource(R.drawable.heart_blank);
-                }
+                boolean isStar = !searchResult.hasStar;
 
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(Constant.backendBaseUrl)
@@ -93,7 +87,7 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
                         .build();
                 BackendService service = retrofit.create(BackendService.class);
 
-                if (searchResult.hasStar) {
+                if (isStar) {
                    service.starEntity(Constant.backendToken,
                            new HistoryParam(searchResult.course.toUpperCase(),
                             searchResult.label, searchResult.uri, searchResult.category, searchResult.searchKey))
@@ -102,8 +96,9 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
                         public void onResponse(@NotNull Call<BackendObject> call,
                                                @NotNull Response<BackendObject> response) {
                             if (response.body() != null) {
+                                searchResult.hasStar = !searchResult.hasStar;
                                 searchResult.id = response.body().id;
-                                Log.e("retrofit", "收藏成功!");
+                                holder.starButton.setImageResource(R.drawable.heart_fill);
                                 Toast.makeText(v.getContext(), "收藏成功!", Toast.LENGTH_LONG).show();
                                 MyDatabase.databaseWriteExecutor.submit(new Runnable() {
                                     @Override
@@ -112,19 +107,12 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
                                                 .updateSearchResult(searchResult);
                                     }
                                 });
-                            } else {
-                                Log.e("retrofit", "null body!");
-                                Log.e("retrofit", String.format("code: %d", response.code()));
-                                Log.e("retrofit", String.format("error body: %s", response.errorBody()));
-                                Log.e("retrofit", String.format("message: %s", response.message()));
-                                Log.e("retrofit", String.format("body: %s", response.body()));
                             }
                         }
 
                         @Override
                         public void onFailure(@NotNull Call<BackendObject> call,
                                               @NotNull Throwable t) {
-                            Log.e("retrofit", "收藏失败!");
                             Toast.makeText(v.getContext(), "收藏失败!", Toast.LENGTH_LONG).show();
                         }
                     });
@@ -134,13 +122,14 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
                         @Override
                         public void onResponse(@NotNull Call<BackendObject> call,
                                                @NotNull Response<BackendObject> response) {
+                            searchResult.hasStar = !searchResult.hasStar;
+                            holder.starButton.setImageResource(R.drawable.heart_blank);
+                            Toast.makeText(v.getContext(), "取消收藏成功!", Toast.LENGTH_LONG).show();
                             MyDatabase.databaseWriteExecutor.submit(new Runnable() {
                                 @Override
                                 public void run() {
                                     MyDatabase.getDatabase(v.getContext()).searchResultDAO()
                                             .updateSearchResult(searchResult);
-                                    Log.e("retrofit", "取消收藏成功!");
-                                    Toast.makeText(v.getContext(), "取消收藏成功!", Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
@@ -148,7 +137,6 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
                         @Override
                         public void onFailure(@NotNull Call<BackendObject> call,
                                               @NotNull Throwable t) {
-                            Log.e("retrofit", "取消收藏失败!");
                             Toast.makeText(v.getContext(), "取消收藏失败!", Toast.LENGTH_LONG).show();
                         }
                     });

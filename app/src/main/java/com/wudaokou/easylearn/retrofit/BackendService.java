@@ -1,6 +1,7 @@
 package com.wudaokou.easylearn.retrofit;
 
 import com.wudaokou.easylearn.data.Question;
+import com.wudaokou.easylearn.data.SearchResult;
 
 import java.util.List;
 
@@ -89,4 +90,16 @@ public interface BackendService {
 
     @PUT("/changePassword")
     Call<String> changePassword(@Body ChangePassParam changePassParam);
+
+
+    // 以下为经由后端向服务器请求数据的接口
+    @GET("/open/instanceList")
+    Call<JSONArray<SearchResult>> instanceList(@Header("Authorization") String backendToken,
+                                          @Query("id") String id,
+                                          @Query("course") String course,
+                                          @Query("searchKey") String searchKey);
+
+    @GET("/open/infoHasStar")
+    Call<SearchResult> infoHasStar(@Header("Authorization") String backendToken,
+                                   @Query("uri") String uri);
 }

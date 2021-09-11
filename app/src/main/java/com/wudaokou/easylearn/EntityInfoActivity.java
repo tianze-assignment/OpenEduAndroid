@@ -173,16 +173,45 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
         setIntent(intent);
     }
 
+    public void updateStar() {
+        new Retrofit.Builder()
+                .baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build().create(BackendService.class)
+                .infoHasStar(Constant.backendToken, searchResult.uri)
+                .enqueue(new Callback<SearchResult>() {
+            @Override
+            public void onResponse(@NotNull Call<SearchResult> call,
+                                   @NotNull Response<SearchResult> response) {
+                boolean valid = false;
+                if (response.body() != null) {
+                    searchResult.hasStar = response.body().hasStar;
+                    searchResult.id = response.body().id;
+                    MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            MyDatabase.getDatabase(EntityInfoActivity.this).searchResultDAO()
+                                    .updateSearchResult(searchResult);
+                        }
+                    });
+                    if (searchResult.hasStar)
+                        runOnUiThread(()->{binding.imageButtonStar.setImageResource(R.drawable.star_fill);});
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<SearchResult> call,
+                                  @NotNull Throwable t) {
+
+            }
+        });
+    }
+
     public void setStarListener() {
         binding.imageButtonStar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchResult.hasStar = !searchResult.hasStar;
-                if (searchResult.hasStar) {
-                    binding.imageButtonStar.setImageResource(R.drawable.star_fill);
-                } else {
-                    binding.imageButtonStar.setImageResource(R.drawable.star_blank);
-                }
+                boolean isStar = !searchResult.hasStar;
 
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(Constant.backendBaseUrl)
@@ -190,41 +219,45 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                         .build();
                 BackendService service = retrofit.create(BackendService.class);
 
-                if (searchResult.hasStar) {
+                if (isStar) {
                     service.starEntity(Constant.backendToken,
                             new HistoryParam(searchResult.course.toUpperCase(), searchResult.label,
                                     searchResult.uri, searchResult.category, searchResult.searchKey))
                             .enqueue(new Callback<BackendObject>() {
                                 @Override
-                                public void onResponse(@NotNull Call<BackendObject> call,
-                                                       @NotNull Response<BackendObject> response) {
-                                    if (response.body() != null) {
-                                        searchResult.id = response.body().id;
-                                        MyDatabase.databaseWriteExecutor.submit(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                MyDatabase.getDatabase(v.getContext()).searchResultDAO()
-                                                        .updateSearchResult(searchResult);
-                                            }
-                                        });
-                                        Snackbar.make(v, "收藏成功", Snackbar.LENGTH_LONG)
-                                                .setAction("Action", null).show();
+                        public void onResponse(@NotNull Call<BackendObject> call,
+                                               @NotNull Response<BackendObject> response) {
+                            if (response.body() != null) {
+                                searchResult.hasStar = !searchResult.hasStar;
+                                searchResult.id = response.body().id;
+                                binding.imageButtonStar.setImageResource(R.drawable.star_fill);
+                                MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        MyDatabase.getDatabase(v.getContext()).searchResultDAO()
+                                                .updateSearchResult(searchResult);
                                     }
-                                }
+                                });
+                                Snackbar.make(v, "收藏成功", Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                            }
+                        }
 
-                                @Override
-                                public void onFailure(@NotNull Call<BackendObject> call,
-                                                      @NotNull Throwable t) {
-                                    Snackbar.make(v, "收藏失败!", Snackbar.LENGTH_LONG)
-                                            .setAction("Action", null).show();
-                                }
-                            });
+                        @Override
+                        public void onFailure(@NotNull Call<BackendObject> call,
+                                              @NotNull Throwable t) {
+                            Snackbar.make(v, "收藏失败!", Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+                        }
+                    });
                 } else {
                     service.cancelStarEntity(Constant.backendToken,
                             searchResult.id).enqueue(new Callback<BackendObject>() {
                         @Override
                         public void onResponse(@NotNull Call<BackendObject> call,
                                                @NotNull Response<BackendObject> response) {
+                            searchResult.hasStar = !searchResult.hasStar;
+                            binding.imageButtonStar.setImageResource(R.drawable.star_blank);
                             MyDatabase.databaseWriteExecutor.submit(new Runnable() {
                                 @Override
                                 public void run() {

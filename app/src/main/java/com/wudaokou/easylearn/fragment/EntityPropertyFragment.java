@@ -49,7 +49,6 @@ public class EntityPropertyFragment extends Fragment {
     public List<Property> data;
     private FragmentEntityPropertyBinding binding;
     private EntityPropertyAdapter adapter;
-    private LoadingDialog loadingDialog;
     private String course;
     private String label;
     private String uri;
@@ -171,11 +170,8 @@ public class EntityPropertyFragment extends Fragment {
             public void onResponse(@NotNull Call<JSONObject<EntityInfo>> call,
                                    @NotNull Response<JSONObject<EntityInfo>> response) {
                 JSONObject<EntityInfo> jsonObject = response.body();
-                Log.e("retrofit", "http ok");
                 if (jsonObject != null) {
                     if (jsonObject.data.property != null) {
-                        Log.e("retrofit", String.format("property size: %s",
-                                jsonObject.data.property.size()));
                         data = jsonObject.data.property;
                         sortData();
                         updateData(data);
@@ -186,19 +182,15 @@ public class EntityPropertyFragment extends Fragment {
                             property.hasRead = false;
                             property.hasStar = false;
                         }
-
                         // 在filterProperty里进行插入数据库的操作
                         filterProperty(data);
                     }
                 }
-//                loadingDialog.dismiss();
             }
 
             @Override
             public void onFailure(@NotNull Call<JSONObject<EntityInfo>> call,
                                   @NotNull Throwable t) {
-                Log.e("retrofit", "http error");
-//                loadingDialog.dismiss();
             }
         });
     }
