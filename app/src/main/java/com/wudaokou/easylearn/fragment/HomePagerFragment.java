@@ -81,7 +81,7 @@ public class HomePagerFragment extends Fragment {
         binding = FragmentHomePagerBinding.inflate(inflater, container, false);
 
         if (forStarHistory) {
-            binding.processBar.setVisibility(View.GONE);
+//            binding.processBar.setVisibility(View.GONE);
             initForStarHistory();
         } else {
             initForHomePage();
@@ -127,6 +127,7 @@ public class HomePagerFragment extends Fragment {
                         searchResult.hasRead = true;
                         homeCourseItemList.add(new HomeCourseItem(searchResult, null));
                     }
+                    binding.processBar.setVisibility(View.GONE);
                     if (adapter != null) {
                         adapter.updateData(homeCourseItemList);
                         adapter.notifyDataSetChanged();

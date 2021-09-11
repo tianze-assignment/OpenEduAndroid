@@ -18,9 +18,10 @@ public class SubjectKeyWords {
             "定义", "单位"
     };
     public static String[] english = {
-            "english", "actor", "home", "search", "train", "me", "this", "be", "there", "human", "war",
-            "university", "work", "money", "hard", "tear", "mouth", "ear", "movie", "song", "ball",
-            "how", "what", "when", "good", "why", "do", "you", "and", "or", "love", "miss"
+            "english", "actor","this", "be", "there", "human", "work",
+            "how", "what", "when", "good", "why", "do", "you", "and", "or", "a", "b", "c", "d", "e",
+            "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
+            "w", "x", "y", "z"
     };
     public static String[] physics = {
             "物理", "力", "能量", "速度", "电", "磁", "摩擦", "光", "功", "热", "声", "波", "辐射", "振动",
