@@ -33,7 +33,6 @@
             android:id="@+id/textView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-thin"
             android:gravity="center"
             android:text="发现"
             android:textColor="#B9000000"

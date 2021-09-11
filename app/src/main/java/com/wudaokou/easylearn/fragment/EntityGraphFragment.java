@@ -59,9 +59,6 @@ public class EntityGraphFragment extends Fragment {
         binding = FragmentEntityGraphBinding.inflate(inflater, container, false);
 //        graphSurfaceView = binding.mySurfaceView;
         echartView = binding.echartView;
-
-        binding.zoomInButton.setOnClickListener(v -> echartView.zoomIn());
-
         checkDatabase();
         return binding.getRoot();
     }
@@ -164,7 +161,8 @@ public class EntityGraphFragment extends Fragment {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        Log.d("json", json);
+        json = json.replace("\\\"", "");
+//        Log.d("json", json);
         return json;
     }
 

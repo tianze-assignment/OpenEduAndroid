@@ -204,13 +204,11 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
         public final TextView category;
         public final TextView label;
         public final ImageButton starButton;
-        public final ImageButton shareButton;
         public VH(View v) {
             super(v);
             category = (TextView) v.findViewById(R.id.searchResultLabel);
             label = (TextView) v.findViewById(R.id.searchResultText);
             starButton = (ImageButton) v.findViewById(R.id.starButton);
-            shareButton = (ImageButton) v.findViewById(R.id.shareButton);
         }
     }
 
