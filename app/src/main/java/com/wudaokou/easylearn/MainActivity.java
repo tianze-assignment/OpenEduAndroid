@@ -87,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
         if (isFirst) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("isFirst", false);
-            editor.apply();
 
             List<SubjectChannelBean> myChannelList = new ArrayList<>();
             myChannelList.add(new SubjectChannelBean("语文", "chinese"));
