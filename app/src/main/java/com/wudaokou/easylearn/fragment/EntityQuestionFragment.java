@@ -140,9 +140,12 @@ public class EntityQuestionFragment extends Fragment {
                     data = response.body();
                     for (Question question : data)
                         question.hasStar = true;
-                    if (adapter != null) {
+                    if (adapter != null && data.size() != 0) {
                         adapter.updateData(data);
                         adapter.notifyDataSetChanged();
+                    }
+                    if (data.size() == 0) {
+                        binding.notFoundLayout.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -151,6 +154,7 @@ public class EntityQuestionFragment extends Fragment {
             public void onFailure(@NotNull Call<List<Question>> call,
                                   @NotNull Throwable t) {
                 binding.progressBar.setVisibility(View.GONE);
+                binding.notFoundLayout.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -194,12 +198,8 @@ public class EntityQuestionFragment extends Fragment {
             public void onResponse(@NotNull Call<JSONArray<Question>> call,
                                    @NotNull Response<JSONArray<Question>> response) {
                 JSONArray<Question> jsonArray = response.body();
-                Log.e("retrofit", "http ok");
                 if (jsonArray != null) {
                     if (jsonArray.data != null) {
-                        Log.e("retrofit question", String.format("property size: %s",
-                                jsonArray.data.size()));
-
                         // 只展示选择题
                         data = new ArrayList<>();
                         for (Question question: jsonArray.data) {

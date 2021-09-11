@@ -279,7 +279,7 @@ public class SearchResultActivity extends AppCompatActivity {
             public void onResponse(@NotNull Call<JSONArray<SearchResult>> call,
                                    @NotNull Response<JSONArray<SearchResult>> response) {
                 JSONArray<SearchResult> jsonArray = response.body();
-                if (jsonArray != null) {
+                if (jsonArray != null && jsonArray.data != null) {
                     data = jsonArray.data;
                     activeData = data;
                     Set<String> set = new HashSet<>();  //去重
