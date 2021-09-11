@@ -49,6 +49,8 @@ public class SubjectManageActivity extends AppCompatActivity {
 
         listDataSave = new ListDataSave(this, "channel");
 
+        binding.backButton.setOnClickListener(v -> SubjectManageActivity.this.finish());
+
         mRecyclerView = binding.manageRecyclerView;
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {

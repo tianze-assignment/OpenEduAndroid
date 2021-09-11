@@ -19,15 +19,15 @@
 
         <ImageButton
             android:id="@+id/goBackButton"
-            android:layout_width="43dp"
-            android:layout_height="35dp"
-            android:layout_marginStart="8dp"
+            android:layout_width="60dp"
+            android:layout_height="25dp"
             android:background="@color/white"
             android:onClick="goBack"
+            android:scaleType="fitCenter"
+            android:src="@drawable/backward_arrow"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@mipmap/back" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/entityTitle"
