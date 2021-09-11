@@ -180,7 +180,7 @@ public class EntityContentFragment extends Fragment {
                                    @NotNull Response<JSONObject<EntityInfo>> response) {
                 JSONObject<EntityInfo> jsonObject = response.body();
                 Log.e("retrofit content", "http ok");
-                if (jsonObject != null) {
+                if (jsonObject != null && jsonObject.data != null) {
                     if (jsonObject.data.content != null) {
                         Log.e("retrofit content", String.format("content size: %s",
                                 jsonObject.data.content.size()));

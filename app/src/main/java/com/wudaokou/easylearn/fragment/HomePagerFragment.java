@@ -132,15 +132,19 @@ public class HomePagerFragment extends Fragment {
                         adapter.updateData(homeCourseItemList);
                         adapter.notifyDataSetChanged();
                     }
+                    if (homeCourseItemList.size() == 0)
+                        binding.notFoundLayout.setVisibility(View.VISIBLE);
+                    else
+                        binding.notFoundLayout.setVisibility(View.GONE);
                 } else {
-                    Log.e("home page for star", "get null history");
+                    binding.notFoundLayout.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call<List<BackendObject>> call,
                                   @NotNull Throwable t) {
-                Log.e("home page for star", "retrofit connect backend error");
+                binding.notFoundLayout.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -254,7 +258,11 @@ public class HomePagerFragment extends Fragment {
         } finally {
 //            loadingDialog.dismiss();
 //            binding.loading.hide();
-            getActivity().runOnUiThread(()->{binding.processBar.setVisibility(View.GONE);});
+            getActivity().runOnUiThread(()->{
+                binding.processBar.setVisibility(View.GONE);
+                if (homeCourseItemList.size() == 0)
+                    binding.notFoundLayout.setVisibility(View.VISIBLE);
+            });
         }
     }
 }

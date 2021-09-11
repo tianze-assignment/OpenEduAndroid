@@ -90,6 +90,8 @@ public class BrowsingHistoryActivity extends AppCompatActivity {
                     adapter.updateData(homeCourseItemList);
                     adapter.notifyDataSetChanged();
                     binding.progressBar2.setVisibility(View.GONE);
+                    if (homeCourseItemList.size() == 0)
+                        binding.notFoundLayout.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -97,6 +99,7 @@ public class BrowsingHistoryActivity extends AppCompatActivity {
             public void onFailure(@NotNull Call<List<BackendObject>> call,
                                   @NotNull Throwable t) {
                 binding.progressBar2.setVisibility(View.GONE);
+                binding.notFoundLayout.setVisibility(View.VISIBLE);
             }
         });
     }

@@ -171,7 +171,7 @@ public class TestActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(@NotNull Call<JSONArray<Question>> call,
                                        @NotNull Response<JSONArray<Question>> response) {
-                    if (response.body() != null) {
+                    if (response.body() != null && response.body().data != null) {
                         for (Question question : response.body().data) {
                             if (question.qAnswer.length() == 1) {
 //                                 只看选择题
