@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -53,6 +54,14 @@ public class RegisterActivity extends AppCompatActivity {
         passwordLayout = findViewById(R.id.passwordLayout);
         confirmPasswordInput = findViewById(R.id.confirmPasswordInput);
         confirmPasswordLayout = findViewById(R.id.confirmPasswordLayout);
+
+        confirmPasswordInput.setOnEditorActionListener((v, actionId, event) -> {
+            if(actionId == EditorInfo.IME_ACTION_DONE){
+                register(v);
+                return true;
+            }
+            return false;
+        });
 
         setTextLayoutError();
     }

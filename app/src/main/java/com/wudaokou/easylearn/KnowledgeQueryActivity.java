@@ -66,6 +66,8 @@ public class KnowledgeQueryActivity extends AppCompatActivity {
         binding = ActivityKnowledgeQueryBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        binding.imageButton3.setOnClickListener(v -> finish());
+
         messagesList = binding.messageList;
         chooseSubjectText = binding.chooseQuerySubject;
         inputEditText = binding.inputEditText;

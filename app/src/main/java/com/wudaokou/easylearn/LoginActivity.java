@@ -8,8 +8,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -58,6 +58,14 @@ public class LoginActivity extends AppCompatActivity {
         usernameLayout = findViewById(R.id.usernameLayout);
         passwordInput = findViewById(R.id.passwordInput);
         passwordLayout = findViewById(R.id.passwordLayout);
+
+        passwordInput.setOnEditorActionListener((v, actionId, event) -> {
+            if(actionId == EditorInfo.IME_ACTION_DONE){
+                loginButtonOnClick(v);
+                return true;
+            }
+            return false;
+        });
 
         setTextLayoutError();
     }
