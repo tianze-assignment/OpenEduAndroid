@@ -62,7 +62,6 @@ public class SearchResultActivity extends AppCompatActivity {
     private String selectedMethod = "默认",
             selectedFilter = "全部";
     private List<String> filterMethods;
-    EduKGService service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,11 +83,7 @@ public class SearchResultActivity extends AppCompatActivity {
         filterMethods = new ArrayList<>();
         filterMethods.add("全部");
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constant.eduKGBaseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        service = retrofit.create(EduKGService.class);
+
         // 为recyclerView设置adapter
         adapter = new SearchResultAdapter(activeData);
         adapter.setOnItemClickListener(new SearchResultAdapter.OnItemClickListener() {
@@ -102,8 +97,6 @@ public class SearchResultActivity extends AppCompatActivity {
                 intent.putExtra("label", searchResult.label);
                 intent.putExtra("uri", searchResult.uri);
                 intent.putExtra("searchResult", searchResult);
-                Log.e("searchResultActivity", String.format("searchResult == null ? %s",
-                        Boolean.toString(searchResult == null)));
                 startActivity(intent);
             }
         });
@@ -142,10 +135,6 @@ public class SearchResultActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         checkDatabase();
-//        if (adapter != null) {
-//            // 强制刷新，及时更新点击过后的选项为灰色
-//            adapter.notifyDataSetChanged();
-//        }
     }
 
     public void setFilter() {
@@ -178,14 +167,14 @@ public class SearchResultActivity extends AppCompatActivity {
         }
 
         if (selectedMethod.equals("标签长度升序")) {
-            Collections.sort(activeData, new Comparator<SearchResult>() {
+            activeData.sort(new Comparator<SearchResult>() {
                 @Override
                 public int compare(SearchResult o1, SearchResult o2) {
                     return o1.label.length() - o2.label.length();
                 }
             });
         } else if (selectedMethod.equals("标签长度降序")) {
-            Collections.sort(activeData, new Comparator<SearchResult>() {
+            activeData.sort(new Comparator<SearchResult>() {
                 @Override
                 public int compare(SearchResult o1, SearchResult o2) {
                     return o2.label.length() - o1.label.length();
@@ -193,7 +182,7 @@ public class SearchResultActivity extends AppCompatActivity {
             });
         } else if (selectedMethod.equals("标签首字母排序") ||
         selectedMethod.equals("类别首字母排序")) {
-            Collections.sort(activeData, new Comparator<SearchResult>() {
+            activeData.sort(new Comparator<SearchResult>() {
                 @Override
                 public int compare(SearchResult o1, SearchResult o2) {
                     HanyuPinyinOutputFormat outputFormat = new HanyuPinyinOutputFormat();
@@ -212,7 +201,7 @@ public class SearchResultActivity extends AppCompatActivity {
                         int codePoint2 = label2.charAt(i);
 
                         if (Character.isSupplementaryCodePoint(codePoint1) ||
-                        Character.isSupplementaryCodePoint(codePoint2)) {
+                                Character.isSupplementaryCodePoint(codePoint2)) {
                             i++;
                         }
 
@@ -257,8 +246,6 @@ public class SearchResultActivity extends AppCompatActivity {
         try {
             List<SearchResult> localList = futureList.get();
             if (localList != null && localList.size() != 0) {
-                Log.e("database", "search result success");
-                Log.e("database", String.format("list size: %s", localList.size()));
                 data = localList;
                 activeData = data;
                 Set<String> set = new HashSet<>();  //去重
@@ -282,17 +269,17 @@ public class SearchResultActivity extends AppCompatActivity {
     }
 
     public void doSearch() {
-        Call<JSONArray<SearchResult>> call = service.instanceList(Constant.eduKGId, course, searchKey);
-
-
-        call.enqueue(new Callback<JSONArray<SearchResult>>() {
+        new Retrofit.Builder()
+                .baseUrl(Constant.backendBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build().create(BackendService.class)
+                .instanceList(Constant.backendToken, Constant.eduKGId, course.toUpperCase(), searchKey)
+                .enqueue(new Callback<JSONArray<SearchResult>>() {
             @Override
             public void onResponse(@NotNull Call<JSONArray<SearchResult>> call,
                                    @NotNull Response<JSONArray<SearchResult>> response) {
-                Log.e("retrofit", "search result success");
                 JSONArray<SearchResult> jsonArray = response.body();
-
-                if (jsonArray != null && jsonArray.code.equals("0")) {
+                if (jsonArray != null) {
                     data = jsonArray.data;
                     activeData = data;
                     Set<String> set = new HashSet<>();  //去重
@@ -300,7 +287,6 @@ public class SearchResultActivity extends AppCompatActivity {
                         result.course = course;
                         result.searchKey = searchKey;
                         result.hasRead = false;
-                        result.hasStar = false;
                         if (!set.contains(result.category)) {
                             set.add(result.category);
                             filterMethods.add(result.category);
@@ -318,7 +304,6 @@ public class SearchResultActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    Log.e("retrofit", "error request");
                     data = new ArrayList<SearchResult>();
                     data.add(new SearchResult("暂时找不到您想要的结果", "抱歉", ""));
                     activeData = data;
@@ -334,8 +319,6 @@ public class SearchResultActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NotNull Call<JSONArray<SearchResult>> call,
                                   @NotNull Throwable t) {
-                Log.e("retrofit", "connect error");
-                // todo
                 setFilter();
             }
         });

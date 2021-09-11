@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.wudaokou.easylearn.adapter.SearchRecordAdapter;
 import com.wudaokou.easylearn.adapter.SearchResultAdapter;
@@ -134,7 +135,7 @@ public class SearchableActivity extends AppCompatActivity
             @Override
             public void onFailure(@NotNull Call<List<BackendObject>> call,
                                   @NotNull Throwable t) {
-
+                Log.e("searchable", "get popular error");
             }
         });
     }
@@ -201,7 +202,6 @@ public class SearchableActivity extends AppCompatActivity
                     }
                 });
 
-                // todo 执行搜搜
                 doMySearch(subject, query);
 
                 return false;
@@ -248,13 +248,6 @@ public class SearchableActivity extends AppCompatActivity
     }
 
     public void clearSearchRecord(View view) {
-        MyDatabase.databaseWriteExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                myDatabase.searchRecordDAO().deleteAllRecord();
-            }
-        });
-        initSearchRecord();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.backendBaseUrl)
@@ -266,11 +259,20 @@ public class SearchableActivity extends AppCompatActivity
             @Override
             public void onResponse(@NotNull Call<BackendObject> call,
                                    @NotNull Response<BackendObject> response) {
+                MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        myDatabase.searchRecordDAO().deleteAllRecord();
+                    }
+                });
+                initSearchRecord();
             }
 
             @Override
             public void onFailure(@NotNull Call<BackendObject> call,
                                   @NotNull Throwable t) {
+                Toast.makeText(SearchableActivity.this, "删除搜索历史失败",
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -123,6 +123,8 @@ public class EntityQuestionFragment extends Fragment {
                                    @NotNull Response<List<Question>> response) {
                 if (response.body() != null) {
                     data = response.body();
+                    for (Question question : data)
+                        question.hasStar = true;
                     if (adapter != null) {
                         adapter.updateData(data);
                         adapter.notifyDataSetChanged();
@@ -205,7 +207,6 @@ public class EntityQuestionFragment extends Fragment {
                         updateData(data);
                     }
                 }
-//                loadingDialog.dismiss();
                 binding.progressBar.setVisibility(View.GONE);
             }
 
@@ -213,7 +214,6 @@ public class EntityQuestionFragment extends Fragment {
             public void onFailure(@NotNull Call<JSONArray<Question>> call,
                                   @NotNull Throwable t) {
                 Log.e("retrofit", "http error");
-//                loadingDialog.dismiss();
                 binding.progressBar.setVisibility(View.GONE);
             }
         });

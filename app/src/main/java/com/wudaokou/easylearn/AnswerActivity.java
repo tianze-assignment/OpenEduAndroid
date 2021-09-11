@@ -191,13 +191,8 @@ public class AnswerActivity extends AppCompatActivity
     public void onStarQuestionClick(View view) {
         int position = binding.questionViewPager2.getCurrentItem();
         Question question = questionList.get(position);
-        question.hasStar = !question.hasStar;
 
-        if (question.hasStar) {
-            binding.starQuestionButton.setImageResource(R.drawable.star_fill);
-        } else {
-            binding.starQuestionButton.setImageResource(R.drawable.star_blank);
-        }
+        boolean isStar = !question.hasStar;
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.backendBaseUrl)
@@ -207,7 +202,7 @@ public class AnswerActivity extends AppCompatActivity
         BackendService backendService = retrofit.create(BackendService.class);
         String course = question.course == null ? "" : question.course.toUpperCase();
         String label = question.label == null ? "" : question.label;
-        backendService.onStarQuestion(Constant.backendToken, question.hasStar, question.id,
+        backendService.onStarQuestion(Constant.backendToken, isStar, question.id,
                 question.qAnswer, question.qBody,
                 label, course).enqueue(new Callback<String>() {
             @Override
@@ -216,6 +211,19 @@ public class AnswerActivity extends AppCompatActivity
                 if (response.code() == 200) {
                     String msg = question.hasStar ? "收藏题目成功!" : "取消收藏成功!";
                     Toast.makeText(AnswerActivity.this, msg, Toast.LENGTH_LONG).show();
+                    question.hasStar = !question.hasStar;
+                    if (question.hasStar) {
+                        binding.starQuestionButton.setImageResource(R.drawable.star_fill);
+                    } else {
+                        binding.starQuestionButton.setImageResource(R.drawable.star_blank);
+                    }
+                    MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            MyDatabase.getDatabase(AnswerActivity.this).questionDAO()
+                                    .updateQuestion(question);
+                        }
+                    });
                 } else {
                     String msg = question.hasStar ? "收藏题目失败!" : "取消收藏失败!";
                     Toast.makeText(AnswerActivity.this, "收藏题目失败!", Toast.LENGTH_LONG).show();
@@ -227,14 +235,6 @@ public class AnswerActivity extends AppCompatActivity
                                   @NotNull Throwable t) {
                 String msg = question.hasStar ? "收藏题目失败!" : "取消收藏失败!";
                 Toast.makeText(AnswerActivity.this, msg, Toast.LENGTH_LONG).show();
-            }
-        });
-
-        MyDatabase.databaseWriteExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                MyDatabase.getDatabase(AnswerActivity.this).questionDAO()
-                        .updateQuestion(question);
             }
         });
     }
