@@ -42,8 +42,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -104,14 +106,6 @@ public class HomePagerFragment extends Fragment {
         return binding.getRoot();
     }
 
-    @Override
-    public void onStop() {
-        if (loadingDialog != null && loadingDialog.isShowing()) {
-            loadingDialog.dismiss();
-        }
-        super.onStop();
-    }
-
     public void initForStarHistory() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.backendBaseUrl)
@@ -144,15 +138,18 @@ public class HomePagerFragment extends Fragment {
             @Override
             public void onFailure(@NotNull Call<List<BackendObject>> call,
                                   @NotNull Throwable t) {
-                loadingDialog.dismiss();
                 Log.e("home page for star", "retrofit connect backend error");
             }
         });
     }
 
     public void initForHomePage() {
-        loadingDialog = new LoadingDialog(requireContext());
-        loadingDialog.show();
+//        loadingDialog = new LoadingDialog(requireContext());
+//        loadingDialog.show();
+//        binding.loading.show();
+//        binding.loading.setVisibilityAfterHide(View.GONE);
+
+
 
         keyWordList = SubjectKeyWords.getMap().get(course);
         Retrofit retrofit = new Retrofit.Builder()
@@ -188,12 +185,9 @@ public class HomePagerFragment extends Fragment {
         }
 
         List<SearchResult> searchResultList = new ArrayList<>();
-        resultThreadCount = randomCount;
-
-        Log.e("home", String.format("resultThreadCount： %d", resultThreadCount));
+        CountDownLatch latch = new CountDownLatch(randomCount);
 
         for (String label : selectedKeyWordList) {
-
             Future<List<SearchResult>> featureList = MyDatabase.databaseWriteExecutor.submit(new Callable<List<SearchResult>>() {
                 @Override
                 public List<SearchResult> call() throws Exception {
@@ -205,9 +199,7 @@ public class HomePagerFragment extends Fragment {
                 List<SearchResult> resultList = featureList.get();
                 if (resultList != null && resultList.size() != 0) {
                     searchResultList.addAll(resultList);
-                    resultThreadCount--;
-                    Log.e("home", String.format("keyWord[%s] success", label));
-                    Log.e("home", String.format("resultThreadCount： %d", resultThreadCount));
+                    latch.countDown();
                     continue;
                 }
             } catch (InterruptedException | ExecutionException e) {
@@ -220,9 +212,6 @@ public class HomePagerFragment extends Fragment {
                 @Override
                 public void onResponse(@NotNull Call<JSONArray<SearchResult>> call,
                                        @NotNull Response<JSONArray<SearchResult>> response) {
-                    resultThreadCount--;
-                    Log.e("home", String.format("keyWord[%s] success", label));
-                    Log.e("home", String.format("resultThreadCount： %d", resultThreadCount));
                     if (response.body() != null && response.body().data != null) {
                         List<SearchResult> dataList = response.body().data;
 
@@ -240,117 +229,37 @@ public class HomePagerFragment extends Fragment {
                                 }
                             });
                         }
-
                         searchResultList.addAll(dataList);
                     }
+                    latch.countDown();
                 }
 
                 @Override
                 public void onFailure(@NotNull Call<JSONArray<SearchResult>> call,
                                       @NotNull Throwable t) {
-                    resultThreadCount--;
-                    Log.e("home", String.format("keyWord[%s] fail", label));
-                    Log.e("home", String.format("resultThreadCount： %d", resultThreadCount));
+                    latch.countDown();
                 }
             });
         }
 
         // 上述四个关键词的查询都结束后开始查询每个搜索结果的property
-        while (true) {
-
-            //!! log不能注释掉
-            Log.i("home", "home page waiting");
-
-            if (resultThreadCount == 0) {
-
-                // 暂时只搜索label， 不搜索详情
-
-//                Log.e("home", "finish get search result");
-//                propertyThreadCount = searchResultList.size();
-//                for (SearchResult searchResult : searchResultList) {
-//                    Future<List<Property>> listFuture = MyDatabase.databaseWriteExecutor
-//                            .submit(new Callable<List<Property>>() {
-//                        @Override
-//                        public List<Property> call() throws Exception {
-//                            return MyDatabase.getDatabase(getContext()).propertyDAO()
-//                                    .loadPropertyByParentUri(searchResult.uri);
-//                        }
-//                    });
-//                    try {
-//                        List<Property> propertyList = listFuture.get();
-//                        if (propertyList != null && propertyList.size() != 0) {
-//                            homeCourseItemList.add(new HomeCourseItem(searchResult, propertyList));
-//                            propertyThreadCount--;
-//                            continue;
-//                        }
-//                    } catch (InterruptedException | ExecutionException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    // 向服务器请求数据
-//                    service.infoByInstanceName(Constant.eduKGId, course, searchResult.label).enqueue(new Callback<JSONObject<EntityInfo>>() {
-//                        @Override
-//                        public void onResponse(@NotNull Call<JSONObject<EntityInfo>> call,
-//                                               @NotNull Response<JSONObject<EntityInfo>> response) {
-//                            if (response.body() != null && response.body().data != null
-//                            && response.body().data.property != null) {
-//                                List<Property> propertyList = response.body().data.property;
-//                                for (Property property : propertyList) {
-//                                    property.course = course;
-//                                    property.label = searchResult.label;
-//                                    property.parentUri = searchResult.uri;
-//                                    property.hasRead = false;
-//                                    property.hasStar = false;
-//
-//                                    MyDatabase.databaseWriteExecutor.submit(new Runnable() {
-//                                        @Override
-//                                        public void run() {
-//                                            MyDatabase.getDatabase(getContext()).propertyDAO()
-//                                                    .insertProperty(property);
-//                                        }
-//                                    });
-//                                }
-//                                homeCourseItemList.add(new HomeCourseItem(searchResult, propertyList));
-//                                propertyThreadCount--;
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onFailure(@NotNull Call<JSONObject<EntityInfo>> call,
-//                                              @NotNull Throwable t) {
-//                            propertyThreadCount--;
-//                        }
-//                    });
-//                }
-//
-//                while (true) {
-//                    if (propertyThreadCount == 0) {
-//                        adapter.updateData(homeCourseItemList);
-//                        Log.e("home", "finish get property");
-//                        requireActivity().runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                adapter.notifyDataSetChanged();
-//                            }
-//                        });
-//                        loadingDialog.dismiss();
-//                        break;  // 跳出获取property的循环
-//                    }
-//                }
-                Log.e("home", "enter break");
-                Log.e("home", String.format("list size: %d", searchResultList.size()));
-                for (int id = 0; id != searchResultList.size(); id++) {
-                    SearchResult searchResult = searchResultList.get(id);
-                    homeCourseItemList.add(new HomeCourseItem(searchResult, null));
-                }
-                // 使用迭代器遍历时，在home页连续切换tab会闪退
-
-                Collections.shuffle(homeCourseItemList); // 打乱数据
-                adapter.updateData(homeCourseItemList);
-                requireActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
-                loadingDialog.dismiss();
-                break;  // 跳出获取 SearchResult 的循环
+        try {
+            latch.await(6, TimeUnit.SECONDS); // 最多等6秒
+            for (int id = 0; id != searchResultList.size(); id++) {
+                SearchResult searchResult = searchResultList.get(id);
+                homeCourseItemList.add(new HomeCourseItem(searchResult, null));
             }
+            // 使用迭代器遍历时，在home页连续切换tab会闪退
+
+            Collections.shuffle(homeCourseItemList); // 打乱数据
+            adapter.updateData(homeCourseItemList);
+            requireActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+//            loadingDialog.dismiss();
+//            binding.loading.hide();
+            getActivity().runOnUiThread(()->{binding.processBar.setVisibility(View.GONE);});
         }
     }
 }

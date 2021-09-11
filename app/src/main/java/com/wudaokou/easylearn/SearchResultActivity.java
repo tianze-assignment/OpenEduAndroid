@@ -130,9 +130,12 @@ public class SearchResultActivity extends AppCompatActivity {
             }
         });
 
-        // 为筛选按钮设置adapter
-//        String[] filterMethods = getResources().getStringArray(R.array.resultFilterMethod);
-
+        binding.searchLine.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SearchResultActivity.this.finish(); // 调回搜索页面
+            }
+        });
     }
 
     @Override

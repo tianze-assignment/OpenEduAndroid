@@ -51,7 +51,7 @@ public class EntityQuestionFragment extends Fragment {
     public List<Question> data;
     private FragmentEntityQuestionBinding binding;
     private EntityQuestionAdapter adapter;
-    private LoadingDialog loadingDialog;
+//    private LoadingDialog loadingDialog;
     private String label, course;
     boolean forStarHistory;
 
@@ -81,10 +81,7 @@ public class EntityQuestionFragment extends Fragment {
         binding = FragmentEntityQuestionBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        if (!forStarHistory) {
-            loadingDialog = new LoadingDialog(requireContext());
-            loadingDialog.show();
-        } else {
+        if (forStarHistory) {
             getStarQuestion();
         }
 
@@ -114,14 +111,6 @@ public class EntityQuestionFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onStop() {
-        if (loadingDialog != null && loadingDialog.isShowing()) {
-            loadingDialog.dismiss();
-        }
-        super.onStop();
-    }
-
     public void getStarQuestion() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.backendBaseUrl)
@@ -149,6 +138,7 @@ public class EntityQuestionFragment extends Fragment {
     }
 
     public void checkDatabase() {
+        binding.progressBar.setVisibility(View.VISIBLE);
         Future<List<Question>> listFuture = MyDatabase.databaseWriteExecutor.submit(new Callable<List<Question>>() {
             @Override
             public List<Question> call() throws Exception {
@@ -162,7 +152,8 @@ public class EntityQuestionFragment extends Fragment {
             if (localList != null && localList.size() != 0) {
                 data = localList;
                 updateData(data);
-                loadingDialog.dismiss();
+//                loadingDialog.dismiss();
+                binding.progressBar.setVisibility(View.GONE);
             } else {
                 getEntityQuestion(label);
             }
@@ -214,14 +205,16 @@ public class EntityQuestionFragment extends Fragment {
                         updateData(data);
                     }
                 }
-                loadingDialog.dismiss();
+//                loadingDialog.dismiss();
+                binding.progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(@NotNull Call<JSONArray<Question>> call,
                                   @NotNull Throwable t) {
                 Log.e("retrofit", "http error");
-                loadingDialog.dismiss();
+//                loadingDialog.dismiss();
+                binding.progressBar.setVisibility(View.GONE);
             }
         });
     }

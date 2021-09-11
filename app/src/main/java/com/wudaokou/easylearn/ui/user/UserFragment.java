@@ -23,6 +23,7 @@ import com.wudaokou.easylearn.ChangePasswordActivity;
 import com.wudaokou.easylearn.LoginActivity;
 import com.wudaokou.easylearn.StarHistoryActivity;
 import com.wudaokou.easylearn.constant.Constant;
+import com.wudaokou.easylearn.data.MyDatabase;
 import com.wudaokou.easylearn.databinding.FragmentUserBinding;
 
 import org.jetbrains.annotations.NotNull;
@@ -62,6 +63,17 @@ public class UserFragment extends Fragment{
                     arrangeLayout();
 
                     // TODO 删库
+                    MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            MyDatabase myDatabase = MyDatabase.getDatabase(requireActivity());
+                            myDatabase.questionDAO().deleteAllQuestion();
+                            myDatabase.contentDAO().deleteAllContent();
+                            myDatabase.propertyDAO().deleteAllProperty();
+                            myDatabase.searchRecordDAO().deleteAllRecord();
+                            myDatabase.searchResultDAO().deleteAllSearchResult();
+                        }
+                    });
 
                     dialog.dismiss();
                 })

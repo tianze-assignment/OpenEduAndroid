@@ -87,7 +87,6 @@ public class EntityContentFragment extends Fragment {
         adapter.setOnItemClickListener(new SearchResultAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Log.e("entity_content", "click");
                 Content content = data.get(position);
                 String course = content.course;
                 String label, uri;
@@ -112,15 +111,8 @@ public class EntityContentFragment extends Fragment {
                 });
                 try {
                     searchResult = searchResultFuture.get();
-                    if (searchResult != null) {
-                        Log.e("entity_content", "load searchResult ok");
-                    } else {
-                        Log.e("entity_content", "load null searchResult from database");
-                    }
-
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
-                    Log.e("entity_content", "load searchResult fail");
                 } finally {
                     // 不能在catch里初始化searchResult
                     if (searchResult == null) {
@@ -129,17 +121,15 @@ public class EntityContentFragment extends Fragment {
                         searchResult.category = null;
                         searchResult.hasRead = false;
                         searchResult.hasStar = false;
+                        MyDatabase.databaseWriteExecutor.submit(new Runnable() {
+                            @Override
+                            public void run() {
+                                MyDatabase.getDatabase(getContext()).searchResultDAO()
+                                        .insertSearchResult(searchResult);
+                            }
+                        });
                     }
-                    MyDatabase.databaseWriteExecutor.submit(new Runnable() {
-                        @Override
-                        public void run() {
-                            MyDatabase.getDatabase(getContext()).searchResultDAO()
-                                    .insertSearchResult(searchResult);
-                        }
-                    });
                     intent.putExtra("searchResult", searchResult);
-                    Log.e("entity_content", String.format("searchResult == null ? %s",
-                            Boolean.toString(searchResult == null)));
                     startActivity(intent);
                 }
             }
@@ -149,7 +139,8 @@ public class EntityContentFragment extends Fragment {
     }
 
     public void checkDatabase() {
-        Future<List<Content>> listFuture = MyDatabase.databaseWriteExecutor.submit(new Callable<List<Content>>() {
+        Future<List<Content>> listFuture = MyDatabase.databaseWriteExecutor.submit(
+                new Callable<List<Content>>() {
             @Override
             public List<Content> call() throws Exception {
                 return MyDatabase.getDatabase(getContext())
@@ -204,14 +195,12 @@ public class EntityContentFragment extends Fragment {
                         }
                     }
                 }
-//                loadingDialog.dismiss();
             }
 
             @Override
             public void onFailure(@NotNull Call<JSONObject<EntityInfo>> call,
                                   @NotNull Throwable t) {
                 Log.e("retrofit", "http error");
-//                loadingDialog.dismiss();
             }
         });
     }

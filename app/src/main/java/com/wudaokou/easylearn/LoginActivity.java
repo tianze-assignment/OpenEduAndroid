@@ -20,6 +20,7 @@ import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.CheckUsernameReturn;
 import com.wudaokou.easylearn.retrofit.LoginParam;
 import com.wudaokou.easylearn.retrofit.LoginReturn;
+import com.wudaokou.easylearn.utils.BackendHandler;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -146,6 +147,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
 
+                BackendHandler.initDatabaseFromBackend(LoginActivity.this);
                 LoginActivity.this.finish();
             }
 

@@ -197,23 +197,19 @@ public class TestActivity extends AppCompatActivity {
                         }
                     }
                     latch.countDown();
-                    Log.e("test_activity", "latch count down");
                 }
 
                 @Override
                 public void onFailure(@NotNull Call<JSONArray<Question>> call,
                                       @NotNull Throwable t) {
                     latch.countDown();
-                    Log.e("test_activity", "latch count down");
                 }
             });
         }
 
         try {
             latch.await();
-            Log.e("test_activity", "latch end wait");
-            if (questionList.size() != 0) {
-                Log.e("test_activity", "get some question");
+            if (questionList.size() != 0 && loadingDialog.isShowing()) {
                 Collections.shuffle(questionList);
                 Intent intent = new Intent(this, AnswerActivity.class);
                 intent.putExtra("position", 0);

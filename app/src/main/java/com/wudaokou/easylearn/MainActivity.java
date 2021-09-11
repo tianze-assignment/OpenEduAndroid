@@ -26,6 +26,7 @@ import com.wudaokou.easylearn.retrofit.BackendService;
 import com.wudaokou.easylearn.retrofit.EduKGService;
 import com.wudaokou.easylearn.retrofit.EduLoginRet;
 import com.wudaokou.easylearn.retrofit.LoginParam;
+import com.wudaokou.easylearn.utils.BackendHandler;
 import com.wudaokou.easylearn.utils.ListDataSave;
 
 import org.jetbrains.annotations.NotNull;
@@ -159,48 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 向后端请求搜索历史记录
     public void updateSearchHistory() {
-        // 清除历史记录
-        MyDatabase.databaseWriteExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                MyDatabase.getDatabase(MainActivity.this).searchRecordDAO().deleteAllRecord();
-            }
-        });
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constant.backendBaseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        BackendService backendService = retrofit.create(BackendService.class);
-        backendService.getHistorySearch(Constant.backendToken)
-                .enqueue(new Callback<List<BackendObject>>() {
-            @Override
-            public void onResponse(@NotNull Call<List<BackendObject>> call,
-                                   @NotNull Response<List<BackendObject>> response) {
-                if (response.body() != null) {
-                    for (BackendObject backendObject : response.body()) {
-                        String timeStr = backendObject.createdAt.replace("T", " ");
-                        Timestamp timestamp = Timestamp.valueOf(timeStr);
-                        MyDatabase.databaseWriteExecutor.submit(new Runnable() {
-                            @Override
-                            public void run() {
-                                MyDatabase.getDatabase(MainActivity.this).searchRecordDAO()
-                                        .insertRecord(new SearchRecord(timestamp.getTime(),
-                                                backendObject.name, backendObject.course.toLowerCase()));
-                            }
-                        });
-                    }
-                    Log.e("main_activity", "update search record ok");
-                } else {
-                    Log.e("main_activity", "update null search record");
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call<List<BackendObject>> call, @NotNull Throwable t) {
-                Log.e("main_activity", "update search record error");
-            }
-        });
+        BackendHandler.initDatabaseFromBackend(MainActivity.this);
     }
 
     // 试题推荐onClick

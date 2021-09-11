@@ -94,8 +94,6 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
         course = intent.getStringExtra("course");
         label = intent.getStringExtra("label");
         uri = intent.getStringExtra("uri");
-        Log.e("entity_info_activity", String.format("course == null? %s",
-                Boolean.toString(course == null)));
         if (label != null) {
             if (label.length() < 10) {
                 binding.title.setText(label);
@@ -105,8 +103,6 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
         }
         searchResult = (SearchResult) intent.getSerializableExtra("searchResult");
         if (searchResult == null) {
-            Log.e("entity_info_activity", "get null searchResult from intent");
-
             Future<SearchResult> searchResultFuture = MyDatabase.databaseWriteExecutor.submit(
                     new Callable<SearchResult>() {
                 @Override
@@ -118,18 +114,9 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
 
             try {
                 searchResult = searchResultFuture.get();
-                if (searchResult != null) {
-                    Log.e("entity_info_activity", "get a searchResult from database");
-                } else {
-                    Log.e("entity_info_activity", "get null searchResult from database");
-                }
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
-        }
-
-        if (searchResult == null) {
-            Log.e("entity_info_activity", "null searchResult after get from database");
         }
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -167,10 +154,7 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
 
         if (searchResult != null) {
             postClickEntity();
-        } else {
-            Log.e("entity_info_activity", "null searchResult");
         }
-
     }
 
     @Override
@@ -183,17 +167,12 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
         binding.imageButtonStar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("entity_info_activity", "on click star");
                 searchResult.hasStar = !searchResult.hasStar;
-
-                Log.e("entity_info_activity", "after modify hasStar");
                 if (searchResult.hasStar) {
                     binding.imageButtonStar.setImageResource(R.drawable.star_fill);
                 } else {
                     binding.imageButtonStar.setImageResource(R.drawable.star_blank);
                 }
-
-                Log.e("entity_info_activity", "after set star logo");
 
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(Constant.backendBaseUrl)
@@ -202,7 +181,6 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                 BackendService service = retrofit.create(BackendService.class);
 
                 if (searchResult.hasStar) {
-                    Log.e("entity_info_activity", "send star");
                     service.starEntity(Constant.backendToken,
                             new HistoryParam(searchResult.course.toUpperCase(), searchResult.label,
                                     searchResult.uri, searchResult.category, searchResult.searchKey))
@@ -221,20 +199,17 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                                         });
                                         Snackbar.make(v, "收藏成功", Snackbar.LENGTH_LONG)
                                                 .setAction("Action", null).show();
-                                        Log.e("retrofit", "收藏成功!");
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(@NotNull Call<BackendObject> call,
                                                       @NotNull Throwable t) {
-                                    Log.e("retrofit", "收藏失败!");
                                     Snackbar.make(v, "收藏失败!", Snackbar.LENGTH_LONG)
                                             .setAction("Action", null).show();
                                 }
                             });
                 } else {
-                    Log.e("entity_info_activity", "send unstar");
                     service.cancelStarEntity(Constant.backendToken,
                             searchResult.id).enqueue(new Callback<BackendObject>() {
                         @Override
@@ -245,7 +220,6 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                                 public void run() {
                                     MyDatabase.getDatabase(v.getContext()).searchResultDAO()
                                             .updateSearchResult(searchResult);
-                                    Log.e("retrofit", "取消收藏成功!");
                                     Snackbar.make(v, "取消收藏成功!", Snackbar.LENGTH_LONG)
                                             .setAction("Action", null).show();
                                 }
@@ -255,7 +229,6 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                         @Override
                         public void onFailure(@NotNull Call<BackendObject> call,
                                               @NotNull Throwable t) {
-                            Log.e("retrofit", "取消收藏失败!");
                             Snackbar.make(v, "取消收藏失败!", Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show();
                         }
@@ -324,18 +297,11 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
                     @Override
                     public void onResponse(@NotNull Call<BackendObject> call,
                                            @NotNull Response<BackendObject> response) {
-                        if (response.code() == 200) {
-                            Log.e("home", "post click ok");
-                        } else {
-                            Log.e("home", "post click fail");
-                            Log.e("home", String.format("code: %d", response.code()));
-                        }
                     }
 
                     @Override
                     public void onFailure(@NotNull Call<BackendObject> call,
                                           @NotNull Throwable t) {
-                        Log.e("home", "post click error");
                     }
                 });
     }
