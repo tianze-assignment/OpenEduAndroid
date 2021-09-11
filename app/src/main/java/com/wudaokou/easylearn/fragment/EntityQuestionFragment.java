@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.wudaokou.easylearn.AnswerActivity;
 import com.wudaokou.easylearn.EntityInfoActivity;
@@ -68,6 +69,13 @@ public class EntityQuestionFragment extends Fragment {
 
     public void updateData(List<Question> data) {
         this.data = data;
+        if(data.isEmpty()){
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) binding.notFoundImage.getLayoutParams();
+            params.width = binding.recyclerView.getWidth() / 2;
+            params.height = binding.recyclerView.getWidth() / 2;
+            binding.notFoundImage.setLayoutParams(params);
+            binding.notFoundLayout.setVisibility(View.VISIBLE);
+        }
         if (adapter != null) {
             adapter.updateData(data);
             adapter.notifyDataSetChanged();
@@ -109,6 +117,10 @@ public class EntityQuestionFragment extends Fragment {
         if (!forStarHistory) {
             checkDatabase();
         }
+    }
+
+    public void hideNotFoundLayout(){
+        binding.notFoundLayout.setVisibility(View.GONE);
     }
 
     public void getStarQuestion() {

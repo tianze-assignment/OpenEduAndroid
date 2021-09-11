@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.wudaokou.easylearn.EntityInfoActivity;
 import com.wudaokou.easylearn.R;
@@ -59,10 +60,21 @@ public class EntityContentFragment extends Fragment {
 
     public void updateData(List<Content> data) {
         this.data = data;
+        if(data.isEmpty()){
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) binding.notFoundImage.getLayoutParams();
+            params.width = binding.recyclerView.getWidth() / 2;
+            params.height = binding.recyclerView.getWidth() / 2;
+            binding.notFoundImage.setLayoutParams(params);
+            binding.notFoundLayout.setVisibility(View.VISIBLE);
+        }
         if (adapter != null) {
             adapter.updateData(data);
             adapter.notifyDataSetChanged();
         }
+    }
+
+    public void hideNotFoundLayout(){
+//        binding.notFoundLayout.setVisibility(View.GONE);
     }
 
     @Override

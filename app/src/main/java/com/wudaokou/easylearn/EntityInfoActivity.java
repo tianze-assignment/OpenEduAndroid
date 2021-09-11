@@ -143,6 +143,16 @@ public class EntityInfoActivity extends AppCompatActivity implements WbShareCall
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 binding.viewPager2.setUserInputEnabled(position != 2);
+                if(position != 3){
+                    if(entityQuestionFragment != null){
+                        entityQuestionFragment.hideNotFoundLayout();
+                    }
+                }
+                if(position != 1){
+                    if(entityContentFragment != null){
+                        entityContentFragment.hideNotFoundLayout();
+                    }
+                }
             }
         });
 
