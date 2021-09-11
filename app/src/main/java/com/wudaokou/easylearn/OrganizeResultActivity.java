@@ -4,6 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.text.HtmlCompat;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -142,15 +146,12 @@ public class OrganizeResultActivity extends AppCompatActivity {
             listPopupWindow.dismiss();
             View correspondingText = outlineLayout.getChildAt(position);
             outlineScroll.smoothScrollTo(0, (correspondingText.getTop() + correspondingText.getBottom() - outlineScroll.getBottom())/2);
-            correspondingText.setActivated(true);
-            new Thread(() -> {
-                try{
-                    TimeUnit.MILLISECONDS.sleep(500);
-                }catch (InterruptedException e){
-                    e.printStackTrace();
-                }
-                runOnUiThread(() -> correspondingText.setActivated(false));
-            }).start();
+            TransitionDrawable transitionDrawable = new TransitionDrawable(new Drawable[]{
+                    new ColorDrawable(Color.parseColor("#FFF1BA")),
+                    new ColorDrawable(Color.parseColor("#FFFFFF"))
+            });
+            correspondingText.setBackground(transitionDrawable);
+            transitionDrawable.startTransition(1000);
         });
 
         popupButton.setOnClickListener(v -> listPopupWindow.show());
